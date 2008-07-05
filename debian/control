@@ -1,0 +1,12 @@
+Source: oi-build-firmware
+Section: devel
+Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
+Build-Depends: debhelper (>> 2.0.0)
+Priority: optional
+Standards-Version: 3.6.2
+
+Package: oi-v3-build-firmware
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: OpenInkpot tools for Hanlin v3 firmware generation.
+ This package includes mkv3update tool which generates firmware in Hanlin V3 updater format.
