@@ -15,4 +15,5 @@ AC_CHECK_HEADERS([inttypes.h])
 AC_OUTPUT([
 Makefile
 src/Makefile
+scripts/Makefile
 ])
