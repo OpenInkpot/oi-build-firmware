@@ -1,0 +1,98 @@
+#!/bin/sh
+set -e
+
+#
+# FIXME: this script is steaming pile of shit.
+#
+
+PACKAGES="mdev fbreader xserver-xfbdev"
+
+if [ "x$1" = "xnfsroot" ]; then
+    shift
+    NFSROOT=1
+else
+    NFSROOT=0
+fi
+
+if [ "x$1" = "xskip-bootstrap" ]; then
+    shift
+else
+    if [ "$NFSROOT" -eq 1 ]; then
+        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot-v3-armel linux-modules-2.6.25-nfsroot-v3 kexec-tools gdbserver"
+    else
+        PACKAGES="$PACKAGES linux-modules-2.6.25-v3"
+    fi
+
+    ARCH=armel
+
+    sudo rm -rf /rootfs-i386 /rootfs-$ARCH
+
+    sc-bootstrap-host
+    sc-bootstrap-target $ARCH
+
+    echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
+
+    cross-shell sh $ARCH apt-get update
+    cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
+    cross-shell sh $ARCH apt-get clean
+
+    echo "::sysinit:/etc/init.d/rcS
+:2345:respawn:/bin/sh" > /rootfs-$ARCH/etc/inittab
+    sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
+    echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
+    cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
+    rm /rootfs-$ARCH/etc/passwd2
+
+    echo "eink_apollofb
+g_ether
+lbookv3_keys
+s3cmci
+mmc_block
+" > /rootfs-$ARCH/etc/modules
+
+    echo "auto lo
+iface lo inet loopback
+
+auto usb0
+iface usb0 inet static
+	address 192.168.111.1
+	netmask 255.255.255.0
+	broadcast 192.168.111.255
+" > /rootfs-$ARCH/etc/network/interfaces
+
+    touch /rootfs-$ARCH/etc/mdev.conf
+
+    if [ "$NFSROOT" -eq 1 ]; then
+        echo "#!/bin/sh
+case \`uname -r\` in
+  *-nfsroot)
+    kexec -l /boot/vmlinuz
+    kexec -e
+    echo Oops
+    ;;
+esac
+" > /rootfs-$ARCH/etc/rcS.d/S03kexec-reload
+
+        chmod +x /rootfs-$ARCH/etc/rcS.d/S03kexec-reload
+        ln -s /boot/vmlinuz-2.6.25-nfsroot-v3-armel /rootfs-$ARCH/boot/vmlinuz
+    fi
+fi
+
+sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
+
+if [ $NFSROOT -ne 1 ]; then
+    sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
+
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25-v3-armel
+
+    sudo rm -rf tmp
+    mkdir tmp
+    (cd tmp && sudo tar xf ../nfsroot-v3-armel.tar)
+    mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
+
+    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel +rootfs.jffs2
+
+    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25-v3-armel
+
+    sudo rm -rf rootfs.jffs2 nfsroot-v3-armel.tar tmp
+fi
