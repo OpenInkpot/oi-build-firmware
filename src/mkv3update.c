@@ -159,6 +159,13 @@ int put_file_to_image(const partition_t* partition,
   char* buf;
   struct stat stat_info;
   off_t file_size;
+  int fill_whole_partition = 0;
+
+  if(partition_filename[0] == '+')
+  {
+    partition_filename++;
+    fill_whole_partition = 1;
+  }
   
   printf("Writing %s to partition %s from block %d...\n",
          partition_filename,
@@ -189,19 +196,22 @@ int put_file_to_image(const partition_t* partition,
     return 1;
   }
 
-  buf = mmap(NULL, file_size, PROT_READ, MAP_SHARED, f, 0);
-  if(buf == MAP_FAILED)
+  if(file_size)
   {
-    perror(buf);
-    return 1;
-  }
+    buf = mmap(NULL, file_size, PROT_READ, MAP_SHARED, f, 0);
+    if(buf == MAP_FAILED)
+    {
+      perror(buf);
+      return 1;
+    }
 
-  memcpy(firmware + partition->offset * BLOCK_SIZE, buf, file_size);
+    memcpy(firmware + partition->offset * BLOCK_SIZE, buf, file_size);
   
-  if(-1 == munmap(buf, file_size))
-  {
-    perror("munmap");
-    return 1;
+    if(-1 == munmap(buf, file_size))
+    {
+      perror("munmap");
+      return 1;
+    }
   }
   
   if(-1 == close(f))
@@ -210,8 +220,17 @@ int put_file_to_image(const partition_t* partition,
     return 1;
   }
 
-  firmware_end_block = max(firmware_end_block,
-                           partition->offset + div_ceil(file_size, BLOCK_SIZE));
+  if(fill_whole_partition)
+  {
+    firmware_end_block = max(firmware_end_block,
+                             partition->offset + partition->size);
+  }
+  else
+  {
+    firmware_end_block = max(firmware_end_block,
+                             partition->offset + div_ceil(file_size,
+                                                          BLOCK_SIZE));
+  }
 
   return 0;
 }
@@ -370,11 +389,12 @@ void usage()
   {
     printf(PROGNAME " --write-%s=<outfile>", layouts[i].tag);
     for(j = 0; j < layouts[i].npartitions; ++j)
-      printf(" <%s>", layouts[i].partitions[j].name);
+      printf(" [+]<%s>", layouts[i].partitions[j].name);
     printf("\n");
   }
   printf("\n");
   printf("Any file may be omitted. Resulting image will be truncated.\n");
+  printf("'+' before filename will force filling whole partition with 0xff.\n");
 }
 
 int main(int argc, char** argv)
