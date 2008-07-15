@@ -1,6 +1,15 @@
+oi-build-firmware (0.5) unstable; urgency=low
+
+  * eink_apollofb and g_ether are compiled into the standalone kernel,
+    avoid loading them manually.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 15 Jul 2008 18:39:34 +0700
+
 oi-build-firmware (0.4) unstable; urgency=low
 
   * Added missing slind-control dependency.
+  * build-v3:
+    - added /usr/sbin to $PATH to run mkfs.jffs2
 
  -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 13 Jul 2008 20:38:26 +0700
 

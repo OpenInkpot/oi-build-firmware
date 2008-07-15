@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+PATH=$PATH:/usr/sbin
+
 #
 # FIXME: this script is steaming pile of shit.
 #
@@ -43,12 +45,19 @@ else
     cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
     rm /rootfs-$ARCH/etc/passwd2
 
-    echo "eink_apollofb
+    if [ "$NFSROOT" -eq 1 ]; then
+        echo "eink_apollofb
 g_ether
 lbookv3_keys
 s3cmci
 mmc_block
 " > /rootfs-$ARCH/etc/modules
+    else
+        echo "lbookv3_keys
+s3cmci
+mmc_block
+" > /rootfs-$ARCH/etc/modules
+    fi
 
     echo "auto lo
 iface lo inet loopback
