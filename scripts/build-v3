@@ -42,6 +42,8 @@ else
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
     cross-shell sh $ARCH apt-get clean
 
+	sed -i 's/\s*(^.*dropbearkey.*\)$/( \1 )\&/' /etc/init.d/dropbear
+
 	echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 
@@ -84,12 +86,14 @@ lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
+vfat
 " > /rootfs-$ARCH/etc/modules
     else
         echo "lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
+vfat
 " > /rootfs-$ARCH/etc/modules
     fi
 
