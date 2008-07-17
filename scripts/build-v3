@@ -38,11 +38,11 @@ else
 
     cross-shell sh $ARCH apt-get update
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
-	sleep 3
+	sleep 20
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
     cross-shell sh $ARCH apt-get clean
 
-	sed -i 's/\s*(^.*dropbearkey.*\)$/( \1 )\&/' /etc/init.d/dropbear
+	sed -i 's/\(^.*dropbearkey.*\)$/\( \1 \)\&/' /rootfs-$ARCH/etc/init.d/dropbear
 
 	echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
