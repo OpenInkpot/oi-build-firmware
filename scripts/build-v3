@@ -25,6 +25,8 @@ else
         PACKAGES="$PACKAGES linux-modules-2.6.25-v3"
     fi
 
+	PACKAGES2="liberation-fonts fbreader madshelf libewl libewl-engines-all libevas-engine-software-xcb"
+
     ARCH=armel
 
     sudo rm -rf /rootfs-i386 /rootfs-$ARCH
@@ -36,26 +38,58 @@ else
 
     cross-shell sh $ARCH apt-get update
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
+	sleep 3
+    cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
     cross-shell sh $ARCH apt-get clean
 
+	echo "#!/bin/sh
+HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
+
     echo "::sysinit:/etc/init.d/rcS
-:2345:respawn:/bin/sh" > /rootfs-$ARCH/etc/inittab
+#:2345:respawn:/bin/sh
+::respawn:Xfbdev -hide-cursor -ac -noreset -dpi 170
+::respawn:madshelf.sh" > /rootfs-$ARCH/etc/inittab
     sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
     echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
     cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
     rm /rootfs-$ARCH/etc/passwd2
 
+	ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
+
+	echo "#! /bin/sh
+if [ x$ACTION = "x" ] ; then
+	echo "$0: should be called by mdev"
+	exit -1
+fi
+
+if [ $ACTION = "remove" ] ; then
+	umount -f /dev/$MDEV
+	killall -HUP madshelf
+	exit 0
+fi
+
+if [ $ACTION = "add" ] ; then
+	mount -o sync /dev/$MDEV /mnt
+	killall -HUP madshelf
+	exit 0
+fi" > /rootfs-$ARCH/sbin/automount.sh
+
+	echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
+mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
+
     if [ "$NFSROOT" -eq 1 ]; then
         echo "eink_apollofb
 g_ether
 lbookv3_keys
-s3cmci
+lbookv3_battery
 mmc_block
+s3cmci
 " > /rootfs-$ARCH/etc/modules
     else
         echo "lbookv3_keys
-s3cmci
+lbookv3_battery
 mmc_block
+s3cmci
 " > /rootfs-$ARCH/etc/modules
     fi
 
