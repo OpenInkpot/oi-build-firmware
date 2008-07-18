@@ -74,7 +74,19 @@ if [ $ACTION = "remove" ] ; then
 fi
 
 if [ $ACTION = "add" ] ; then
+	for i in /dev/mmcblk*
+	do
+		D1=`echo $i | sed -e 's/p[0-9]*//'`
+		D2="/dev/"`echo $MDEV | sed -e 's/p[0-9]*//'` 
+		if [ $D1 != $D2 ]
+		then
+			umount $i
+			rm -f $i
+		fi
+	done
+
 	mount -o sync /dev/$MDEV /mnt
+
 	killall -HUP madshelf
 	exit 0
 fi' > /rootfs-$ARCH/sbin/automount.sh
