@@ -42,7 +42,7 @@ else
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
     cross-shell sh $ARCH apt-get clean
 
-	sed -i 's/\(^.*dropbearkey.*\)$/\( \1 \)\&/' /rootfs-$ARCH/etc/init.d/dropbear
+	sed -i 's/\(^.*dropbearkey.*\)$/\( \1 \) 1>\/dev\/null 2>\&1 \&/' /rootfs-$ARCH/etc/init.d/dropbear
 
 	echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS
 
