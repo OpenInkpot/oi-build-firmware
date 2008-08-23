@@ -1,3 +1,9 @@
+oi-build-firmware (0.6.6) UNRELEASED; urgency=low
+
+  * No longer touch dropbear initscript - now it works well enough.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 24 Aug 2008 03:19:44 +0700
+
 oi-build-firmware (0.6.5) unstable; urgency=low
 
   * dropbear starting in background
