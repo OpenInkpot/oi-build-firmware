@@ -1,8 +1,11 @@
 oi-build-firmware (0.6.6) UNRELEASED; urgency=low
 
+  * "Dehackization" release.
+
   * No longer touch dropbear initscript - now it works well enough.
   * S03kexec-reload functionality was integrated to boot-local-kernel
     package - install it instead of writing initscript manually.
+  * Stop creating /vmlinuz symlink - it is handled by linux-image package.
 
  -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 24 Aug 2008 03:19:44 +0700
 

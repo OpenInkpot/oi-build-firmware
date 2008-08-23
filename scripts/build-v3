@@ -126,10 +126,6 @@ iface usb0 inet static
 " > /rootfs-$ARCH/etc/network/interfaces
 
     touch /rootfs-$ARCH/etc/mdev.conf
-
-    if [ "$NFSROOT" -eq 1 ]; then
-        ln -s /boot/vmlinuz-2.6.25-nfsroot-v3-armel /rootfs-$ARCH/boot/vmlinuz
-    fi
 fi
 
 sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
