@@ -20,7 +20,8 @@ if [ "x$1" = "xskip-bootstrap" ]; then
     shift
 else
     if [ "$NFSROOT" -eq 1 ]; then
-        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot-v3-armel linux-modules-2.6.25-nfsroot-v3 kexec-tools gdbserver"
+        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot-v3-armel linux-modules-2.6.25-nfsroot-v3 kexec-tools boot-local-kernel"
+        PACKAGES="$PACKAGES gdbserver"
     else
         PACKAGES="$PACKAGES linux-modules-2.6.25-v3"
     fi
@@ -127,17 +128,6 @@ iface usb0 inet static
     touch /rootfs-$ARCH/etc/mdev.conf
 
     if [ "$NFSROOT" -eq 1 ]; then
-        echo "#!/bin/sh
-case \`uname -r\` in
-  *-nfsroot)
-    kexec -l /boot/vmlinuz
-    kexec -e
-    echo Oops
-    ;;
-esac
-" > /rootfs-$ARCH/etc/rcS.d/S03kexec-reload
-
-        chmod +x /rootfs-$ARCH/etc/rcS.d/S03kexec-reload
         ln -s /boot/vmlinuz-2.6.25-nfsroot-v3-armel /rootfs-$ARCH/boot/vmlinuz
     fi
 fi
