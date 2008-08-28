@@ -32,7 +32,10 @@ else
 
     if [ "x$1" = "xsecond-stage" ]; then
     	shift
-    else	
+    else
+        ARCHIVES=/var/cache/apt/acrhives
+        sudo umount /rootfs-i386$ARCHIVES ||:
+        sudo umount /rootfs-$ARCH$ARCHIVES ||:
     	sudo rm -rf /rootfs-i386 /rootfs-$ARCH
 
     	sc-bootstrap-host
