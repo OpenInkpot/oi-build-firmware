@@ -33,7 +33,7 @@ else
     if [ "x$1" = "xsecond-stage" ]; then
     	shift
     else
-        ARCHIVES=/var/cache/apt/acrhives
+        ARCHIVES=/var/cache/apt/archives
         while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
         sudo rm -rf /rootfs-i386
         while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
