@@ -34,9 +34,10 @@ else
     	shift
     else
         ARCHIVES=/var/cache/apt/acrhives
-        sudo umount /rootfs-i386$ARCHIVES ||:
-        sudo umount /rootfs-$ARCH$ARCHIVES ||:
-    	sudo rm -rf /rootfs-i386 /rootfs-$ARCH
+        while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
+        sudo rm -rf /rootfs-i386
+        while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
+    	sudo rm -rf /rootfs-$ARCH
 
     	sc-bootstrap-host
     	sc-bootstrap-target $ARCH
