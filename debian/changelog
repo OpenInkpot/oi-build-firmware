@@ -1,3 +1,11 @@
+oi-build-firmware (0.6.6.2) unstable; urgency=low
+
+  * Fixed typo in APT cache dir name.
+  * Avoid unmounting APT cache dirs if they are mounted.
+  * Avoid cleaning up APT cache, as it won't be included in rootfs
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 29 Aug 2008 20:47:48 +0700
+
 oi-build-firmware (0.6.6.1) unstable; urgency=low
 
   * Trying to unmount /var/cache/apt/archives in /rootfs-* before removing
