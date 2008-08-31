@@ -45,6 +45,7 @@ else
     	echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
 
     	cross-shell sh $ARCH apt-get update
+        cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
     	cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
     fi
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
