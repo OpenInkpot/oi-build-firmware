@@ -1,0 +1,60 @@
+#!/bin/bash
+
+ARCH=armel
+PACKAGES="busybox-static linux-modules-2.6.25-v3"
+MIRROR="http://openinkpot.org/pub/SLIND"
+CACHE_DIR="/rootfs-$ARCH/var/cache/apt/archives"
+INITRD_DIR=`mktemp build_initrd-$ARCH.XXXX`
+
+
+rm -rf $INITRD_DIR
+mkdir -p $INITRD_DIR
+
+cross-shell sh $ARCH apt-get install -y --force-yes --download-only $PACKAGES
+
+for pkg in $PACKAGES; do
+	pkg_version=`cross-shell sh $ARCH apt-cache show $pkg | awk '$1 == "Version:" {print $2}' | head -1 | sed 's/:/%3a/g'`
+	pkg_path="$CACHE_DIR/${pkg}_${pkg_version}_${ARCH}.deb"
+
+	dpkg -x $pkg_path $INITRD_DIR
+done
+
+
+mkdir -p $INITRD_DIR/dev
+sudo mknod $INITRD_DIR/dev/console c 5 1
+sudo mknod $INITRD_DIR/dev/loop0 b 7 0
+sudo mknod $INITRD_DIR/dev/mmcblk0 b 179 0
+sudo mknod $INITRD_DIR/dev/mmcblk0p1 b 179 1
+sudo mknod $INITRD_DIR/dev/mmcblk0p2 b 179 2
+
+rm $INITRD_DIR/sbin/init
+mkdir -p $INITRD_DIR/root
+mkdir -p $INITRD_DIR/mnt
+mkdir -p $INITRD_DIR/initrd
+
+echo "#!/bin/sh
+
+insmod loop
+insmod nls_base
+insmod fat
+insmod vfat
+insmod mmc_core
+insmod mmc_block
+insmod s3cmci
+insmod ext2
+
+mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /mnt || /bin/sh
+mount -o loop -t ext2 /mnt/openinkpot/rootfs.ext2 /root || /bin/sh
+mount --move /mnt /root/mnt || /bin/sh
+
+exec switch_root /root /sbin/init" > $INITRD_DIR/init
+
+chmod +x $INITRD_DIR/init
+
+CURDIR=$PWD
+
+cd $INITRD_DIR
+
+find . | cpio --quiet -H newc -o | gzip -9 -n > /"$CURDIR"/initrd.gz
+
+rm -rf $INITRD_DIR
