@@ -1,3 +1,10 @@
+oi-build-firmware (0.6.6.3+nmu1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Scripts for OI-on-SD build.
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Tue, 02 Sep 2008 00:10:23 +0300
+
 oi-build-firmware (0.6.6.3) unstable; urgency=low
 
   * Added apt-get dist-upgrade to rootfs generation.
