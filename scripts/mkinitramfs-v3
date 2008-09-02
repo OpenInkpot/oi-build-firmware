@@ -57,4 +57,6 @@ cd $INITRD_DIR
 
 find . | cpio --quiet -H newc -o | gzip -9 -n > /"$CURDIR"/initrd.gz
 
+cd $CURDIR
+
 rm -rf $INITRD_DIR
