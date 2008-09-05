@@ -118,6 +118,7 @@ s3cmci
 vfat
 " > /rootfs-$ARCH/etc/modules
     fi
+    mkdir /rootfs-$ARCH/etc/modprobe.d
 
     echo "auto lo
 iface lo inet loopback
