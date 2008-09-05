@@ -67,23 +67,13 @@ HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 
     ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
 
-    echo '#! /bin/sh
-if [ x$ACTION = "x" ] ; then
-	echo "$0: should be called by mdev"
-	exit -1
-fi
+    echo '#!/bin/sh
 
-if [ $ACTION = "remove" ] ; then
-	umount -f /dev/$MDEV
-	killall -HUP madshelf
-	exit 0
-fi
-
-if [ $ACTION = "add" ] ; then
+if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 	for i in /dev/mmcblk*
 	do
-		D1=`echo $i | sed -e 's/p[0-9]*//'`
-		D2="/dev/"`echo $MDEV | sed -e 's/p[0-9]*//'` 
+		D1=`echo $i | sed -e s/p[0-9]*//`
+		D2="/dev/"`echo $MDEV | sed -e s/p[0-9]*//`
 		if [ $D1 != $D2 ]
 		then
 			umount $i
@@ -93,9 +83,19 @@ if [ $ACTION = "add" ] ; then
 
 	mount -o sync /dev/$MDEV /mnt
 
+	killall madshelf
+	exit 0
+fi
+
+if [ $ACTION = "remove" ] ; then
+	umount -f /dev/$MDEV
 	killall -HUP madshelf
 	exit 0
-fi' > /rootfs-$ARCH/sbin/automount.sh
+fi
+
+echo "Unknown action. This script must be called by mdev!"
+exit 1
+' > /rootfs-$ARCH/sbin/automount.sh
     chmod a+x /rootfs-$ARCH/sbin/automount.sh
 
     echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
