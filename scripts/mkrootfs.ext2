@@ -1,0 +1,20 @@
+#!/bin/sh
+
+tar=$1
+
+if [ ! -f "$tar" ]; then
+	echo "Usage: $0 <rootfs tar filename>" >&2
+	exit 1
+fi
+
+ROOTFS_DIR=`mktemp -d rootfs.XXXX`
+
+dd if=/dev/zero of=rootfs.ext2 bs=10M count=4
+/sbin/mke2fs -m0 -F rootfs.ext2
+sudo mount -o loop rootfs.ext2 $ROOTFS_DIR
+sudo tar xf $tar -C $ROOTFS_DIR
+sudo umount $ROOTFS_DIR
+
+sudo rm -rf $ROOTFS_DIR
+
+

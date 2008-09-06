@@ -1,3 +1,11 @@
+oi-build-firmware (0.6.6.5) unstable; urgency=low
+
+  [Yauhen Kharuzhy]
+
+  * Add build-OI-on-SD-v3 script
+
+ --
+
 oi-build-firmware (0.6.6.4) asimov; urgency=low
 
   * automount.sh updated - newer mdev do not export ACTION= from mdev -s.

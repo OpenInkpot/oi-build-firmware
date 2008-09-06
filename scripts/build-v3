@@ -9,6 +9,12 @@ PATH=$PATH:/usr/sbin
 
 PACKAGES="mdev fbreader xserver-xfbdev"
 
+if [ x"$1" = x"keepfiles" ]; then
+	KEEP_FILES=1
+else
+	KEEP_FILES=0
+fi
+
 if [ "x$1" = "xnfsroot" ]; then
     shift
     NFSROOT=1
@@ -45,7 +51,7 @@ else
     	echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
 
     	cross-shell sh $ARCH apt-get update
-        cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
+    	cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
     	cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
     fi
     cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
@@ -147,7 +153,10 @@ if [ $NFSROOT -ne 1 ]; then
 
     mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel +rootfs.jffs2
 
+    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel ./
+
     cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25-v3-armel
 
-    sudo rm -rf rootfs.jffs2 nfsroot-v3-armel.tar tmp
+    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot-v3-armel.tar
+    sudo rm -rf tmp
 fi
