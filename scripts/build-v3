@@ -48,7 +48,7 @@ if [ $SKIP_BOOTSTRAP -eq 1 ]; then
     shift
 else
     if [ "$NFSROOT" -eq 1 ]; then
-        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot-v3-armel linux-modules-2.6.25-nfsroot-v3 kexec-tools boot-local-kernel"
+        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot$flavour-armel linux-modules-2.6.25-nfsroot$flavour kexec-tools boot-local-kernel"
         PACKAGES="$PACKAGES gdbserver"
     else
         PACKAGES="$PACKAGES linux-modules-2.6.25$flavour"
@@ -161,7 +161,7 @@ iface usb0 inet static
     touch /rootfs-$ARCH/etc/mdev.conf
 fi
 
-sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
+sc-pack-rootfs $ARCH nfsroot$flavour-armel.tar
 
 if [ $NFSROOT -ne 1 ]; then
     sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools

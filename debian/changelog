@@ -1,8 +1,12 @@
-oi-build-firmware (0.6.6.6) asimov; urgency=low
+oi-build-firmware (0.6.6.6) UNRELEASED; urgency=low
 
+  [Yauhen Kharuzhy]
   * Add v3ext flavour
 
- -- Yauhen Kharuzhy <jekhor@gmail.com>  Wed, 17 Sep 2008 00:19:25 +0300
+  [Mikhail Gusarov]
+  * Fixed v3ext nfsroot building
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 17 Sep 2008 04:52:32 +0700
 
 oi-build-firmware (0.6.6.5) unstable; urgency=low
 
