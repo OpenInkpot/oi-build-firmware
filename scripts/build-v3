@@ -178,7 +178,7 @@ sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
 if [ $NFSROOT -ne 1 ]; then
     sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
 
-    if [ $V3EXT -eq 1]; then
+    if [ $V3EXT -eq 1 ]; then
 	    flavour=-v3ext-armel
     else
 	    flavour=-v3-armel
