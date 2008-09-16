@@ -1,10 +1,16 @@
+oi-build-firmware (0.6.6.6) asimov; urgency=low
+
+  * Add v3ext flavour
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Wed, 17 Sep 2008 00:19:25 +0300
+
 oi-build-firmware (0.6.6.5) unstable; urgency=low
 
   [Yauhen Kharuzhy]
 
   * Add build-OI-on-SD-v3 script
 
- --
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Tue, 02 Sep 2008 16:17:24 +0300
 
 oi-build-firmware (0.6.6.4) asimov; urgency=low
 
