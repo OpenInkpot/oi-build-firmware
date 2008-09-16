@@ -37,24 +37,12 @@ for option in $@; do
 	esac
 done
 
-if [ x"$1" = x"keepfiles" ]; then
-	KEEP_FILES=1
+if [ $V3EXT -eq 1 ]; then
+	flavour=-v3ext
 else
-	KEEP_FILES=0
+	flavour=-v3
 fi
 
-if [ "x$1" = "xnfsroot" ]; then
-    shift
-    NFSROOT=1
-else
-    NFSROOT=0
-fi
-
-if echo $@ | grep -q v3ext; then
-	V3EXT=1
-else
-	V3EXT=0
-fi
 
 if [ $SKIP_BOOTSTRAP -eq 1 ]; then
     shift
@@ -63,7 +51,7 @@ else
         PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot-v3-armel linux-modules-2.6.25-nfsroot-v3 kexec-tools boot-local-kernel"
         PACKAGES="$PACKAGES gdbserver"
     else
-        PACKAGES="$PACKAGES linux-modules-2.6.25-v3"
+        PACKAGES="$PACKAGES linux-modules-2.6.25$flavour"
     fi
 
     PACKAGES2="liberation-fonts fbreader madshelf libewl libewl-engines-all libevas-engine-software-xcb"
@@ -178,25 +166,19 @@ sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
 if [ $NFSROOT -ne 1 ]; then
     sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
 
-    if [ $V3EXT -eq 1 ]; then
-	    flavour=-v3ext-armel
-    else
-	    flavour=-v3-armel
-    fi
-
-    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$flavour
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$flavour-armel
 
     sudo rm -rf tmp
     mkdir tmp
-    (cd tmp && sudo tar xf ../nfsroot$flavour.tar)
+    (cd tmp && sudo tar xf ../nfsroot$flavour-armel.tar)
     mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
 
-    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour +rootfs.jffs2
+    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour-armel +rootfs.jffs2
 
-    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour ./
+    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour-armel ./
 
-    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25$flavour
+    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25$flavour-armel
 
-    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot$flavour.tar
+    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot$flavour-armel.tar
     sudo rm -rf tmp
 fi
