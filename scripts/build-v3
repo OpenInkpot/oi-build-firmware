@@ -9,6 +9,34 @@ PATH=$PATH:/usr/sbin
 
 PACKAGES="mdev fbreader xserver-xfbdev"
 
+KEEP_FILES=0
+NFSROOT=0
+V3EXT=0
+SKIP_BOOTSTRAP=0
+SECOND_STAGE=0
+
+for option in $@; do
+	case "x$option" in
+		"xkeepfiles")
+			KEEP_FILES=1
+			;;
+		"xnfsroot")
+			NFSROOT=1
+			;;
+		"xv3ext")
+			V3EXT=1
+			;;
+		"xskip-bootstrap")
+			SKIP_BOOTSTRAP=1
+			;;
+		"xsecond-stage")
+			SECOND_STAGE=1
+			;;
+		*)
+		;;
+	esac
+done
+
 if [ x"$1" = x"keepfiles" ]; then
 	KEEP_FILES=1
 else
@@ -22,7 +50,13 @@ else
     NFSROOT=0
 fi
 
-if [ "x$1" = "xskip-bootstrap" ]; then
+if echo $@ | grep -q v3ext; then
+	V3EXT=1
+else
+	V3EXT=0
+fi
+
+if [ $SKIP_BOOTSTRAP -eq 1 ]; then
     shift
 else
     if [ "$NFSROOT" -eq 1 ]; then
@@ -36,7 +70,7 @@ else
 
     ARCH=armel
 
-    if [ "x$1" = "xsecond-stage" ]; then
+    if [ $SECOND_STAGE -eq 1 ]; then
     	shift
     else
         ARCHIVES=/var/cache/apt/archives
@@ -144,19 +178,25 @@ sc-pack-rootfs $ARCH nfsroot-v3-armel.tar
 if [ $NFSROOT -ne 1 ]; then
     sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
 
-    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25-v3-armel
+    if [ $V3EXT -eq 1]; then
+	    flavour=-v3ext-armel
+    else
+	    flavour=-v3-armel
+    fi
+
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$flavour
 
     sudo rm -rf tmp
     mkdir tmp
-    (cd tmp && sudo tar xf ../nfsroot-v3-armel.tar)
+    (cd tmp && sudo tar xf ../nfsroot$flavour.tar)
     mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
 
-    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel +rootfs.jffs2
+    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour +rootfs.jffs2
 
-    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel ./
+    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour ./
 
-    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25-v3-armel
+    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25$flavour
 
-    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot-v3-armel.tar
+    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot$flavour.tar
     sudo rm -rf tmp
 fi
