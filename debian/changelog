@@ -5,6 +5,11 @@ oi-build-firmware (0.6.6.6) UNRELEASED; urgency=low
 
   [Mikhail Gusarov]
   * Fixed v3ext nfsroot building
+  * tmpfs for /tmp, /var/tmp, /var/log and /var/run, /var/lock
+  * Send SIGHUP to madshelf, not SIGTERM - madshelf has grown the "reread
+    directory" functionality.
+  * X server no longer tries to listen on IPv6.
+  * USB connect/disconnect handler added.
 
  -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 17 Sep 2008 04:52:32 +0700
 
