@@ -111,7 +111,7 @@ if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 
 	mount -o sync /dev/$MDEV /mnt
 
-	killall madshelf
+	killall -HUP madshelf
 	exit 0
 fi
 
