@@ -172,6 +172,16 @@ s3cmci
 vfat
 " > /rootfs-$ARCH/etc/modules
     fi
+
+    if [ "$NFSROOT" -eq 0 ]; then
+    echo "tmpfs /tmp tmpfs defaults 0 0
+tmpfs /var/run tmpfs defaults 0 0
+tmpfs /var/tmp tmpfs defaults 0 0
+tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
+
+    rm -rf /rootfs-$ARCH/var/log/*
+    fi
+
     mkdir /rootfs-$ARCH/etc/modprobe.d
 
     echo "auto lo
