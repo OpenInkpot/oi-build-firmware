@@ -126,6 +126,32 @@ exit 1
 ' > /rootfs-$ARCH/sbin/automount.sh
     chmod a+x /rootfs-$ARCH/sbin/automount.sh
 
+    echo '#!/bin/sh
+
+do_power_supply() {
+        if [ x"$ACTION" = x"change" -a x"$POWER_SUPPLY_NAME" = x"usb" ]; then
+                if [ $POWER_SUPPLY_ONLINE -eq 1 ]; then
+                        echo 0 > /sys/power/autosuspend
+                else
+                        echo 1 > /sys/power/autosuspend
+                fi
+        fi
+}
+
+
+case $1 in
+        power_supply)
+                do_power_supply
+                ;;
+esac
+
+exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
+    chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
+
+    # FIX-damn-ME!
+
+    sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
+
     echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
 mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
 
