@@ -163,6 +163,7 @@ lbookv3_battery
 mmc_block
 s3cmci
 vfat
+evdev
 " > /rootfs-$ARCH/etc/modules
     else
         echo "lbookv3_keys
@@ -170,6 +171,7 @@ lbookv3_battery
 mmc_block
 s3cmci
 vfat
+evdev
 " > /rootfs-$ARCH/etc/modules
     fi
 
