@@ -86,7 +86,7 @@ HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 
     echo "::sysinit:/etc/init.d/rcS
 #:2345:respawn:/bin/sh
-::respawn:Xfbdev -hide-cursor -ac -noreset -dpi 170 -nolisten inet6
+::respawn:Xfbdev -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0,XkbRules=evdev
 ::respawn:madshelf.sh" > /rootfs-$ARCH/etc/inittab
     sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
     echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
@@ -197,6 +197,9 @@ iface usb0 inet static
 " > /rootfs-$ARCH/etc/network/interfaces
 
     touch /rootfs-$ARCH/etc/mdev.conf
+
+    # FIXME!
+    mkdir /rootfs-$ARCH/var/lib/xkb
 fi
 
 sc-pack-rootfs $ARCH nfsroot$flavour-armel.tar
