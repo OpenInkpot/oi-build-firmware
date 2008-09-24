@@ -54,7 +54,7 @@ else
         PACKAGES="$PACKAGES linux-modules-2.6.25$flavour"
     fi
 
-    PACKAGES2="liberation-fonts fbreader madshelf libewl libewl-engines-all libevas-engine-software-xcb"
+    PACKAGES2="liberation-fonts fbreader madshelf libextractor-oi-extras libewl libewl-engines-all libevas-engine-software-xcb"
 
     ARCH=armel
 
