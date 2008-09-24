@@ -1,4 +1,4 @@
-oi-build-firmware (0.6.6.6) UNRELEASED; urgency=low
+oi-build-firmware (0.6.6.6) asimov; urgency=low
 
   [Yauhen Kharuzhy]
   * Add v3ext flavour
@@ -10,8 +10,12 @@ oi-build-firmware (0.6.6.6) UNRELEASED; urgency=low
     directory" functionality.
   * X server no longer tries to listen on IPv6.
   * USB connect/disconnect handler added.
+  * Fixed OI-on-SD rootfs mount race condition.
+  * Added evdev to list of required modules.
+  * Adapted to new X server (changed command-line arguments)
+  * Added libextractor-oi-extras
 
- -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 17 Sep 2008 04:52:32 +0700
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 24 Sep 2008 18:28:27 +0700
 
 oi-build-firmware (0.6.6.5) unstable; urgency=low
 
