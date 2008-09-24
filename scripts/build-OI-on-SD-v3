@@ -8,7 +8,6 @@ build-v3 keepfiles
 mkinitramfs-v3
 mkrootfs.ext2 nfsroot-v3-armel.tar
 
-
 mkdir -p ../$RELEASE_DIR/openinkpot
 
 mv initrd.gz rootfs.ext2 vmlinuz-2.6.25-v3-armel ../$RELEASE_DIR/openinkpot

@@ -148,7 +148,7 @@ esac
 exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
     chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
 
-    # FIX-damn-ME!
+    # FIXME!
 
     sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
