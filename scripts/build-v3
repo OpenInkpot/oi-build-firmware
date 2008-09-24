@@ -116,7 +116,7 @@ if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 fi
 
 if [ $ACTION = "remove" ] ; then
-	umount -f /dev/$MDEV
+	umount -fl /dev/$MDEV
 	killall -HUP madshelf
 	exit 0
 fi
