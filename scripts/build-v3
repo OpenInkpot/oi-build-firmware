@@ -196,8 +196,6 @@ iface usb0 inet static
 
     touch /rootfs-$ARCH/etc/mdev.conf
 
-    # FIXME!
-    mkdir /rootfs-$ARCH/var/lib/xkb
 fi
 
 sc-pack-rootfs $ARCH nfsroot$flavour-armel.tar
