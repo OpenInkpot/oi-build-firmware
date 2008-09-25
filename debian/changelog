@@ -1,4 +1,11 @@
-oi-build-firmware (0.6.6.7) unstable; urgency=low
+oi-build-firmware (0.6.6.8) unstable; urgency=low
+
+  * It is no longer necessary to manually create /var/lib/xkb -
+    xorg-server carries it.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 25 Sep 2008 07:38:40 +0700
+
+oi-build-firmware (0.6.6.7) asimov; urgency=low
 
   * Fixed unmount of SD card: using lazy unmount guarantees absence of
     several /dev/mmcblk* mounted to the /mnt simultaneously.
