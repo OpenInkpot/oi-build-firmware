@@ -1,6 +1,110 @@
 #!/bin/sh
 set -e
 
+MODE=install
+DEVICE=v3
+VERSION=$(date +%Y%m%d)
+
+KEEP_WORKDIR=0
+SKIP_BOOTSTRAP=0
+
+set_device() {
+    case "$1" in
+        v3|v3ext|v3all) DEVICE="$1";;
+        *) echo "Unknown device: $1"; exit 1;;
+    esac
+}
+
+set_mode() {
+    case "$1" in
+        install|live|nfsroot) MODE="$1";;
+        *) echo "Unknown mode: $1"; exit 1;;
+    esac
+}
+
+set_device v3
+set_mode install
+
+usage() {
+    echo "Usage: build-v3 [--skip-bootstrap]"
+    echo "    [(-d |--device=)(v3|v3ext|v3all)]"
+    echo "    [(-m |--mode=)(install|live|nfsroot)]"
+    echo "    [<version>]"
+    echo
+    echo "device defaults to 'v3',"
+    echo "mode defaults to 'install',"
+    echo "version defaults to today's snapshot."
+}
+
+TMP=$(getopt -l help,skip-bootstrap,device:,mode: -o hd:m: -- "$@")
+
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+eval set -- "$TMP"
+
+while true; do
+    case "$1" in
+        --skip-bootstrap) SKIP_BOOTSTRAP=1; shift;;
+        --keep-workdir) KEEP_WORKDIR=1; shift;;
+        -d|--device) set_device "$2"; shift; shift;;
+        -m|--mode) set_mode "$2"; shift; shift;;
+        -h|--help) usage; exit 0;;
+        --) shift; break;;
+        *) echo "Unexpected argument in getopt parsing: $1"; exit 1;;
+    esac
+done
+
+if [ $# -gt 1 ]; then
+    usage
+    exit 1
+fi
+
+if [ $# -eq 1 ]; then
+    VERSION="$1"
+fi
+
+if [ $MODE = "live" ] && ( [ $DEVICE = "v3" ] || [ $DEVICE = "v3ext" ] ); then
+    echo "Warning: Selecting v3all instead of v3 or v3ext for OI-on-SD"
+    DEVICE=v3all
+fi
+
+if [ $MODE = "nfsroot" ] && [ $DEVICE != "v3" ]; then
+    echo "Error: only v3 is supported for nfsroot"
+    exit 1
+fi
+
+case $DEVICE in
+    v3|v3all) KERNEL_FLAVOUR=-v3;;
+    v3ext) KERNEL_FLAVOUR=-v3ext;;
+    *) echo "Unknown device: $DEVICE"; exit 1;;
+esac
+
+case $DEVICE in
+    v3|v3ext|v3all) MANUFACTURER=hanlin;;
+    *) echo "Unknown device: $DEVICE"; exit 1;;
+esac
+
+# --
+
+OUTPUT_DIR=$(pwd)/output/"$VERSION"
+mkdir -p "$OUTPUT_DIR"
+
+OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION
+
+WORK_DIR=$(pwd)/$(mktemp build-v3.XXXXXXXX -d)
+cleanup() {
+    RETCODE=$?
+    [ -z "$WORK_DIR" ] || sudo rm -rf "$WORK_DIR"
+    return $RETCODE
+}
+if [ $KEEP_WORKDIR -eq 0 ]; then
+    trap cleanup 0
+fi
+
+# --
+
 PATH=$PATH:/usr/sbin
 
 #
@@ -9,74 +113,37 @@ PATH=$PATH:/usr/sbin
 
 PACKAGES="mdev fbreader xserver-xfbdev"
 
-KEEP_FILES=0
-NFSROOT=0
-V3EXT=0
-SKIP_BOOTSTRAP=0
-SECOND_STAGE=0
-
-for option in $@; do
-	case "x$option" in
-		"xkeepfiles")
-			KEEP_FILES=1
-			;;
-		"xnfsroot")
-			NFSROOT=1
-			;;
-		"xv3ext")
-			V3EXT=1
-			;;
-		"xskip-bootstrap")
-			SKIP_BOOTSTRAP=1
-			;;
-		"xsecond-stage")
-			SECOND_STAGE=1
-			;;
-		*)
-		;;
-	esac
-done
-
-if [ $V3EXT -eq 1 ]; then
-	flavour=-v3ext
-else
-	flavour=-v3
-fi
-
-
 if [ $SKIP_BOOTSTRAP -eq 1 ]; then
     shift
 else
-    if [ "$NFSROOT" -eq 1 ]; then
-        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot$flavour-armel linux-modules-2.6.25-nfsroot$flavour kexec-tools boot-local-kernel"
+    if [ "$MODE" = "nfsroot" ]; then
+        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot$KERNEL_FLAVOUR-armel linux-modules-2.6.25-nfsroot$KERNEL_FLAVOUR"
+        PACKAGES="$PACKAGES kexec-tools boot-local-kernel"
         PACKAGES="$PACKAGES gdbserver"
     else
-        PACKAGES="$PACKAGES linux-modules-2.6.25$flavour"
+        PACKAGES="$PACKAGES linux-modules-2.6.25$KERNEL_FLAVOUR"
     fi
 
-    PACKAGES2="liberation-fonts fbreader madshelf libextractor-oi-extras libewl libewl-engines-all libevas-engine-software-xcb"
+    PACKAGES="$PACKAGES liberation-fonts libewl libewl-engines-all libevas-engine-software-xcb"
+    PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
+    PACKAGES="$PACKAGES fbreader"
 
     ARCH=armel
 
-    if [ $SECOND_STAGE -eq 1 ]; then
-    	shift
-    else
-        ARCHIVES=/var/cache/apt/archives
-        while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
-        sudo rm -rf /rootfs-i386
-        while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
-    	sudo rm -rf /rootfs-$ARCH
+    ARCHIVES=/var/cache/apt/archives
+    while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
+    sudo rm -rf /rootfs-i386
+    while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
+    sudo rm -rf /rootfs-$ARCH
 
-    	sc-bootstrap-host
-    	sc-bootstrap-target $ARCH
+    sc-bootstrap-host
+    sc-bootstrap-target $ARCH
 
-    	echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
+    echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
 
-    	cross-shell sh $ARCH apt-get update
-    	cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
-    	cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
-    fi
-    cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES2
+    cross-shell sh $ARCH apt-get update
+    cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
+    cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
 
     echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS
 
@@ -155,7 +222,7 @@ exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
     echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
 mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
 
-    if [ "$NFSROOT" -eq 1 ]; then
+    if [ "$MODE" = "nfsroot" ]; then
         echo "eink_apollofb
 g_ether
 lbookv3_keys
@@ -173,7 +240,7 @@ vfat
 evdev" > /rootfs-$ARCH/etc/modules
     fi
 
-    if [ "$NFSROOT" -eq 0 ]; then
+    if [ "$MODE" = "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
@@ -198,24 +265,48 @@ iface usb0 inet static
 
 fi
 
-sc-pack-rootfs $ARCH nfsroot$flavour-armel.tar
+ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
 
-if [ $NFSROOT -ne 1 ]; then
+sc-pack-rootfs $ARCH $ROOTFS
+
+if [ "$MODE" = "nfsroot" ]; then
+    cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
+    bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar"
+fi
+
+if [ $MODE = "install" ]; then
     sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
 
-    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$flavour-armel
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$KERNEL_FLAVOUR-armel
 
-    sudo rm -rf tmp
-    mkdir tmp
-    (cd tmp && sudo tar xf ../nfsroot$flavour-armel.tar)
-    mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
+    mkdir -p $WORK_DIR/rootfs
+    (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
+    mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.jffs2
 
-    mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour-armel +rootfs.jffs2
+    mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$KERNEL_FLAVOUR-armel +$WORK_DIR/rootfs.jffs2
 
-    [ $KEEP_FILES -eq 1 ] && cp /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour-armel ./
+    (cd $WORK_DIR; tar c V3update.bin) | bzip2 -9 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
+fi
 
-    cross-shell sh $ARCH apt-get -y --force-yes remove linux-image-2.6.25$flavour-armel
+if [ "$MODE" = "live" ]; then
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25-v3-armel
+    cp /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel $WORK_DIR
 
-    [ $KEEP_FILES -ne 1 ] && sudo rm -rf rootfs.jffs2 nfsroot$flavour-armel.tar
-    sudo rm -rf tmp
+    # Creates $WORK_DIR/initrd.gz
+    (cd $WORK_DIR; mkinitramfs-v3)
+
+    # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
+    (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)
+
+    mkdir -p $WORK_DIR/openinkpot
+
+    mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-2.6.25-v3-armel $WORK_DIR/openinkpot
+
+    echo '#!/bin/sh
+insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-2.6.25-v3-armel initrd=/mnt/openinkpot/initrd.gz
+' > $WORK_DIR/openinkpot/boot-OI-V3.exe.txt
+
+    wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
+
+    (cd $WORK_DIR; tar cv openinkpot/ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME.tar.bz2)
 fi
