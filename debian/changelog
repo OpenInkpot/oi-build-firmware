@@ -1,3 +1,11 @@
+oi-build-firmware (0.6.7.0) asimov; urgency=low
+
+  * Big overhaul of scripts: build-OI-on-SD merged into build-v3, rewrote
+    arguments handling
+  * Output files naming changed to adhere to naming convention.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 05 Oct 2008 01:27:03 +0700
+
 oi-build-firmware (0.6.6.9) asimov; urgency=low
 
   * Fix mkfs.jffs2 parameters for V3ext build
