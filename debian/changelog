@@ -1,3 +1,9 @@
+oi-build-firmware (0.6.6.9) asimov; urgency=low
+
+  * Fix mkfs.jffs2 parameters for V3ext build
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sat, 04 Oct 2008 14:23:39 +0300
+
 oi-build-firmware (0.6.6.8) unstable; urgency=low
 
   * It is no longer necessary to manually create /var/lib/xkb -
