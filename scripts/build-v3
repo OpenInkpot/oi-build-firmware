@@ -176,7 +176,7 @@ if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 		fi
 	done
 
-	mount -o sync /dev/$MDEV /mnt
+	mount -o sync,iocharset=utf8 /dev/$MDEV /mnt
 
 	killall -HUP madshelf
 	exit 0
