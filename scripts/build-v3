@@ -208,7 +208,11 @@ if [ $NFSROOT -ne 1 ]; then
     sudo rm -rf tmp
     mkdir tmp
     (cd tmp && sudo tar xf ../nfsroot$flavour-armel.tar)
-    mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
+    if [ $V3EXT -ne 1 ]; then
+	    mkfs.jffs2 -l -n -e 16384 -s 512 --faketime -r tmp -o rootfs.jffs2
+    else
+	    mkfs.jffs2 -l -n -e 131072 -s 2048 --faketime -r tmp -o rootfs.jffs2
+    fi
 
     mkv3update --write-oi=V3update.bin /rootfs-$ARCH/boot/vmlinuz-2.6.25$flavour-armel +rootfs.jffs2
 
