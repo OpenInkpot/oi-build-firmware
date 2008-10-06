@@ -1,3 +1,9 @@
+oi-build-firmware (0.6.7.2) asimov; urgency=low
+
+  * Added -nocursor to prevent mouse cursor from appearing on screen.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 06 Oct 2008 14:49:13 +0700
+
 oi-build-firmware (0.6.7.1) asimov; urgency=low
 
   * Fixed iocharset mount option of SD card.
