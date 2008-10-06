@@ -1,3 +1,9 @@
+oi-build-firmware (0.6.7.3) asimov; urgency=low
+
+  * Added generation of .zip archives.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 06 Oct 2008 23:44:46 +0700
+
 oi-build-firmware (0.6.7.2) asimov; urgency=low
 
   * Added -nocursor to prevent mouse cursor from appearing on screen.
