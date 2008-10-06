@@ -26,7 +26,7 @@ set_device v3
 set_mode install
 
 usage() {
-    echo "Usage: build-v3 [--skip-bootstrap]"
+    echo "Usage: build-v3 [--skip-bootstrap] [--keep-workdir]"
     echo "    [(-d |--device=)(v3|v3ext|v3all)]"
     echo "    [(-m |--mode=)(install|live|nfsroot)]"
     echo "    [<version>]"
@@ -36,7 +36,7 @@ usage() {
     echo "version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,skip-bootstrap,device:,mode: -o hd:m: -- "$@")
+TMP=$(getopt -l help,skip-bootstrap,keep-workdir,device:,mode: -o hd:m: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
