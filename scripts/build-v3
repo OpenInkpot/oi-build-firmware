@@ -303,11 +303,12 @@ if [ $MODE = "install" ]; then
 fi
 
 if [ "$MODE" = "live" ]; then
+    cd $WORK_DIR
     cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25-v3-armel
-    cp /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel $WORK_DIR
+    cp /rootfs-$ARCH/boot/vmlinuz-2.6.25-v3-armel .
 
     # Creates $WORK_DIR/initrd.gz
-    (cd $WORK_DIR; mkinitramfs-v3)
+    mkinitramfs-v3
 
     # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
     (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)
