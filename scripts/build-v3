@@ -319,7 +319,7 @@ if [ "$MODE" = "live" ]; then
 
     echo '#!/bin/sh
 insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-2.6.25-v3-armel initrd=/mnt/openinkpot/initrd.gz
-' > $WORK_DIR/openinkpot/boot-OI-V3.exe.txt
+' > $WORK_DIR/openinkpot/boot-OI-V3.exe.fb2
 
     wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
 

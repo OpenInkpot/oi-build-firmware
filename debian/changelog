@@ -1,3 +1,10 @@
+oi-build-firmware (0.6.7.4) asimov; urgency=low
+
+  * Fixed "live" generation: .exe.fb2 is now used instead of .exe.txt, so
+    it will work with all V3 firmwares.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 07 Oct 2008 21:02:31 +0700
+
 oi-build-firmware (0.6.7.3) asimov; urgency=low
 
   * Added generation of .zip archives.
