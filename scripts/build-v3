@@ -6,7 +6,6 @@ DEVICE=v3
 VERSION=$(date +%Y%m%d)
 
 KEEP_WORKDIR=0
-SKIP_BOOTSTRAP=0
 
 set_device() {
     case "$1" in
@@ -23,7 +22,7 @@ set_mode() {
 }
 
 usage() {
-    echo "Usage: build-v3 [--skip-bootstrap] [--keep-workdir]"
+    echo "Usage: build-v3 [--keep-workdir]"
     echo "    [(-d |--device=)(v3|v3ext|v3all)]"
     echo "    [(-m |--mode=)(install|live|nfsroot)]"
     echo "    [<version>]"
@@ -33,7 +32,7 @@ usage() {
     echo "version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,skip-bootstrap,keep-workdir,device:,mode: -o hd:m: -- "$@")
+TMP=$(getopt -l help,keep-workdir,device:,mode: -o hd:m: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
@@ -43,7 +42,6 @@ eval set -- "$TMP"
 
 while true; do
     case "$1" in
-        --skip-bootstrap) SKIP_BOOTSTRAP=1; shift;;
         --keep-workdir) KEEP_WORKDIR=1; shift;;
         -d|--device) set_device "$2"; shift; shift;;
         -m|--mode) set_mode "$2"; shift; shift;;
@@ -110,57 +108,54 @@ PATH=$PATH:/usr/sbin
 
 PACKAGES="mdev fbreader xserver-xfbdev autosuspend-support"
 
-if [ $SKIP_BOOTSTRAP -eq 1 ]; then
-    shift
+if [ "$MODE" = "nfsroot" ]; then
+    PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot$KERNEL_FLAVOUR-armel linux-modules-2.6.25-nfsroot$KERNEL_FLAVOUR"
+    PACKAGES="$PACKAGES kexec-tools boot-local-kernel"
+    PACKAGES="$PACKAGES gdbserver"
 else
-    if [ "$MODE" = "nfsroot" ]; then
-        PACKAGES="$PACKAGES linux-image-2.6.25-nfsroot$KERNEL_FLAVOUR-armel linux-modules-2.6.25-nfsroot$KERNEL_FLAVOUR"
-        PACKAGES="$PACKAGES kexec-tools boot-local-kernel"
-        PACKAGES="$PACKAGES gdbserver"
-    else
-        PACKAGES="$PACKAGES linux-modules-2.6.25$KERNEL_FLAVOUR"
-    fi
+    PACKAGES="$PACKAGES linux-modules-2.6.25$KERNEL_FLAVOUR"
+fi
 
-    PACKAGES="$PACKAGES liberation-fonts libewl libewl-engines-all libevas-engine-software-xcb"
-    PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
-    PACKAGES="$PACKAGES fbreader"
+PACKAGES="$PACKAGES liberation-fonts libewl libewl-engines-all libevas-engine-software-xcb"
+PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
+PACKAGES="$PACKAGES fbreader"
 
-    ARCH=armel
+ARCH=armel
 
-    ARCHIVES=/var/cache/apt/archives
-    while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
-    sudo rm -rf /rootfs-i386
-    while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
-    sudo rm -rf /rootfs-$ARCH
+ARCHIVES=/var/cache/apt/archives
+while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
+sudo rm -rf /rootfs-i386
+while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
+sudo rm -rf /rootfs-$ARCH
 
-    sc-bootstrap-host
-    sc-bootstrap-target $ARCH
+sc-bootstrap-host
+sc-bootstrap-target $ARCH
 
-    echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
+echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
 
-    cross-shell sh $ARCH apt-get update
-    cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
-    cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
+cross-shell sh $ARCH apt-get update
+cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
+cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
 
-    echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS
+echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS
 
-    echo "#!/bin/sh
+echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
-    chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
+chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
 
-    echo "::sysinit:/etc/init.d/rcS
+echo "::sysinit:/etc/init.d/rcS
 #:2345:respawn:/bin/sh
 ::respawn:Xfbdev -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0,XkbRules=evdev
 ::respawn:madshelf.sh
 ::shutdown:/etc/init.d/rc 6" > /rootfs-$ARCH/etc/inittab
-    sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
-    echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
-    cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
-    rm /rootfs-$ARCH/etc/passwd2
+sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
+echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
+cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
+rm /rootfs-$ARCH/etc/passwd2
 
-    ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
+ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
 
-    echo '#!/bin/sh
+echo '#!/bin/sh
 
 if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 	for i in /dev/mmcblk*
@@ -189,9 +184,9 @@ fi
 echo "Unknown action. This script must be called by mdev!"
 exit 1
 ' > /rootfs-$ARCH/sbin/automount.sh
-    chmod a+x /rootfs-$ARCH/sbin/automount.sh
+chmod a+x /rootfs-$ARCH/sbin/automount.sh
 
-    echo '#!/bin/sh
+echo '#!/bin/sh
 
 do_power_supply() {
         if [ x"$ACTION" = x"change" -a x"$POWER_SUPPLY_NAME" = x"usb" ]; then
@@ -211,17 +206,17 @@ case $1 in
 esac
 
 exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
-    chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
+chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
 
-    # FIXME!
+# FIXME!
 
-    sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
+sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
-    echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
+echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
 mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
 
-    if [ "$MODE" = "nfsroot" ]; then
-        echo "eink_apollofb
+if [ "$MODE" = "nfsroot" ]; then
+    echo "eink_apollofb
 g_ether
 lbookv3_keys
 lbookv3_battery
@@ -229,27 +224,27 @@ mmc_block
 s3cmci
 vfat
 evdev" > /rootfs-$ARCH/etc/modules
-    else
-        echo "lbookv3_keys
+else
+    echo "lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
 vfat
 evdev" > /rootfs-$ARCH/etc/modules
-    fi
+fi
 
-    if [ "$MODE" = "nfsroot" ]; then
+if [ "$MODE" = "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
 tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
     rm -rf /rootfs-$ARCH/var/log/*
-    fi
+fi
 
-    mkdir /rootfs-$ARCH/etc/modprobe.d
+mkdir /rootfs-$ARCH/etc/modprobe.d
 
-    echo "auto lo
+echo "auto lo
 iface lo inet loopback
 
 auto usb0
@@ -259,9 +254,7 @@ iface usb0 inet static
 	broadcast 192.168.111.255
 " > /rootfs-$ARCH/etc/network/interfaces
 
-    touch /rootfs-$ARCH/etc/mdev.conf
-
-fi
+touch /rootfs-$ARCH/etc/mdev.conf
 
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
 
