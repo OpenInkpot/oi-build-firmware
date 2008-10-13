@@ -266,8 +266,6 @@ if [ "$MODE" = "nfsroot" ]; then
 fi
 
 if [ $MODE = "install" ]; then
-    sudo apt-get -y --force-yes install oi-v3-build-firmware mtd-tools
-
     cross-shell sh $ARCH apt-get -y --force-yes install linux-image-2.6.25$KERNEL_FLAVOUR-armel
 
     mkdir -p $WORK_DIR/rootfs
