@@ -22,9 +22,6 @@ set_mode() {
     esac
 }
 
-set_device v3
-set_mode install
-
 usage() {
     echo "Usage: build-v3 [--skip-bootstrap] [--keep-workdir]"
     echo "    [(-d |--device=)(v3|v3ext|v3all)]"
