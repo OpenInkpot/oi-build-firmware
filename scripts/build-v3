@@ -325,5 +325,5 @@ insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-2.6.25-v3-arme
     wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
 
     (cd $WORK_DIR; tar cv openinkpot/ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME.tar.bz2)
-    (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME openinkpot)
+    (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
 fi
