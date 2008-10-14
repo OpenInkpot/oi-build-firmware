@@ -1,3 +1,9 @@
+oi-build-firmware (0.6.7.7) asimov; urgency=low
+
+  * Fix fstab generation
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Tue, 14 Oct 2008 18:58:25 +0300
+
 oi-build-firmware (0.6.7.6) asimov; urgency=low
 
   [ Mikhail Gusarov ]
