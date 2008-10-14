@@ -234,7 +234,7 @@ vfat
 evdev" > /rootfs-$ARCH/etc/modules
 fi
 
-if [ "$MODE" = "nfsroot" ]; then
+if [ "$MODE" != "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
