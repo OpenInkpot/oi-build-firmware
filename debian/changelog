@@ -1,3 +1,13 @@
+oi-build-firmware (0.6.7.5) unstable; urgency=low
+
+  [Yauhen Kharuzhy]
+  * Add shutdown section to inittab
+
+  [Mikhail Gusarov]
+  * Fixed file extension of live V3 builds.
+  
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 13 Oct 2008 23:56:33 +0700
+
 oi-build-firmware (0.6.7.4) asimov; urgency=low
 
   * Fixed "live" generation: .exe.fb2 is now used instead of .exe.txt, so
