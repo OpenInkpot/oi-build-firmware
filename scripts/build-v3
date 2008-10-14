@@ -155,7 +155,9 @@ HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 #:2345:respawn:/bin/sh
 ::respawn:Xfbdev -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0,XkbRules=evdev
 ::respawn:madshelf.sh
-::shutdown:/etc/init.d/rc 6" > /rootfs-$ARCH/etc/inittab
+::shutdown:/etc/init.d/rc 0
+::reboot:/etc/init.d/rc 6
+" > /rootfs-$ARCH/etc/inittab
     sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
     echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
     cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
