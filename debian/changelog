@@ -1,3 +1,10 @@
+oi-build-firmware (0.6.7.8) asimov; urgency=low
+
+  * Change kernel version
+  * Add bzip2 to Depends:
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Tue, 28 Oct 2008 22:18:13 +0200
+
 oi-build-firmware (0.6.7.7) asimov; urgency=low
 
   * Fix fstab generation
