@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ARCH=armel
-PACKAGES="busybox-static linux-modules-2.6.25-v3"
+PACKAGES="busybox-static linux-modules-2.6.27-v3"
 MIRROR="http://openinkpot.org/pub/SLIND"
-CACHE_DIR="/rootfs-$ARCH/var/cache/apt/archives"
+CACHE_DIR="/var/cache/apt/archives-$ARCH"
 INITRD_DIR=`mktemp build_initrd-$ARCH.XXXX`
 
 
