@@ -107,7 +107,7 @@ PATH=$PATH:/usr/sbin
 # FIXME: this script is steaming pile of shit.
 #
 
-PACKAGES="mdev fbreader xserver-xfbdev autosuspend-support"
+PACKAGES="mdev fbreader xserver-xfbdev autosuspend-support dropbear"
 
 if [ "$MODE" = "nfsroot" ]; then
     PACKAGES="$PACKAGES linux-image-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR-armel linux-modules-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR"
