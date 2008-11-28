@@ -1,3 +1,10 @@
+oi-build-firmware (0.6.7.9) asimov; urgency=low
+
+  * sudo'ed mkfs.jffs2 call: debootstrap generates file inaccessible by
+    non-root.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 17 Nov 2008 01:36:02 +0600
+
 oi-build-firmware (0.6.7.8) asimov; urgency=low
 
   * Change kernel version

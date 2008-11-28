@@ -285,7 +285,7 @@ if [ $MODE = "install" ]; then
             exit 1
     esac
 
-    mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.jffs2
+    sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.jffs2
 
     mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR-armel +$WORK_DIR/rootfs.jffs2
 
