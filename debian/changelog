@@ -1,3 +1,9 @@
+oi-build-firmware (0.7) asimov; urgency=low
+
+  * Add dropbear package to build-v3
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Fri, 28 Nov 2008 10:10:13 +0200
+
 oi-build-firmware (0.6.7.9) asimov; urgency=low
 
   * sudo'ed mkfs.jffs2 call: debootstrap generates file inaccessible by
