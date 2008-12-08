@@ -1,3 +1,9 @@
+oi-build-firmware (0.8) asimov; urgency=low
+
+  * build-v3: Add etimetool package
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 08 Dec 2008 13:11:07 +0000
+
 oi-build-firmware (0.7) asimov; urgency=low
 
   * Add dropbear package to build-v3
