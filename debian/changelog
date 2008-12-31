@@ -1,3 +1,10 @@
+oi-build-firmware (0.9) asimov; urgency=low
+
+  * Change linux version to 2.6.28
+  * build-v3: Enable shell on the serial console
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Wed, 31 Dec 2008 20:10:59 +0200
+
 oi-build-firmware (0.8) asimov; urgency=low
 
   * build-v3: Add etimetool package
