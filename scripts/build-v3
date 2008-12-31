@@ -145,7 +145,7 @@ HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
 
 echo "::sysinit:/etc/init.d/rcS
-#:2345:respawn:/bin/sh
+:2345:respawn:/bin/sh
 ::respawn:Xfbdev -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0,XkbRules=evdev
 ::respawn:madshelf.sh
 ::reboot:/etc/init.d/rc 6
