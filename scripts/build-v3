@@ -117,9 +117,10 @@ else
     PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}$KERNEL_FLAVOUR"
 fi
 
-PACKAGES="$PACKAGES liberation-fonts libewl libewl-engines-all libevas-engine-software-xcb"
+PACKAGES="$PACKAGES liberation-fonts libewl1-engines-all libevas-engines"
 PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
 PACKAGES="$PACKAGES fbreader"
+PACKAGES="$PACKAGES locopdf"
 
 ARCH=armel
 
