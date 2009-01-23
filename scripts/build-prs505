@@ -1,0 +1,190 @@
+#!/bin/sh
+
+set -e
+
+LINUX_VERSION='2.6.28'
+MODE=nfsroot
+DEVICE=prs505
+VERSION=$(date +%Y%m%d)
+
+KEEP_WORKDIR=0
+
+set_device() {
+    case "$1" in
+        prs505) DEVICE="$1";;
+        *) echo "Unknown device: '$1'"; exit 1;;
+    esac
+}
+
+set_mode() {
+    case "$1" in
+        nfsroot) MODE="$1";;
+        *) echo "Unknown mode: $1"; exit 1;;
+    esac
+}
+
+usage() {
+    echo "Usage: build-prs505 [--keep-workdir]"
+    echo "    [(-d |--device=)(prs505)]"
+    echo "    [(-m |--mode=)(nfsroot)]"
+    echo "    [<version>]"
+    echo
+    echo "device defaults to 'prs505',"
+    echo "mode defaults to 'nfsroot',"
+    echo "version defaults to today's snapshot."
+}
+
+TMP=$(getopt -l help,keep-workdir,device:,mode: -o hd:m: -- "$@")
+
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+eval set -- "$TMP"
+
+while true; do
+    case "$1" in
+        --keep-workdir) KEEP_WORKDIR=1; shift;;
+        -d|--device) set_device "$2"; shift; shift;;
+        -m|--mode) set_mode "$2"; shift; shift;;
+        -h|--help) usage; exit 0;;
+        --) shift; break;;
+        *) echo "Unexpected argument in getopt parsing: $1"; exit 1;;
+    esac
+done
+
+if [ $# -gt 1 ]; then
+    usage
+    exit 1
+fi
+
+if [ $# -eq 1 ]; then
+    VERSION="$1"
+fi
+
+case $DEVICE in
+    prs505) KERNEL_FLAVOUR=-prs505;;
+    *) echo "Unknown device: $DEVICE"; exit 1;;
+esac
+
+case $DEVICE in
+    v3|v3ext|v3all) MANUFACTURER=hanlin;;
+    prs505) MANUFACTURER=sony;;
+    *) echo "Unknown device: $DEVICE"; exit 1;;
+esac
+
+# --
+
+OUTPUT_DIR=$(pwd)/output/"$VERSION"
+mkdir -p "$OUTPUT_DIR"
+
+OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION
+
+WORK_DIR=$(pwd)/$(mktemp build-v3.XXXXXXXX -d)
+cleanup() {
+    RETCODE=$?
+    [ -z "$WORK_DIR" ] || sudo rm -rf "$WORK_DIR"
+    return $RETCODE
+}
+if [ $KEEP_WORKDIR -eq 0 ]; then
+    trap cleanup 0
+fi
+
+# --
+
+PATH=$PATH:/usr/sbin
+
+#
+# FIXME: this script is steaming pile of shit.
+#
+
+PACKAGES="mdev dropbear"
+#PACKAGES="$PACKAGES fbreader xserver-xfbdev autosuspend-support etimetool"
+ARCH=armel
+
+if [ "$MODE" = "nfsroot" ]; then
+    PACKAGES="$PACKAGES linux-image-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR-armel linux-modules-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR"
+    PACKAGES="$PACKAGES kexec-tools boot-local-kernel"
+    PACKAGES="$PACKAGES gdbserver"
+else
+    PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}$KERNEL_FLAVOUR"
+fi
+
+#PACKAGES="$PACKAGES liberation-fonts libewl1-engines-all libevas-engines"
+#PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
+#PACKAGES="$PACKAGES fbreader"
+#PACKAGES="$PACKAGES locopdf"
+#PACKAGES="$PACKAGES cr3"
+#PACKAGES="$PACKAGES madeye"
+
+ARCHIVES=/var/cache/apt/archives
+while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
+sudo rm -rf /rootfs-i386
+while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
+sudo rm -rf /rootfs-$ARCH
+
+sc-bootstrap-host
+sc-bootstrap-target $ARCH
+
+echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
+
+cross-shell sh $ARCH apt-get update
+cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
+cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
+
+echo "::sysinit:/etc/init.d/rcS
+#:2345:respawn:/bin/sh
+#::respawn:Xfbdev -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0,XkbRules=evdev
+#::respawn:madshelf.sh
+::reboot:/etc/init.d/rc 6
+::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
+sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
+echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
+cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
+rm /rootfs-$ARCH/etc/passwd2
+
+ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
+
+echo "tmpfs /tmp tmpfs defaults 0 0
+tmpfs /var/run tmpfs defaults 0 0
+tmpfs /var/tmp tmpfs defaults 0 0
+tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
+
+rm -rf /rootfs-$ARCH/var/log/*
+
+mkdir /rootfs-$ARCH/etc/modprobe.d
+
+echo "auto lo
+iface lo inet loopback
+
+auto usb0
+iface usb0 inet static
+	address 192.168.111.1
+	netmask 255.255.255.0
+	broadcast 192.168.111.255
+" > /rootfs-$ARCH/etc/network/interfaces
+
+touch /rootfs-$ARCH/etc/mdev.conf
+
+ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
+
+sc-pack-rootfs $ARCH $ROOTFS
+
+if [ "$MODE" = "nfsroot" ]; then
+    cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
+    bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar"
+
+    cd $WORK_DIR
+    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-nfsroot${KERNEL_FLAVOUR}-armel
+    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-nfsroot${KERNEL_FLAVOUR}-armel .
+
+    mkdir -p $WORK_DIR/openinkpot-sd
+    mv $WORK_DIR/vmlinuz-${LINUX_VERSION}-nfsroot${KERNEL_FLAVOUR}-armel $WORK_DIR/openinkpot-sd/zImage
+
+    wget -O $WORK_DIR/openinkpot-sd/reloaded.o http://openinkpot.org/pub/contrib/sony-prs505-reloaded/reloaded.o
+    wget -O - http://openinkpot.org/pub/contrib/sony-prs505-live-loader/oi-runner.tar.gz | tar xz -C $WORK_DIR/openinkpot-sd/
+    
+    (cd $WORK_DIR/openinkpot-sd; tar cv ./ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME-sd-loader.tar.bz2)
+fi
+
+

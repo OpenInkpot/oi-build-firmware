@@ -11,3 +11,9 @@ Depends: ${shlibs:Depends}, slind-control, zip, mtd-tools, bzip2
 Description: Tool for Hanlin v3 firmware generation
  This package includes mkv3update tool which generates firmware in Hanlin V3
  updater format.
+
+Package: oi-prs505-build-firmware
+Architecture: any
+Depends: ${shlibs:Depends}, slind-control, zip, mtd-tools, bzip2
+Description: Tools for Sony PRS-505 firmware generation
+ This package contains scripts for generation of Sony PRS-505 firmware images.

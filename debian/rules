@@ -36,6 +36,8 @@ install: build
 	dh_installdirs
 
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/oi-v3-build-firmware
+	mkdir -p $(CURDIR)/debian/oi-prs505-build-firmware/usr/bin
+	mv $(CURDIR)/debian/oi-v3-build-firmware/usr/bin/build-prs505 $(CURDIR)/debian/oi-prs505-build-firmware/usr/bin/
 
 binary-arch: build install
 	dh_testdir
