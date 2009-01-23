@@ -1,3 +1,10 @@
+oi-build-firmware (0.10.0) asimov; urgency=low
+
+  * build-v3: proper mounting points for sd card and internal storage
+  * build-v3: new applications: cr3 and madeye
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 23 Jan 2009 13:18:35 +0000
+
 oi-build-firmware (0.9.1) asimov; urgency=low
 
   * build-v3: locoPDF added
