@@ -30,7 +30,7 @@ sudo mknod $INITRD_DIR/dev/mmcblk0p2 b 179 2
 
 rm $INITRD_DIR/sbin/init
 mkdir -p $INITRD_DIR/root
-mkdir -p $INITRD_DIR/mnt
+mkdir -p $INITRD_DIR/media/sd
 mkdir -p $INITRD_DIR/initrd
 
 echo "#!/bin/sh
@@ -45,14 +45,14 @@ insmod s3cmci
 insmod ext2
 
 echo 'Mounting root filesystem'
-while ! mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /mnt 2>/dev/null; do
+while ! mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /media/sd 2>/dev/null; do
   echo -n .
 done
 echo ' done!'
 
-mount -o loop -t ext2 /mnt/openinkpot/rootfs.ext2 /root || /bin/sh
+mount -o loop -t ext2 /media/sd/openinkpot/rootfs.ext2 /root || /bin/sh
 
-mount --move /mnt /root/mnt || /bin/sh
+mount --move /media/sd /root/media/sd || /bin/sh
 
 exec switch_root /root /sbin/init" > $INITRD_DIR/init
 
