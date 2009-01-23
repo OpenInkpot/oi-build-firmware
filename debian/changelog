@@ -1,3 +1,10 @@
+oi-build-firmware (0.11.0) asimov; urgency=low
+
+  * build-v3: improved v3 fontconfig settings
+  * mkinitramfs-v3: /mnt -> /media/sd
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 23 Jan 2009 16:26:47 +0000
+
 oi-build-firmware (0.10.1) asimov; urgency=low
 
   * build-v3: added font dirs
