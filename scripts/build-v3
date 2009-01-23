@@ -265,6 +265,14 @@ iface usb0 inet static
 
 touch /rootfs-$ARCH/etc/mdev.conf
 
+echo "<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+	<!-- V3 specific font directories -->
+	<dir>/media/sd/fonts</dir>
+	<dir>/mnt/storage/fonts</dir>
+</fontconfig>" > /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
+
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
 
 sc-pack-rootfs $ARCH $ROOTFS
