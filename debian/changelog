@@ -1,3 +1,9 @@
+oi-build-firmware (0.12) asimov; urgency=low
+
+  * Add script for build Sony PRS-505 firmware
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sat, 24 Jan 2009 01:08:15 +0200
+
 oi-build-firmware (0.11.0) asimov; urgency=low
 
   * build-v3: improved v3 fontconfig settings
