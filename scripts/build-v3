@@ -121,6 +121,8 @@ PACKAGES="$PACKAGES liberation-fonts libewl1-engines-all libevas-engines"
 PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
 PACKAGES="$PACKAGES fbreader"
 PACKAGES="$PACKAGES locopdf"
+PACKAGES="$PACKAGES cr3"
+PACKAGES="$PACKAGES madeye"
 
 ARCH=armel
 
