@@ -11,6 +11,7 @@ KEEP_WORKDIR=0
 set_device() {
     case "$1" in
         v3|v3ext|v3all) DEVICE="$1";;
+        n516) DEVICE="$1";;
         *) echo "Unknown device: $1"; exit 1;;
     esac
 }
@@ -23,8 +24,8 @@ set_mode() {
 }
 
 usage() {
-    echo "Usage: build-v3 [--keep-workdir]"
-    echo "    [(-d |--device=)(v3|v3ext|v3all)]"
+    echo "Usage: build-fw [--keep-workdir]"
+    echo "    [(-d |--device=)(v3|v3ext|v3all|n516)]"
     echo "    [(-m |--mode=)(install|live|nfsroot)]"
     echo "    [<version>]"
     echo
@@ -66,21 +67,36 @@ if [ $MODE = "live" ] && ( [ $DEVICE = "v3" ] || [ $DEVICE = "v3ext" ] ); then
     DEVICE=v3all
 fi
 
-if [ $MODE = "nfsroot" ] && [ $DEVICE != "v3" ]; then
-    echo "Error: only v3 is supported for nfsroot"
-    exit 1
-fi
+case "$MODE-$DEVICE" in
+    nfsroot-v3|nfsroot-n516) :;;
+    nfsroot-*) echo "Error: only v3 is supported for nfsroot";  exit 1;;
+    *) ;;
+esac
 
 case $DEVICE in
     v3|v3all) KERNEL_FLAVOUR=-v3;;
     v3ext) KERNEL_FLAVOUR=-v3ext;;
+    n516) KERNEL_FLAVOUR=-n516;;
+    *) echo "Unknown device: $DEVICE"; exit 1;;
+esac
+
+if [ $MODE = nfsroot ]; then
+    KERNEL_FLAVOUR="-nfsroot${KERNEL_FLAVOUR}"
+fi
+
+case $DEVICE in
+    v3|v3ext|v3all) MANUFACTURER=hanlin;;
+    n516) MANUFACTURER=hanvon;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
 case $DEVICE in
-    v3|v3ext|v3all) MANUFACTURER=hanlin;;
+    v3|v3ext|v3all) ARCH=armel;;
+    n516) ARCH=mipsel;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
+
+HOSTARCH=$(dpkg --print-architecture)
 
 # --
 
@@ -89,7 +105,7 @@ mkdir -p "$OUTPUT_DIR"
 
 OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION
 
-WORK_DIR=$(pwd)/$(mktemp build-v3.XXXXXXXX -d)
+WORK_DIR=$(pwd)/$(mktemp build-fw.XXXXXXXX -d)
 cleanup() {
     RETCODE=$?
     [ -z "$WORK_DIR" ] || sudo rm -rf "$WORK_DIR"
@@ -107,41 +123,65 @@ PATH=$PATH:/usr/sbin
 # FIXME: this script is steaming pile of shit.
 #
 
-PACKAGES="mdev fbreader xserver-xfbdev autosuspend-support dropbear etimetool"
+# Basic stuff
+PACKAGES="mdev autosuspend-support dropbear"
 
-if [ "$MODE" = "nfsroot" ]; then
-    PACKAGES="$PACKAGES linux-image-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR-armel linux-modules-${LINUX_VERSION}-nfsroot$KERNEL_FLAVOUR"
-    PACKAGES="$PACKAGES kexec-tools boot-local-kernel"
-    PACKAGES="$PACKAGES gdbserver"
-else
-    PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}$KERNEL_FLAVOUR"
+# Kernel
+PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}${KERNEL_FLAVOUR}"
+if [ "$MODE" = nfsroot ]; then
+    PACKAGES="$PACKAGES linux-image-${LINUX_VERSION}${KERNEL_FLAVOUR}"
+    PACKAGES="$PACKAGES boot-local-kernel"
 fi
 
-PACKAGES="$PACKAGES liberation-fonts libewl1-engines-all libevas-engines"
+# GUI
+PACKAGES="$PACKAGES xserver-xfbdev libewl1-engines-all libevas-engines fontconfig"
+
+# Fonts
+PACKAGES="$PACKAGES liberation-fonts"
+
+# Applications
 PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
 PACKAGES="$PACKAGES fbreader"
 PACKAGES="$PACKAGES locopdf"
-PACKAGES="$PACKAGES cr3"
+#PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
+#PACKAGES="$PACKAGES etimetol"
 
-ARCH=armel
+# if [ "$MODE" = "nfsroot" ]; then
+#     PACKAGES="$PACKAGES gdbserver"
+# fi
 
 ARCHIVES=/var/cache/apt/archives
-while sudo umount /rootfs-i386$ARCHIVES 2>/dev/null; do :; done
-sudo rm -rf /rootfs-i386
-while sudo umount /rootfs-$ARCH$ARCHIVES 2>/dev/null; do :; done
+
+umount_all() {
+    if [ -e "$1" ]; then
+        sudo find "$1" -type d -print0 | xargs -0 -r -i{} -- sh -c "! mountpoint -q '{}' || (echo 'unmounting {}'; while sudo umount '{}' 2>/dev/null; do :; done)"
+    fi
+}
+
+umount_all /rootfs-$HOSTARCH
+umount_all /rootfs-$ARCH
+
+sudo rm -rf /rootfs-$HOSTARCH
 sudo rm -rf /rootfs-$ARCH
 
-sc-bootstrap-host
-sc-bootstrap-target $ARCH
+cross-bootstrap-host
+cross-bootstrap-target $ARCH
 
-echo "deb http://openinkpot.org/pub/SLIND clydesdale core security debug gui media" > /rootfs-$ARCH/etc/apt/sources.list
+echo "deb http://ftp.iplinux.org/iplinux asimov core security gui media" > /rootfs-$ARCH/etc/apt/sources.list
+echo "deb http://openinkpot.org/pub/oi asimov core security gui media" >> /rootfs-$ARCH/etc/apt/sources.list
 
-cross-shell sh $ARCH apt-get update
-cross-shell sh $ARCH apt-get -y --force-yes dist-upgrade
-cross-shell sh $ARCH apt-get -y --force-yes install $PACKAGES
+cross-shell $ARCH apt-get update
+cross-shell $ARCH apt-get -y --force-yes dist-upgrade
+cross-shell $ARCH apt-get -y --force-yes install $PACKAGES
 
-echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS
+
+case $DEVICE in
+    v3|v3ext|v3all)
+        echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS;;
+    *)
+        :;;
+esac
 
 echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
@@ -249,6 +289,8 @@ tmpfs /var/log tmpfs defaults 0 0
 /dev/mtdblock4 /mnt/storage vfat iocharset=utf8 0 0" > /rootfs-$ARCH/etc/fstab
 
     rm -rf /rootfs-$ARCH/var/log/*
+    # Apt goes awry if log directory does not exist.
+    mkdir -p /rootfs-$ARCH/var/log/apt
 fi
 
 mkdir /rootfs-$ARCH/etc/modprobe.d
@@ -276,7 +318,7 @@ ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
 
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
 
-sc-pack-rootfs $ARCH $ROOTFS
+cross-pack-rootfs $ARCH $ROOTFS
 
 if [ "$MODE" = "nfsroot" ]; then
     cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
@@ -284,7 +326,7 @@ if [ "$MODE" = "nfsroot" ]; then
 fi
 
 if [ $MODE = "install" ]; then
-    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR-armel
+    cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR
 
     mkdir -p $WORK_DIR/rootfs
     (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
@@ -303,7 +345,7 @@ if [ $MODE = "install" ]; then
 
     sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.jffs2
 
-    mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR-armel +$WORK_DIR/rootfs.jffs2
+    mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
 
     (cd $WORK_DIR; tar c V3update.bin) | bzip2 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
     zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
@@ -311,8 +353,8 @@ fi
 
 if [ "$MODE" = "live" ]; then
     cd $WORK_DIR
-    cross-shell sh $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3-armel
-    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3-armel .
+    cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3
+    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
 
     # Creates $WORK_DIR/initrd.gz
     mkinitramfs-v3
@@ -322,10 +364,10 @@ if [ "$MODE" = "live" ]; then
 
     mkdir -p $WORK_DIR/openinkpot
 
-    mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3-armel $WORK_DIR/openinkpot
+    mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3 $WORK_DIR/openinkpot
 
     echo "#!/bin/sh
-insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-${LINUX_VERSION}-v3-armel initrd=/mnt/openinkpot/initrd.gz
+insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-${LINUX_VERSION}-v3 initrd=/mnt/openinkpot/initrd.gz
 " > $WORK_DIR/openinkpot/boot-OI-V3.exe.fb2
 
     wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
