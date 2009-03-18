@@ -1,3 +1,10 @@
+oi-build-firmware (0.13) asimov; urgency=low
+
+  * First build for IPlinux-based OpenInkpot.
+  * oi-{v3,prs505}-build-firmware packages merged back to oi-build-firmware.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 19 Mar 2009 03:02:09 +0600
+
 oi-build-firmware (0.12) asimov; urgency=low
 
   * Add script for build Sony PRS-505 firmware

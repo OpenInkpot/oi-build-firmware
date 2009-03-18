@@ -1,19 +1,14 @@
 Source: oi-build-firmware
-Section: host-tools
+Section: host/tools
 Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
-Build-Depends: debhelper (>> 2.0.0)
+Build-Depends: debhelper (>= 7.0)
+XCS-Cross-Host-Build-Depends: debhelper (>= 7.0)
 Priority: optional
 Standards-Version: 3.6.2
 
-Package: oi-v3-build-firmware
+Package: oi-build-firmware
 Architecture: any
-Depends: ${shlibs:Depends}, slind-control, zip, mtd-tools, bzip2
+Depends: ${shlibs:Depends}, cross-shell, zip, mtd-tools, bzip2
 Description: Tool for Hanlin v3 firmware generation
  This package includes mkv3update tool which generates firmware in Hanlin V3
  updater format.
-
-Package: oi-prs505-build-firmware
-Architecture: any
-Depends: ${shlibs:Depends}, slind-control, zip, mtd-tools, bzip2
-Description: Tools for Sony PRS-505 firmware generation
- This package contains scripts for generation of Sony PRS-505 firmware images.
