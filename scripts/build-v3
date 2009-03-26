@@ -143,9 +143,9 @@ PACKAGES="$PACKAGES liberation-fonts"
 PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
 PACKAGES="$PACKAGES fbreader"
 PACKAGES="$PACKAGES locopdf"
-#PACKAGES="$PACKAGES cr3"
+PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
-#PACKAGES="$PACKAGES etimetol"
+PACKAGES="$PACKAGES etimetool"
 
 # if [ "$MODE" = "nfsroot" ]; then
 #     PACKAGES="$PACKAGES gdbserver"
