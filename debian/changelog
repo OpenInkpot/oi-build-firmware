@@ -1,3 +1,9 @@
+oi-build-firmware (0.14) asimov; urgency=low
+
+  * build-v3: Xfbdev launch command adjusted
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Thu, 26 Mar 2009 11:35:28 +0100
+
 oi-build-firmware (0.13) asimov; urgency=low
 
   * First build for IPlinux-based OpenInkpot.
