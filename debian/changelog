@@ -1,3 +1,9 @@
+oi-build-firmware (0.15) asimov; urgency=low
+
+  * build-v3: added cr3 and etimetool
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Thu, 26 Mar 2009 12:45:33 +0100
+
 oi-build-firmware (0.14) asimov; urgency=low
 
   * build-v3: Xfbdev launch command adjusted
