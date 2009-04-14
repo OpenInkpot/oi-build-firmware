@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-LINUX_VERSION='2.6.28'
+LINUX_VERSION='2.6.29'
 MODE=install
 DEVICE=v3
 VERSION=$(date +%Y%m%d)
@@ -119,6 +119,46 @@ fi
 
 PATH=$PATH:/usr/sbin
 
+
+do_pack_n516_firmware() {
+	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 124KiB -c 4096 -x favor_lzo -v
+	echo "[rootfs]
+mode=ubi
+image=$WORK_DIR/rootfs.ubi
+vol_id=1
+vol_size=248MiB
+vol_type=dynamic
+vol_name=rootfs
+
+[storage]
+mode=ubi
+vol_id=2
+vol_type=dynamic
+vol_name=storage
+vol_size=200MiB
+vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
+	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -m 2048 -s 2048 $WORK_DIR/n516-ubinize.ini
+	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
+	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
+
+	pushd $WORK_DIR
+
+#	for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
+#	for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
+#	cat u-boot-nand.bin ff-1M.bin > tmp1
+#	dd if=tmp1 of=tmp2 bs=1M count=1
+#	cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
+#	dd if=tmp3 of=tmp4 bs=1M count=5
+#	cat tmp4 ubi.img > n516-image.bin
+	wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
+	unzip n516-usbboot.zip
+	mv uImage ubi.img u-boot-nand.bin n516-usbboot/
+	zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip n516-usbboot
+
+	popd
+}
+
+
 #
 # FIXME: this script is steaming pile of shit.
 #
@@ -146,6 +186,11 @@ PACKAGES="$PACKAGES locopdf"
 PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
+case $DEVICE in
+	n516)
+		PACKAGES="$PACKAGES esplash-data-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
+		;;
+esac
 
 # if [ "$MODE" = "nfsroot" ]; then
 #     PACKAGES="$PACKAGES gdbserver"
@@ -179,6 +224,8 @@ cross-shell $ARCH apt-get -y --force-yes install $PACKAGES
 case $DEVICE in
     v3|v3ext|v3all)
         echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS;;
+    n516)
+    ;;
     *)
         :;;
 esac
@@ -187,9 +234,18 @@ echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
 
+case $DEVICE in
+	v3|v3ext|v3all)
+		xserver_cmd="Xfbdev -screen 600/91x800/122 -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0";;
+	n516)
+		xserver_cmd="Xfbdev -fb /dev/fb1 -screen 800x600@270 -dpi 200 -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0";;
+	*)
+		:;;
+esac
+
 echo "::sysinit:/etc/init.d/rcS
 :2345:respawn:/bin/sh
-::respawn:Xfbdev -screen 600/91x800/122 -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0
+::respawn:$xserver_cmd
 ::respawn:madshelf.sh
 ::reboot:/etc/init.d/rc 6
 ::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
@@ -243,11 +299,21 @@ do_power_supply() {
         fi
 }
 
+do_firmware() {
+	HOTPLUG_FW_DIR=/lib/firmware
+
+	echo 1 > /sys/$DEVPATH/loading
+	cat $HOTPLUG_FW_DIR/$FIRMWARE > /sys/$DEVPATH/data
+	echo 0 > /sys/$DEVPATH/loading
+}
 
 case $1 in
         power_supply)
                 do_power_supply
                 ;;
+	firmware)
+		do_firmware
+		;;
 esac
 
 exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
@@ -260,8 +326,10 @@ sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d
 echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
 mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
 
-if [ "$MODE" = "nfsroot" ]; then
-    echo "eink_apollofb
+case $DEVICE in
+	v3|v3ext|v3all)
+		if [ "$MODE" = "nfsroot" ]; then
+			echo "eink_apollofb
 g_ether
 lbookv3_keys
 lbookv3_battery
@@ -269,14 +337,22 @@ mmc_block
 s3cmci
 vfat
 evdev" > /rootfs-$ARCH/etc/modules
-else
-    echo "lbookv3_keys
+		else
+			echo "lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
 vfat
 evdev" > /rootfs-$ARCH/etc/modules
-fi
+		fi
+		;;
+	n516)
+		echo "lm75
+jz4740_udc
+g_ether" > /rootfs-$ARCH/etc/modules
+		;;
+esac
+
 
 mkdir -p /rootfs-$ARCH/mnt/storage
 mkdir -p /rootfs-$ARCH/media/sd
@@ -285,8 +361,12 @@ if [ "$MODE" != "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
-tmpfs /var/log tmpfs defaults 0 0
-/dev/mtdblock4 /mnt/storage vfat iocharset=utf8 0 0" > /rootfs-$ARCH/etc/fstab
+tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
+
+case $DEVICE in
+	v3|v3ext|v3all)
+		echo "/dev/mtdblock4 /mnt/storage vfat iocharset=utf8 0 0" >> /rootfs-$ARCH/etc/fstab;;
+esac
 
     rm -rf /rootfs-$ARCH/var/log/*
     # Apt goes awry if log directory does not exist.
@@ -295,11 +375,14 @@ fi
 
 mkdir /rootfs-$ARCH/etc/modprobe.d
 
+iface=usb0
+[ "$DEVICE" == "n516" ] && iface=eth0
+
 echo "auto lo
 iface lo inet loopback
 
-auto usb0
-iface usb0 inet static
+auto $iface
+iface $iface inet static
 	address 192.168.111.1
 	netmask 255.255.255.0
 	broadcast 192.168.111.255
@@ -316,7 +399,15 @@ echo '<?xml version="1.0"?>
 </fontconfig>' > /rootfs-$ARCH/etc/fonts/conf.avail/55-v3.conf
 ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
 
-ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-armel.tar
+case $DEVICE in
+	n516)
+		wget -O $WORK_DIR/metronomefb.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
+		sudo mkdir -p $WORK_DIR/rootfs/lib/firmware
+		sudo cp $WORK_DIR/metronomefb.wbf $WORK_DIR/rootfs/lib/firmware
+		;;
+esac
+
+ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
 
 cross-pack-rootfs $ARCH $ROOTFS
 
@@ -338,6 +429,14 @@ if [ $MODE = "install" ]; then
         v3ext)
             ERASEBLOCK=131072
             PAGESIZE=2048;;
+	n516)
+	    wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
+	    sudo mkdir -p $WORK_DIR/rootfs/lib/firmware
+	    sudo cp $WORK_DIR/metronome.wbf $WORK_DIR/rootfs/lib/firmware/
+
+	    do_pack_n516_firmware
+	    #FIXME: go to finish more clearly
+	    exit 0;;
         *)
             echo "Unknown device: $DEVICE"
             exit 1
