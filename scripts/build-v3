@@ -187,6 +187,9 @@ PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
 case $DEVICE in
+	v3|v3ext|v3all)
+		PACKAGES="$PACKAGES fbreader-settings-v3 madshelf-settings-v3"
+		;;
 	n516)
 		PACKAGES="$PACKAGES esplash-data-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
 		;;
