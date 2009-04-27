@@ -1,3 +1,13 @@
+oi-build-firmware (0.17) asimov; urgency=low
+
+  [ Alexander Kerner ]
+  * build-v3: added packages with V3 settings
+
+  [ Yauhen Kharuzhy ]
+  * Switch N516 net from eth0 to usb0
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 27 Apr 2009 18:07:58 +0300
+
 oi-build-firmware (0.16) asimov; urgency=low
 
   * Add N516 support
