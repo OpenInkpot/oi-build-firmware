@@ -379,7 +379,7 @@ fi
 mkdir /rootfs-$ARCH/etc/modprobe.d
 
 iface=usb0
-[ "$DEVICE" == "n516" ] && iface=eth0
+#[ "$DEVICE" == "n516" ] && iface=eth0
 
 echo "auto lo
 iface lo inet loopback
