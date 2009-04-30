@@ -448,7 +448,7 @@ if [ $MODE = "install" ]; then
     sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.jffs2
 
     mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
-
+    sync
     (cd $WORK_DIR; tar c V3update.bin) | bzip2 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
     zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
 fi
