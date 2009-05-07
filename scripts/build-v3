@@ -179,6 +179,9 @@ PACKAGES="$PACKAGES xserver-xfbdev libewl1-engines-all libevas-engines fontconfi
 # Fonts
 PACKAGES="$PACKAGES liberation-fonts"
 
+# i18n
+PACKAGES="$PACKAGES gconv-data-basic"
+
 # Applications
 PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
 PACKAGES="$PACKAGES fbreader"
