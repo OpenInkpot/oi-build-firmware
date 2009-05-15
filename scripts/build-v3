@@ -174,7 +174,7 @@ if [ "$MODE" = nfsroot ]; then
 fi
 
 # GUI
-PACKAGES="$PACKAGES xserver-xfbdev libewl1-engines-all libevas-engines fontconfig"
+PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1-engines-all libevas-engines fontconfig"
 
 # Fonts
 PACKAGES="$PACKAGES liberation-fonts"
@@ -240,19 +240,25 @@ echo "#!/bin/sh
 HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
 chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
 
+server_args="-nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
+
 case $DEVICE in
-	v3|v3ext|v3all)
-		xserver_cmd="Xfbdev -screen 600/91x800/122 -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0";;
-	n516)
-		xserver_cmd="Xfbdev -fb /dev/fb1 -screen 800x600@270 -dpi 200 -nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0";;
-	*)
-		:;;
+    v3|v3ext|v3all)
+        server_args="$server_args -screen 600x800 -dpi 170";;
+    n516)
+        server_args="$server_args -screen 800x600@270 -dpi 200";;
+    *)
+        :;;
 esac
+
+echo "$server_args" > /rootfs-$ARCH/etc/default/nulldm
+
+# Temporary workaround, until proper Xsession support is introduced
+echo "#!/bin/sh
+exec /usr/bin/madshelf.sh" > /rootfs-$ARCH/etc/X11/Xsession.d/99madshelf
 
 echo "::sysinit:/etc/init.d/rcS
 :2345:respawn:/bin/sh
-::respawn:$xserver_cmd
-::respawn:madshelf.sh
 ::reboot:/etc/init.d/rc 6
 ::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
 sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
