@@ -261,11 +261,10 @@ echo "::sysinit:/etc/init.d/rcS
 :2345:respawn:/bin/sh
 ::reboot:/etc/init.d/rc 6
 ::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
-sed -e '1d' < /rootfs-$ARCH/etc/passwd > /rootfs-$ARCH/etc/passwd2
-echo "root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh" > /rootfs-$ARCH/etc/passwd
-cat /rootfs-$ARCH/etc/passwd2 >> /rootfs-$ARCH/etc/passwd
-rm /rootfs-$ARCH/etc/passwd2
 
+sed -i 's/^root::/root:scKY2GQGBG3Nc:/' /rootfs-$ARCH/etc/passwd
+
+# Humm??
 ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
 
 echo '#!/bin/sh
