@@ -1,3 +1,9 @@
+oi-build-firmware (0.20) asimov; urgency=low
+
+  * build-v3: several configuration files for n516
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 17 May 2009 20:54:34 +0700
+
 oi-build-firmware (0.19) asimov; urgency=low
 
   * build-v3: added gconv-data-basic package
