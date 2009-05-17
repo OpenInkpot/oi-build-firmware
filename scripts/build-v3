@@ -177,7 +177,7 @@ fi
 PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1-engines-all libevas-engines fontconfig"
 
 # Fonts
-PACKAGES="$PACKAGES liberation-fonts"
+PACKAGES="$PACKAGES liberation-fonts libertine-fonts dejavu-fonts droid-fonts"
 
 # i18n
 PACKAGES="$PACKAGES gconv-data-basic"
@@ -195,6 +195,7 @@ case $DEVICE in
 		;;
 	n516)
 		PACKAGES="$PACKAGES esplash-data-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
+        PACKAGES="$PACKAGES uk elock eshutdown language-selector"
 		;;
 esac
 
@@ -225,7 +226,6 @@ echo "deb http://openinkpot.org/pub/oi asimov core security gui media" >> /rootf
 cross-shell $ARCH apt-get update
 cross-shell $ARCH apt-get -y --force-yes dist-upgrade
 cross-shell $ARCH apt-get -y --force-yes install $PACKAGES
-
 
 case $DEVICE in
     v3|v3ext|v3all)
@@ -413,9 +413,51 @@ ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
 case $DEVICE in
 	n516)
 		wget -O $WORK_DIR/metronomefb.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
-		sudo mkdir -p $WORK_DIR/rootfs/lib/firmware
-		sudo cp $WORK_DIR/metronomefb.wbf $WORK_DIR/rootfs/lib/firmware
-		;;
+		sudo mkdir -p /rootfs-$ARCH/lib/firmware
+		sudo cp $WORK_DIR/metronomefb.wbf /rootfs-$ARCH/lib/firmware
+
+        # Fixme: should be moved to fb-halt package
+        
+        START_SHUTDOWN_IMG=/usr/share/esplash-data/start-shutdown
+        SHUTDOWN_IMG=/usr/share/esplash-data/shutdown
+
+        python -c 'import sys
+for i in range(480000): sys.stdout.write("\xff")' > /rootfs-$ARCH/$SHUTDOWN_IMG
+        lzma -9 /rootfs-$ARCH/$SHUTDOWN_IMG
+
+        echo '#!/bin/sh
+
+case "$1" in
+  stop)
+    dd if=$SHUTDOWN_IMG.lzma of=/dev/fb1 bs=480000 count=1;;
+  start|force-reload)
+     ;;
+  *)
+    echo "Usage: fb-halt {start|stop|force-reload}"
+    ;;
+esac
+exit 0
+' > /rootfs-$ARCH/etc/init.d/fb-halt
+
+        chmod 755 /rootfs-$ARCH/etc/init.d/fb-halt
+        ln -s /etc/init.d/fb-halt /rootfs-$ARCH/etc/rc6.d/K01fb-halt
+
+        #
+        # Pre-generation of most used locales
+        #
+        for i in ru_RU en_US; do
+            lzcat /rootfs-$ARCH/usr/lib/locale-archive/main.tar.lzma | tar -x -C /rootfs-$ARCH/usr/lib/locale $i.UTF-8
+        done
+
+        # uk.conf
+        echo '124     eshutdown       Power   exec eshutdown
+
+150     elock   Lock    exec elock
+151     elock   Unlock  exec elock' > /rootfs-$ARCH/etc/uk.conf
+
+        ;;
+    *)
+        ;;
 esac
 
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
