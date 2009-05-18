@@ -121,39 +121,110 @@ PATH=$PATH:/usr/sbin
 
 
 do_pack_n516_firmware() {
-	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 124KiB -c 4096 -x favor_lzo -v
-	echo "[rootfs]
+	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
+	echo "[waveforms]
+mode=ubi
+image=$WORK_DIR/metronome.wbf
+vol_id=1
+vol_size=100KiB
+vol_type=dynamic
+vol_name=waveforms
+
+[bootsplash]
+mode=ubi
+image=$WORK_DIR/bootsplash.dat
+vol_id=2
+vol_size=480000
+vol_type=dynamic
+vol_name=bootsplash
+
+[kernel]
+mode=ubi
+image=$WORK_DIR/uImage
+vol_id=3
+vol_size=3MiB
+vol_type=dynamic
+vol_name=kernel
+
+[rootfs]
 mode=ubi
 image=$WORK_DIR/rootfs.ubi
-vol_id=1
-vol_size=248MiB
+vol_id=4
+vol_size=122MiB
 vol_type=dynamic
 vol_name=rootfs
 
 [storage]
 mode=ubi
-vol_id=2
+vol_id=5
 vol_type=dynamic
 vol_name=storage
 vol_size=200MiB
 vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
-	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -m 2048 -s 2048 $WORK_DIR/n516-ubinize.ini
 	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
+	wget -O $WORK_DIR/bootsplash.dat http://openinkpot.org/pub/contrib/n516-bootsplash/bootsplash.dat
 	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
+
+	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
+
+	echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+# global properties
+[GLOBAL]
+description=OI firmware for N516. Firmware date: `LANG=C date --utc`
+
+[waveforms]
+filename=$WORK_DIR/metronome.wbf
+
+[bootsplash]
+filename=$WORK_DIR/bootsplash.dat
+
+[kernel]
+filename=$WORK_DIR/uImage
+
+[rootfs]
+filename=$WORK_DIR/rootfs.ubi
+" > $WORK_DIR/n516-mkfw.cfg
+
+	echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+# global properties
+[GLOBAL]
+description=OI firmware for N516. Raw version. Firmware date: `LANG=C date --utc`
+
+[UBI]
+filename=$WORK_DIR/ubi.img
+raw=yes
+
+[uboot]
+filename=$WORK_DIR/u-boot-nand.bin
+raw=yes
+" > $WORK_DIR/n516-mkfw-raw.cfg
+
+	mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
+	mk-oifw $WORK_DIR/n516-mkfw-raw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update-raw.oifw
+
 
 	pushd $WORK_DIR
 
-#	for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
-#	for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
-#	cat u-boot-nand.bin ff-1M.bin > tmp1
-#	dd if=tmp1 of=tmp2 bs=1M count=1
-#	cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
-#	dd if=tmp3 of=tmp4 bs=1M count=5
-#	cat tmp4 ubi.img > n516-image.bin
+	for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
+	for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
+	cat u-boot-nand.bin ff-1M.bin > tmp1
+	dd if=tmp1 of=tmp2 bs=1M count=1
+	cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
+	dd if=tmp3 of=tmp4 bs=1M count=1
+	cat tmp4 ubi.img > n516-image.bin
+
 	wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
 	unzip n516-usbboot.zip
-	mv uImage ubi.img u-boot-nand.bin n516-usbboot/
-	zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip n516-usbboot
+	mv n516-image.bin n516-usbboot/
+	zip -r $OUTPUT_DIR/$OUTPUT_NAME-flashimage.zip n516-usbboot
 
 	popd
 }
@@ -412,9 +483,6 @@ ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
 
 case $DEVICE in
 	n516)
-		wget -O $WORK_DIR/metronomefb.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
-		sudo mkdir -p /rootfs-$ARCH/lib/firmware
-		sudo cp $WORK_DIR/metronomefb.wbf /rootfs-$ARCH/lib/firmware
 
         # Fixme: should be moved to fb-halt package
         
