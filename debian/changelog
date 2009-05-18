@@ -1,3 +1,9 @@
+oi-build-firmware (0.22) asimov; urgency=low
+
+  * Add errorsplash to N516 images
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 18 May 2009 15:54:32 +0300
+
 oi-build-firmware (0.21) asimov; urgency=low
 
   * New N516 layout and update format
