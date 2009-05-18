@@ -333,7 +333,7 @@ echo "::sysinit:/etc/init.d/rcS
 ::reboot:/etc/init.d/rc 6
 ::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
 
-sed -i 's/^root::/root:scKY2GQGBG3Nc:/' /rootfs-$ARCH/etc/passwd
+echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > /rootfs-$ARCH/etc/passwd
 
 # Humm??
 ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
