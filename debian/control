@@ -8,7 +8,7 @@ Standards-Version: 3.6.2
 
 Package: oi-build-firmware
 Architecture: any
-Depends: ${shlibs:Depends}, cross-shell, zip, unzip, bzip2, mtd-utils, lzma, python
+Depends: ${shlibs:Depends}, cross-shell, zip, unzip, bzip2, mtd-utils, lzma, python, oi-mkfw
 Description: Tool for Hanlin v3 firmware generation
  This package includes mkv3update tool which generates firmware in Hanlin V3
  updater format.
