@@ -339,6 +339,7 @@ echo "SERVER_ARGS=\"$server_args\"" > /rootfs-$ARCH/etc/default/nulldm
 # Temporary workaround, until proper Xsession support is introduced
 echo "#!/bin/sh
 exec /usr/bin/madshelf.sh" > /rootfs-$ARCH/etc/X11/Xsession.d/99madshelf
+chmod +x /rootfs-$ARCH/etc/X11/Xsession.d/99madshelf
 
 echo "::sysinit:/etc/init.d/rcS
 :2345:respawn:/bin/sh
