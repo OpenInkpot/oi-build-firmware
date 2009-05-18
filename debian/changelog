@@ -1,3 +1,11 @@
+oi-build-firmware (0.23) asimov; urgency=low
+
+  * Adjusted default network settings
+  * Remove unnecessary user entries from /etc/passwd
+  * Fix /etc/default/nulldm syntax and contents
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 18 May 2009 20:24:22 +0700
+
 oi-build-firmware (0.22) asimov; urgency=low
 
   * Add errorsplash to N516 images
