@@ -183,7 +183,7 @@ date=`date +%s`
 
 # global properties
 [GLOBAL]
-description=OI firmware for N516. Firmware date: `LANG=C date --utc`
+description=OI firmware for N516.
 
 [waveforms]
 filename=$WORK_DIR/metronome.wbf
@@ -208,7 +208,7 @@ date=`date +%s`
 
 # global properties
 [GLOBAL]
-description=OI firmware for N516. Raw version. Firmware date: `LANG=C date --utc`
+description=OI firmware for N516. Raw version.
 
 [UBI]
 filename=$WORK_DIR/ubi.img
