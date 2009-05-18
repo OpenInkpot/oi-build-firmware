@@ -138,10 +138,18 @@ vol_size=480000
 vol_type=dynamic
 vol_name=bootsplash
 
+[errorsplash]
+mode=ubi
+image=$WORK_DIR/errorsplash.dat
+vol_id=3
+vol_size=480000
+vol_type=dynamic
+vol_name=bootsplash
+
 [kernel]
 mode=ubi
 image=$WORK_DIR/uImage
-vol_id=3
+vol_id=4
 vol_size=3MiB
 vol_type=dynamic
 vol_name=kernel
@@ -149,20 +157,21 @@ vol_name=kernel
 [rootfs]
 mode=ubi
 image=$WORK_DIR/rootfs.ubi
-vol_id=4
+vol_id=5
 vol_size=122MiB
 vol_type=dynamic
 vol_name=rootfs
 
 [storage]
 mode=ubi
-vol_id=5
+vol_id=6
 vol_type=dynamic
 vol_name=storage
 vol_size=200MiB
 vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
 	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
 	wget -O $WORK_DIR/bootsplash.dat http://openinkpot.org/pub/contrib/n516-bootsplash/bootsplash.dat
+	wget -O $WORK_DIR/errorsplash.dat http://openinkpot.org/pub/contrib/n516-bootsplash/errorsplash.dat
 	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
 
 	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
@@ -181,6 +190,9 @@ filename=$WORK_DIR/metronome.wbf
 
 [bootsplash]
 filename=$WORK_DIR/bootsplash.dat
+
+[errorsplash]
+filename=$WORK_DIR/errorsplash.dat
 
 [kernel]
 filename=$WORK_DIR/uImage
