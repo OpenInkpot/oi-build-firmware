@@ -1,3 +1,9 @@
+oi-build-firmware (0.24) asimov; urgency=low
+
+  * Fix errorsplash UBI volume name
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 18 May 2009 17:02:22 +0300
+
 oi-build-firmware (0.23) asimov; urgency=low
 
   * Adjusted default network settings
