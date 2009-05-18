@@ -144,7 +144,7 @@ image=$WORK_DIR/errorsplash.dat
 vol_id=3
 vol_size=480000
 vol_type=dynamic
-vol_name=bootsplash
+vol_name=errorsplash
 
 [kernel]
 mode=ubi
