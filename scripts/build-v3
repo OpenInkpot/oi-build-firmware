@@ -322,7 +322,7 @@ case $DEVICE in
         :;;
 esac
 
-echo "$server_args" > /rootfs-$ARCH/etc/default/nulldm
+echo "SERVER_ARGS=\"$server_args\"" > /rootfs-$ARCH/etc/default/nulldm
 
 # Temporary workaround, until proper Xsession support is introduced
 echo "#!/bin/sh
