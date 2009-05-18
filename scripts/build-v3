@@ -468,7 +468,10 @@ iface $iface inet static
 	address 192.168.111.1
 	netmask 255.255.255.0
 	broadcast 192.168.111.255
+	gateway 192.168.111.2
 " > /rootfs-$ARCH/etc/network/interfaces
+
+echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
 
 touch /rootfs-$ARCH/etc/mdev.conf
 
