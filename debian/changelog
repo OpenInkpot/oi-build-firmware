@@ -1,3 +1,9 @@
+oi-build-firmware (0.21) asimov; urgency=low
+
+  * New N516 layout and update format
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 18 May 2009 03:11:32 +0300
+
 oi-build-firmware (0.20) asimov; urgency=low
 
   * build-v3: several configuration files for n516
