@@ -1,3 +1,14 @@
+oi-build-firmware (0.25) asimov; urgency=low
+
+  * N516
+    - uuwm added
+    - uk started automatically
+    - bootloader splashscreen generation added
+    - fixed fb cleanup on shutdown
+  * autogen.sh added, regeneration of autostuff added
+  
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 22 May 2009 01:32:03 +0700
+
 oi-build-firmware (0.24) asimov; urgency=low
 
   * Fix errorsplash UBI volume name
