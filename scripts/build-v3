@@ -517,22 +517,22 @@ case $DEVICE in
 for i in range(480000): sys.stdout.write("\xff")' > /rootfs-$ARCH/$SHUTDOWN_IMG
         lzma -9 /rootfs-$ARCH/$SHUTDOWN_IMG
 
-        echo '#!/bin/sh
+        echo "#!/bin/sh
 
-case "$1" in
+case \"\$1\" in
   stop)
-    dd if=$SHUTDOWN_IMG.lzma of=/dev/fb1 bs=480000 count=1;;
+    lzmacat $SHUTDOWN_IMG.lzma > /dev/fb1;;
   start|force-reload)
      ;;
   *)
-    echo "Usage: fb-halt {start|stop|force-reload}"
+    echo \"Usage: fb-halt {start|stop|force-reload}\"
     ;;
 esac
 exit 0
-' > /rootfs-$ARCH/etc/init.d/fb-halt
+" > /rootfs-$ARCH/etc/init.d/fb-halt
 
         chmod 755 /rootfs-$ARCH/etc/init.d/fb-halt
-        ln -s /etc/init.d/fb-halt /rootfs-$ARCH/etc/rc6.d/K01fb-halt
+        ln -s /etc/init.d/fb-halt /rootfs-$ARCH/etc/rc0.d/K01fb-halt
 
         #
         # Pre-generation of most used locales
