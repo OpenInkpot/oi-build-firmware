@@ -16,4 +16,5 @@ AC_OUTPUT([
 Makefile
 src/Makefile
 scripts/Makefile
+logo/Makefile
 ])

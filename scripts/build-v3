@@ -170,7 +170,7 @@ vol_name=storage
 vol_size=200MiB
 vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
 	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
-	wget -O $WORK_DIR/bootsplash.dat http://openinkpot.org/pub/contrib/n516-bootsplash/bootsplash.dat
+
 	wget -O $WORK_DIR/errorsplash.dat http://openinkpot.org/pub/contrib/n516-bootsplash/errorsplash.dat
 	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
 
@@ -551,6 +551,28 @@ exit 0
     *)
         ;;
 esac
+
+case $DEVICE in
+    n516)
+        AZ=azbooka-splash.png
+        S_AZ=/usr/share/oi-build-firmware/$AZ
+        if [ -f $S_AZ ]; then
+            F_AZ=$S_AZ
+        elif [ -f logo/$AZ ]; then
+            F_AZ=logo/$AZ
+        elif [ -f oi-build-firmware/logo/$AZ ]; then
+            F_AZ=oi-build-firmware/logo/$AZ
+        elif [ -f ../logo/$AZ ]; then
+            F_AZ=../logo/$AZ
+        fi
+
+        # Bootloader
+        mk-rawpic -r270 -d3 --high $F_AZ $WORK_DIR/bootsplash.dat
+    ;;
+    *)
+    ;;
+esac
+
 
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
 
