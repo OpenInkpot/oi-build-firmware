@@ -1,8 +1,8 @@
 Source: oi-build-firmware
 Section: host/tools
 Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
-Build-Depends: debhelper (>= 7.0)
-XCS-Cross-Host-Build-Depends: debhelper (>= 7.0)
+Build-Depends: debhelper (>= 7.0), automake, autoconf
+XCS-Cross-Host-Build-Depends: debhelper (>= 7.0), automake, autoconf
 Priority: optional
 Standards-Version: 3.6.2
 

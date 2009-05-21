@@ -1,8 +1,6 @@
+AC_PREREQ(2.57)
 AC_INIT(oi-build-firmware, 0.1, openinkpot-developers@googlegroups.com)
-AC_PREREQ(2.52)
-AC_CONFIG_SRCDIR(configure.ac)
-
-AM_INIT_AUTOMAKE(1.6)
+AM_INIT_AUTOMAKE(foreign)
 
 AC_CONFIG_HEADER(src/config.h)
 
