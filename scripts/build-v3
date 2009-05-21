@@ -351,7 +351,6 @@ chmod +x /rootfs-$ARCH/etc/X11/Xsession.d/50uk
 
 echo "::sysinit:/etc/init.d/rcS
 :2345:respawn:/bin/sh
-::reboot:/etc/init.d/rc 6
 ::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
 
 echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > /rootfs-$ARCH/etc/passwd
