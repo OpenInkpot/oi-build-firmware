@@ -1,3 +1,13 @@
+oi-build-firmware (0.27) asimov; urgency=low
+
+  * Various tweaks for more comformtable development
+  * gm added
+  * epuzzles added
+  * uk_UA locale pregeneration added
+  * pregenerated dropbear hostkeys added
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 27 May 2009 01:25:45 +0700
+
 oi-build-firmware (0.26) asimov; urgency=low
 
   * There is no :reboot: action in busybox's inittab.
