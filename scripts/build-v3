@@ -278,7 +278,7 @@ case $DEVICE in
 		;;
 	n516)
 		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
-        PACKAGES="$PACKAGES uk uuwm elock eshutdown language-selector"
+        PACKAGES="$PACKAGES gm epuzzles uk uuwm elock eshutdown language-selector"
 		;;
 esac
 
@@ -345,8 +345,8 @@ uuwm&" > /rootfs-$ARCH/etc/X11/Xsession.d/05uuwm
 chmod +x /rootfs-$ARCH/etc/X11/Xsession.d/05uuwm
 
 echo "#!/bin/sh
-exec /usr/bin/madshelf.sh" > /rootfs-$ARCH/etc/X11/Xsession.d/99madshelf
-chmod +x /rootfs-$ARCH/etc/X11/Xsession.d/99madshelf
+exec /usr/bin/gm" > /rootfs-$ARCH/etc/X11/Xsession.d/99gm
+chmod +x /rootfs-$ARCH/etc/X11/Xsession.d/99gm
 
 echo "#!/bin/sh
 uk&" > /rootfs-$ARCH/etc/X11/Xsession.d/50uk
@@ -545,6 +545,7 @@ exit 0
 
         # uk.conf
         echo '124     eshutdown       Power   exec eshutdown
+147     gm      Activate exec gm
 
 150     elock   Lock    exec elock
 151     elock   Unlock  exec elock' > /rootfs-$ARCH/etc/uk.conf
