@@ -15,4 +15,5 @@ Makefile
 src/Makefile
 scripts/Makefile
 logo/Makefile
+data/Makefile
 ])

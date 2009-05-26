@@ -1,1 +1,1 @@
-SUBDIRS = src scripts logo
+SUBDIRS = src scripts logo data
