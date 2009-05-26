@@ -282,6 +282,9 @@ case $DEVICE in
 		;;
 esac
 
+# Debug
+PACKAGES="$PACKAGES strace rsync"
+
 # if [ "$MODE" = "nfsroot" ]; then
 #     PACKAGES="$PACKAGES gdbserver"
 # fi
