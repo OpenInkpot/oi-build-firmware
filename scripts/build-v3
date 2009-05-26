@@ -539,7 +539,7 @@ exit 0
         #
         # Pre-generation of most used locales
         #
-        for i in ru_RU en_US; do
+        for i in ru_RU uk_UA en_US; do
             lzcat /rootfs-$ARCH/usr/lib/locale-archive/main.tar.lzma | tar -x -C /rootfs-$ARCH/usr/lib/locale $i.UTF-8
         done
 
