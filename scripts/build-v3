@@ -555,22 +555,55 @@ exit 0
         ;;
 esac
 
+find_file() {
+    F="$1"
+
+    if [ -f "$F" ]; then
+        echo "$F"
+        return
+    fi
+    if [ -f "logo/$F" ]; then
+        echo "logo/$F"
+        return
+    fi
+    if [ -f "oi-build-firmware/logo/$F" ]; then
+        echo "oi-build-firmware/logo/$F"
+        return
+    fi
+    if [ -f "../logo/$F" ]; then
+        echo "../logo/$F"
+        return
+    fi
+    if [ -f "data/$F" ]; then
+        echo "data/$F"
+        return
+    fi
+    if [ -f "oi-build-firmware/data/$F" ]; then
+        echo "oi-build-firmware/data/$F"
+        return
+    fi
+    if [ -f "../data/$F" ]; then
+        echo "../data/$F"
+        return
+    fi
+    if [ -f "/usr/share/oi-build-firmware/$F" ]; then
+        echo "/usr/share/oi-build-firmware/$F" 
+        return
+    fi
+}
+
 case $DEVICE in
     n516)
-        AZ=azbooka-splash.png
-        S_AZ=/usr/share/oi-build-firmware/$AZ
-        if [ -f $S_AZ ]; then
-            F_AZ=$S_AZ
-        elif [ -f logo/$AZ ]; then
-            F_AZ=logo/$AZ
-        elif [ -f oi-build-firmware/logo/$AZ ]; then
-            F_AZ=oi-build-firmware/logo/$AZ
-        elif [ -f ../logo/$AZ ]; then
-            F_AZ=../logo/$AZ
-        fi
-
         # Bootloader
+        F_AZ=$(find_file azbooka-splash.png)
         mk-rawpic -r270 -d3 --high $F_AZ $WORK_DIR/bootsplash.dat
+
+        # Pre-created dropbear keys
+        DSA_K=$(find_file dropbear_dss_host_key)
+        cp "$DSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_dss_host_key
+        RSA_K=$(find_file dropbear_rsa_host_key)
+        cp "$RSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
+        chmod 600 /rootfs-$ARCH/etc/dropbear/*
     ;;
     *)
     ;;
