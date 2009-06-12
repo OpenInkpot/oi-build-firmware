@@ -364,6 +364,13 @@ ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
 echo '#!/bin/sh
 
 if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
+	if [ -e /var/lib/usbwatcher/state ]; then
+		. /var/lib/usbwatcher/state
+		if [ x"$STATE" = x"mass_storage" ]; then
+			exit 0;
+		fi
+	fi
+
 	for i in /dev/mmcblk*
 	do
 		D1=`echo $i | sed -e s/p[0-9]*//`
