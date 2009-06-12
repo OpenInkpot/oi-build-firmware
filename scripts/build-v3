@@ -394,6 +394,9 @@ chmod a+x /rootfs-$ARCH/sbin/automount.sh
 
 echo '#!/bin/sh
 
+exec </dev/null >/dev/null 2>/dev/null
+export USER=root
+
 do_power_supply() {
         if [ x"$ACTION" = x"change" -a x"$POWER_SUPPLY_NAME" = x"usb" ]; then
                 if [ $POWER_SUPPLY_ONLINE -eq 1 ]; then
