@@ -278,7 +278,7 @@ case $DEVICE in
 		;;
 	n516)
 		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
-        PACKAGES="$PACKAGES gm epuzzles uk uuwm elock eshutdown language-selector"
+        PACKAGES="$PACKAGES gm epuzzles uk uk-send uuwm elock eshutdown language-selector usbwatcher usbwatcher-data-azbooka-n516 erot"
 		;;
 esac
 
@@ -561,6 +561,8 @@ exit 0
         # uk.conf
         echo '124     eshutdown       Power   exec eshutdown
 147     gm      Activate exec gm
+
+161     erot    Rotate  exec erot
 
 150     elock   Lock    exec elock
 151     elock   Unlock  exec elock' > /rootfs-$ARCH/etc/uk.conf
