@@ -512,33 +512,6 @@ ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
 
 case $DEVICE in
 	n516)
-
-        # Fixme: should be moved to fb-halt package
-        
-        START_SHUTDOWN_IMG=/usr/share/esplash-data/start-shutdown
-        SHUTDOWN_IMG=/usr/share/esplash-data/shutdown
-
-        python -c 'import sys
-for i in range(480000): sys.stdout.write("\xff")' > /rootfs-$ARCH/$SHUTDOWN_IMG
-        lzma -9 /rootfs-$ARCH/$SHUTDOWN_IMG
-
-        echo "#!/bin/sh
-
-case \"\$1\" in
-  stop)
-    lzmacat $SHUTDOWN_IMG.lzma > /dev/fb1;;
-  start|force-reload)
-     ;;
-  *)
-    echo \"Usage: fb-halt {start|stop|force-reload}\"
-    ;;
-esac
-exit 0
-" > /rootfs-$ARCH/etc/init.d/fb-halt
-
-        chmod 755 /rootfs-$ARCH/etc/init.d/fb-halt
-        ln -s /etc/init.d/fb-halt /rootfs-$ARCH/etc/rc0.d/K01fb-halt
-
         #
         # Pre-generation of most used locales
         #
