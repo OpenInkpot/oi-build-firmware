@@ -322,10 +322,6 @@ case $DEVICE in
         :;;
 esac
 
-echo "#!/bin/sh
-HOME=/home DISPLAY=:0 exec madshelf" > /rootfs-$ARCH/usr/bin/madshelf.sh
-chmod a+x /rootfs-$ARCH/usr/bin/madshelf.sh
-
 server_args="-nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
 
 case $DEVICE in
@@ -625,7 +621,6 @@ case $DEVICE in
     *)
     ;;
 esac
-
 
 ## Devs' public SSH keys
 
