@@ -1,3 +1,5 @@
+SUBDIRS=fontconfig
+
 LOGO=$(wildcard *_key)
 
 logodir=$(datadir)/oi-build-firmware
