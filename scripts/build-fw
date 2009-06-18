@@ -121,6 +121,9 @@ PATH=$PATH:/usr/sbin
 
 
 do_pack_n516_firmware() {
+    # Fixate atime/mtime for rootfs being built
+    sudo find $WORK_DIR/rootfs -type f -print0 | xargs -0 sudo touch -d @0
+    sudo find $WORK_DIR/rootfs -depth -type d -print0 | xargs -0 sudo touch -d @0
 	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
 	echo "[waveforms]
 mode=ubi
@@ -582,6 +585,11 @@ case $DEVICE in
         RSA_K=$(find_file dropbear_rsa_host_key)
         cp "$RSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
         chmod 600 /rootfs-$ARCH/etc/dropbear/*
+
+        # Pre-generated fontconfig cache
+        FC_F=$(find_file fontconfig/0fdfe5ca58fd9bc9e4fc72abcd5bc429-mipsel-ip-linux-gnu.cache-2)
+        FC_D=$(dirname "$FC_F")
+        cp "$FC_D/"* /rootfs-$ARCH/var/cache/fontconfig
     ;;
     *)
     ;;
