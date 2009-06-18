@@ -260,7 +260,7 @@ fi
 PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1-engines-all libevas-engines fontconfig"
 
 # Fonts
-PACKAGES="$PACKAGES liberation-fonts libertine-fonts dejavu-fonts droid-fonts"
+PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts"
 
 # i18n
 PACKAGES="$PACKAGES gconv-data-basic"
