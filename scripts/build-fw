@@ -277,7 +277,7 @@ case $DEVICE in
 		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 madshelf-settings-v3"
 		;;
 	n516)
-		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support"
+		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support n516-waveforms"
         PACKAGES="$PACKAGES gm epuzzles uk uk-send uuwm elock eshutdown language-selector usbwatcher usbwatcher-data-azbooka-n516 erot"
 		;;
 esac
@@ -665,8 +665,6 @@ if [ $MODE = "install" ]; then
             PAGESIZE=2048;;
 	n516)
 	    wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
-	    sudo mkdir -p $WORK_DIR/rootfs/lib/firmware
-	    sudo cp $WORK_DIR/metronome.wbf $WORK_DIR/rootfs/lib/firmware/
 
 	    do_pack_n516_firmware
 	    #FIXME: go to finish more clearly
