@@ -388,6 +388,9 @@ exit 1
 ' > /rootfs-$ARCH/sbin/automount.sh
 chmod a+x /rootfs-$ARCH/sbin/automount.sh
 
+echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
+mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf.d/50automount
+
 echo '#!/bin/sh
 
 exec </dev/null >/dev/null 2>/dev/null
@@ -432,8 +435,6 @@ chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
 
 sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
-echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
-mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf
 
 case $DEVICE in
 	v3|v3ext|v3all)
@@ -499,8 +500,6 @@ iface $iface inet static
 " > /rootfs-$ARCH/etc/network/interfaces
 
 echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
-
-touch /rootfs-$ARCH/etc/mdev.conf
 
 echo '<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
