@@ -1,3 +1,10 @@
+oi-build-firmware (0.29) asimov; urgency=low
+
+  * Added installation of pregenerated fontconfig cache files (droid,
+    liberation, libertine) for mips
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 18 Jun 2009 19:40:26 +0700
+
 oi-build-firmware (0.28) asimov; urgency=low
 
   * Workaround: dejavu-fonts removed from default installation to speed up
