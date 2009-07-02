@@ -513,15 +513,6 @@ iface $iface inet static
 
 echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
 
-echo '<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-	<!-- V3 specific font directories -->
-	<dir>/media/sd/fonts</dir>
-	<dir>/mnt/storage/fonts</dir>
-</fontconfig>' > /rootfs-$ARCH/etc/fonts/conf.avail/55-v3.conf
-ln -sf ../conf.avail/55-v3.conf /rootfs-$ARCH/etc/fonts/conf.d/55-v3.conf
-
 case $DEVICE in
 	n516)
         #
