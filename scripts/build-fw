@@ -281,11 +281,11 @@ PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
 case $DEVICE in
 	v3|v3ext|v3all)
-		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 madshelf-settings-v3"
+		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3"
 		;;
 	n516)
-		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 madshelf-settings-n516 metronomefb-support n516-waveforms"
-        PACKAGES="$PACKAGES gm epuzzles uk uk-send uuwm elock eshutdown language-selector usbwatcher usbwatcher-data-azbooka-n516 erot"
+		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 metronomefb-support n516-waveforms"
+        PACKAGES="$PACKAGES gm make-home shared-mime-info epuzzles uk uk-send uuwm elock eshutdown language-selector usbwatcher usbwatcher-data-azbooka-n516 erot"
 		;;
 esac
 
