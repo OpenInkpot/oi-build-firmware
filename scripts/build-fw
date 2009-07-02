@@ -442,7 +442,6 @@ chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
 
 sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
-
 case $DEVICE in
 	v3|v3ext|v3all)
 		if [ "$MODE" = "nfsroot" ]; then
