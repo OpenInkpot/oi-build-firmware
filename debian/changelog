@@ -1,3 +1,11 @@
+oi-build-firmware (0.30) asimov; urgency=low
+
+  * $HOME moved to /mnt/storage.
+  * Package lists updated
+  * Fontconfig configuration cleanup
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 02 Jul 2009 08:23:30 +0700
+
 oi-build-firmware (0.29) asimov; urgency=low
 
   * Added installation of pregenerated fontconfig cache files (droid,
