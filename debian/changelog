@@ -1,3 +1,12 @@
+oi-build-firmware (0.31) asimov; urgency=low
+
+  [ Mikhail Gusarov ]
+  * Xsession.d/99gm moved to gm package
+  * More packages in V3 build
+  * run sumtool(1) on jffs2 dump for faster mount
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Fri, 10 Jul 2009 01:05:10 +0300
+
 oi-build-firmware (0.30) asimov; urgency=low
 
   * $HOME moved to /mnt/storage.
