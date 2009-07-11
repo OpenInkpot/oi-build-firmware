@@ -1,3 +1,9 @@
+oi-build-firmware (0.32) asimov; urgency=low
+
+  * Replace errorsplash and move it into the package.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sat, 11 Jul 2009 18:00:31 +0700
+
 oi-build-firmware (0.31) asimov; urgency=low
 
   [ Mikhail Gusarov ]
