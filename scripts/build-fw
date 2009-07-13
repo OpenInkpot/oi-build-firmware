@@ -2,8 +2,9 @@
 set -e
 
 LINUX_VERSION='2.6.29'
-MODE=install
 DEVICE=v3
+MODE=install
+VARIANT=default
 VERSION=$(date +%Y%m%d)
 
 KEEP_WORKDIR=0
@@ -23,10 +24,18 @@ set_mode() {
     esac
 }
 
+set_variant() {
+    case "$1" in
+        default|azbooka) VARIANT="$1";;
+        *) echo "Unknown variant: $1"; exit 1;;
+    esac
+}
+
 usage() {
     echo "Usage: build-fw [--keep-workdir]"
     echo "    [(-d |--device=)(v3|v3ext|v3all|n516)]"
     echo "    [(-m |--mode=)(install|live|nfsroot)]"
+    echo "    [(-a |--variant=)(default|azbooka)]"
     echo "    [<version>]"
     echo
     echo "device defaults to 'v3',"
@@ -34,7 +43,7 @@ usage() {
     echo "version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,keep-workdir,device:,mode: -o hd:m: -- "$@")
+TMP=$(getopt -l help,keep-workdir,device:,mode:,variant: -o hd:m:a: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
@@ -47,6 +56,7 @@ while true; do
         --keep-workdir) KEEP_WORKDIR=1; shift;;
         -d|--device) set_device "$2"; shift; shift;;
         -m|--mode) set_mode "$2"; shift; shift;;
+        -a|--variant) set_variant "$2"; shift; shift;;
         -h|--help) usage; exit 0;;
         --) shift; break;;
         *) echo "Unexpected argument in getopt parsing: $1"; exit 1;;
@@ -80,6 +90,12 @@ case $DEVICE in
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
+case "$DEVICE-$VARIANT" in
+    n516-azbooka) :;;
+    *-azbooka) echo "Error: azbooka variant is supported only for n516"; exit 1;;
+    *) ;;
+esac
+
 if [ $MODE = nfsroot ]; then
     KERNEL_FLAVOUR="-nfsroot${KERNEL_FLAVOUR}"
 fi
@@ -103,7 +119,12 @@ HOSTARCH=$(dpkg --print-architecture)
 OUTPUT_DIR=$(pwd)/output/"$VERSION"
 mkdir -p "$OUTPUT_DIR"
 
-OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION
+case "$VARIANT-$DEVICE" in
+    default-*)
+        OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION;;
+    azbooka-n516)
+        OUTPUT_NAME=azbooka516-$VERSION;;
+esac
 
 WORK_DIR=$(pwd)/$(mktemp build-fw.XXXXXXXX -d)
 cleanup() {
@@ -178,6 +199,13 @@ vol_size=372MiB" > $WORK_DIR/n516-ubinize.ini
 
 	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
 
+    case "$VARIANT" in
+        default)
+            DESCRIPTION="OpenInkpot for N516.";;
+        azbooka)
+            DESCRIPTION="Azbooka516 firmware.";;
+    esac
+
 	echo "[DEFAULT]
 device=n516
 hwrev=1.0
@@ -185,7 +213,7 @@ date=`date +%s`
 
 # global properties
 [GLOBAL]
-description=OI firmware for N516.
+description=$DESCRIPTION
 
 [waveforms]
 filename=$WORK_DIR/metronome.wbf
@@ -210,7 +238,7 @@ date=`date +%s`
 
 # global properties
 [GLOBAL]
-description=OI firmware for N516. Raw version.
+description=$DESCRIPTION Raw version.
 
 [UBI]
 filename=$WORK_DIR/ubi.img
@@ -281,11 +309,18 @@ PACKAGES="$PACKAGES etimetool"
 PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown language-selector"
 case $DEVICE in
 	v3|v3ext|v3all)
-		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3"
+		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 ubi-support"
 		;;
 	n516)
-		PACKAGES="$PACKAGES esplash-data-azbooka-n516 fbreader-settings-n516 metronomefb-support n516-waveforms"
+		PACKAGES="$PACKAGES fbreader-settings-n516 metronomefb-support n516-waveforms"
         PACKAGES="$PACKAGES make-home elock usbwatcher usbwatcher-data-azbooka-n516 erot"
+
+        case $VARIANT in
+            azbooka)
+                PACKAGES="$PACKAGES esplash-data-azbooka-n516";;
+            default)
+                PACKAGES="$PACKAGES esplash-data-n516";;
+        esac
 		;;
 esac
 
