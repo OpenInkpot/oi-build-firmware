@@ -1,3 +1,12 @@
+oi-build-firmware (0.33) asimov; urgency=low
+
+  * Temporarily add shutdown/reboot apps to V3 build
+  * Add device variant 'azbooka' to n516
+  * Sync-mount FAT
+  * Compress all .oifw files during build, they're big
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 13 Jul 2009 22:14:23 +0700
+
 oi-build-firmware (0.32) asimov; urgency=low
 
   * Replace errorsplash and move it into the package.
