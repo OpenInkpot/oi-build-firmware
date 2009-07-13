@@ -140,7 +140,6 @@ fi
 
 PATH=$PATH:/usr/sbin
 
-
 do_pack_n516_firmware() {
     # Fixate atime/mtime for rootfs being built
     sudo find $WORK_DIR/rootfs -type f -print0 | xargs -0 sudo touch -d @0
