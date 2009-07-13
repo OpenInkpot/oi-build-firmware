@@ -1,3 +1,9 @@
+oi-build-firmware (0.34) asimov; urgency=low
+
+  * Replace Azbooka logo with new one.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 14 Jul 2009 00:05:40 +0700
+
 oi-build-firmware (0.33) asimov; urgency=low
 
   * Temporarily add shutdown/reboot apps to V3 build
