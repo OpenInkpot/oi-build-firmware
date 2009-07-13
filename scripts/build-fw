@@ -547,6 +547,21 @@ iface $iface inet static
 echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
 
 case $DEVICE in
+    v3*)
+        echo '124 gm Activate exec gm' > /rootfs-$ARCH/etc/uk.conf
+
+        echo '[Desktop Entry]
+Name=Shutdown
+Exec=poweroff
+Type=Application
+Categories=Applications;' > /rootfs-$ARCH/usr/share/applications/shutdown.desktop
+
+        echo '[Desktop Entry]
+Name=Reboot
+Exec=reboot
+Type=Application
+Categories=Applications;' > /rootfs-$ARCH/usr/share/applications/reboot.desktop
+        ;;
 	n516)
         #
         # Pre-generation of most used locales
