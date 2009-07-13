@@ -272,6 +272,10 @@ filename=$WORK_DIR/storage.vfat.fs" >> $WORK_DIR/n516-mkfw.cfg
 	zip -r $OUTPUT_DIR/$OUTPUT_NAME-flashimage.zip n516-usbboot
 
 	popd
+
+    for i in $OUTPUT_DIR/*.oifw; do
+        zip -r ${i%.oifw} $i && rm $i
+    done
 }
 
 
