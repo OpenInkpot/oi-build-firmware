@@ -1,3 +1,9 @@
+oi-build-firmware (0.37) asimov; urgency=low
+
+  * Drop -reinstall, rename -raw to -reinstall in n516 build.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 14 Jul 2009 18:07:11 +0700
+
 oi-build-firmware (0.36) asimov; urgency=low
 
   * Remove full paths from ZIP archives in n516 build.
