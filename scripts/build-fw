@@ -237,7 +237,7 @@ date=`date +%s`
 
 # global properties
 [GLOBAL]
-description=$DESCRIPTION Raw version.
+description=$DESCRIPTION Reinstall image.
 
 [UBI]
 filename=$WORK_DIR/ubi.img
@@ -246,16 +246,10 @@ raw=yes
 [uboot]
 filename=$WORK_DIR/u-boot-nand.bin
 raw=yes
-" > $WORK_DIR/n516-mkfw-raw.cfg
+" > $WORK_DIR/n516-mkfw-reinstall.cfg
 
 	mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
-	mk-oifw $WORK_DIR/n516-mkfw-raw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update-raw.oifw
-
-    echo "[storage]
-filename=$WORK_DIR/storage.vfat.fs" >> $WORK_DIR/n516-mkfw.cfg
-
-    mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
-
+	mk-oifw $WORK_DIR/n516-mkfw-reinstall.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
 	pushd $WORK_DIR
 
 	for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
