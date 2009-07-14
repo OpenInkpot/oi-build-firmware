@@ -1,3 +1,9 @@
+oi-build-firmware (0.35) asimov; urgency=low
+
+  * Remove mkdir /etc/modprobe.d hack, moved to busybox.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 14 Jul 2009 17:07:16 +0700
+
 oi-build-firmware (0.34) asimov; urgency=low
 
   * Replace Azbooka logo with new one.
