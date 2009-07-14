@@ -274,7 +274,9 @@ filename=$WORK_DIR/storage.vfat.fs" >> $WORK_DIR/n516-mkfw.cfg
 	popd
 
     for i in $OUTPUT_DIR/*.oifw; do
-        zip -r ${i%.oifw} $i && rm $i
+        DIR=$(dirname "$i")
+        FILE=$(basename "$i")
+        (cd "$DIR" && zip -r $OUTPUT_DIR/${FILE%.oifw} "$FILE" && rm "$FILE")
     done
 }
 
