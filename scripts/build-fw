@@ -214,9 +214,6 @@ date=`date +%s`
 [GLOBAL]
 description=$DESCRIPTION
 
-[waveforms]
-filename=$WORK_DIR/metronome.wbf
-
 [bootsplash]
 filename=$WORK_DIR/bootsplash.dat
 
