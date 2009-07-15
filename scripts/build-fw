@@ -506,10 +506,10 @@ tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
 case $DEVICE in
 	v3|v3ext|v3all)
-		#echo "/dev/mtdblock4 /mnt/storage vfat quiet,iocharset=utf8,sync 0 0" >> /rootfs-$ARCH/etc/fstab;;
+		#echo "/dev/mtdblock4 /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab;;
         ;;
     n516)
-        echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync 0 0" >> /rootfs-$ARCH/etc/fstab
+        echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
 
         rm -rf /rootfs-$ARCH/root /rootfs-$ARCH/home
         ln -s /mnt/storage/.home /rootfs-$ARCH/home
