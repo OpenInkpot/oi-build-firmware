@@ -1,3 +1,9 @@
+oi-build-firmware (0.40) asimov; urgency=low
+
+  * Mount SD card with 'noatime' option.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 16 Jul 2009 00:50:46 +0700
+
 oi-build-firmware (0.39) asimov; urgency=low
 
   * Do not load g_ether by default on N516.
