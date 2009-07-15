@@ -403,7 +403,7 @@ if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
 		fi
 	done
 
-	mount -o sync,iocharset=utf8 /dev/$MDEV /media/sd
+	mount -o iocharset=utf8,sync,noatime /dev/$MDEV /media/sd
 
 	killall -HUP madshelf
 	exit 0
