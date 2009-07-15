@@ -1,3 +1,11 @@
+oi-build-firmware (0.38) asimov; urgency=low
+
+  * Waveforms are removed from 'update' image.
+  * Added 'noatime' to mount options
+  * Azbooka logo updated
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 16 Jul 2009 00:37:35 +0700
+
 oi-build-firmware (0.37) asimov; urgency=low
 
   * Drop -reinstall, rename -raw to -reinstall in n516 build.
