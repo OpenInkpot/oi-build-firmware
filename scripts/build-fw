@@ -489,8 +489,7 @@ evdev" > /rootfs-$ARCH/etc/modules
 		;;
 	n516)
 		echo "lm75
-jz4740_udc
-g_ether" > /rootfs-$ARCH/etc/modules
+jz4740_udc" > /rootfs-$ARCH/etc/modules
 		;;
 esac
 
