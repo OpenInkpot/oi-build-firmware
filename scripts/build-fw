@@ -193,7 +193,7 @@ image=$WORK_DIR/storage.vfat.fs
 vol_id=6
 vol_type=dynamic
 vol_name=storage
-vol_size=372MiB" > $WORK_DIR/n516-ubinize.ini
+vol_size=388362240" > $WORK_DIR/n516-ubinize.ini
 	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
 
 	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
@@ -682,7 +682,7 @@ if [ $MODE = "install" ]; then
 	n516)
 	    wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
-        dd if=/dev/zero of=$WORK_DIR/storage.vfat.fs count=23751 bs=16384
+        dd if=/dev/zero of=$WORK_DIR/storage.vfat.fs count=94815 bs=4096
         /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
 
 	    do_pack_n516_firmware
