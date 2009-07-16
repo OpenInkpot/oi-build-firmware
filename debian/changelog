@@ -1,3 +1,10 @@
+oi-build-firmware (0.41) asimov; urgency=low
+
+  * Decrease size of storage on N516 a bit.
+  * Add /etc/openinkpot-version to resulting image
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 17 Jul 2009 03:48:21 +0700
+
 oi-build-firmware (0.40) asimov; urgency=low
 
   * Mount SD card with 'noatime' option.
