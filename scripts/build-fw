@@ -4,7 +4,7 @@ set -e
 LINUX_VERSION='2.6.29'
 DEVICE=v3
 MODE=install
-VARIANT=default
+VARIANT=
 VERSION=$(date +%Y%m%d)
 
 KEEP_WORKDIR=0
@@ -26,7 +26,8 @@ set_mode() {
 
 set_variant() {
     case "$1" in
-        default|azbooka) VARIANT="$1";;
+        azbooka) VARIANT="$1";;
+        default) VARIANT=;;
         *) echo "Unknown variant: $1"; exit 1;;
     esac
 }
@@ -40,7 +41,8 @@ usage() {
     echo
     echo "device defaults to 'v3',"
     echo "mode defaults to 'install',"
-    echo "version defaults to today's snapshot."
+    echo "version defaults to today's snapshot,"
+    echo "variant defaults to 'default'."
 }
 
 TMP=$(getopt -l help,keep-workdir,device:,mode:,variant: -o hd:m:a: -- "$@")
@@ -120,7 +122,7 @@ OUTPUT_DIR=$(pwd)/output/"$VERSION"
 mkdir -p "$OUTPUT_DIR"
 
 case "$VARIANT-$DEVICE" in
-    default-*)
+    -*)
         OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION;;
     azbooka-n516)
         OUTPUT_NAME=azbooka516-$VERSION;;
@@ -199,7 +201,7 @@ vol_size=372MiB" > $WORK_DIR/n516-ubinize.ini
 	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
 
     case "$VARIANT" in
-        default)
+        '')
             DESCRIPTION="OpenInkpot for N516.";;
         azbooka)
             DESCRIPTION="Azbooka516 firmware.";;
@@ -314,7 +316,7 @@ case $DEVICE in
         case $VARIANT in
             azbooka)
                 PACKAGES="$PACKAGES esplash-data-azbooka-n516";;
-            default)
+            '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
         esac
 		;;
@@ -518,6 +520,12 @@ esac
     rm -rf /rootfs-$ARCH/var/log/*
     # Apt goes awry if log directory does not exist.
     mkdir -p /rootfs-$ARCH/var/log/apt
+fi
+
+if [ -z "$VARIANT" ]; then
+    echo "OpenInkpot $VERSION ($DEVICE)" > /rootfs-$ARCH/etc/openinkpot-version
+else
+    echo "OpenInkpot $VERSION ($DEVICE-$VARIANT)" > /rootfs-$ARCH/etc/openinkpot-version
 fi
 
 iface=usb0
