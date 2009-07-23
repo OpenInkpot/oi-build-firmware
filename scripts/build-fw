@@ -494,7 +494,8 @@ lbookv3_battery
 mmc_block
 s3cmci
 vfat
-evdev" > /rootfs-$ARCH/etc/modules
+evdev
+mtdchar" > /rootfs-$ARCH/etc/modules
 		fi
 		;;
 	n516)
