@@ -514,17 +514,18 @@ tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
 tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
-case $DEVICE in
-	v3|v3ext|v3all)
-		#echo "/dev/mtdblock4 /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab;;
-        ;;
-    n516)
-        echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+    case $DEVICE in
+	    v3|v3ext|v3all)
+		    echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            ;;
+        n516)
+            echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            ;;
+    esac
 
-        rm -rf /rootfs-$ARCH/root /rootfs-$ARCH/home
-        ln -s /mnt/storage/.home /rootfs-$ARCH/home
-        ln -s /home/user /rootfs-$ARCH/root
-esac
+    rm -rf /rootfs-$ARCH/root /rootfs-$ARCH/home
+    ln -s /mnt/storage/.home /rootfs-$ARCH/home
+    ln -s /home/user /rootfs-$ARCH/root
 
     rm -rf /rootfs-$ARCH/var/log/*
     # Apt goes awry if log directory does not exist.
