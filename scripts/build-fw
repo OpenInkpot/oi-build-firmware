@@ -629,6 +629,13 @@ find_file() {
     fi
 }
 
+# Pre-created dropbear keys
+DSA_K=$(find_file dropbear_dss_host_key)
+cp "$DSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_dss_host_key
+RSA_K=$(find_file dropbear_rsa_host_key)
+cp "$RSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
+chmod 600 /rootfs-$ARCH/etc/dropbear/*
+
 case $DEVICE in
     n516)
         # Bootloader
@@ -637,12 +644,6 @@ case $DEVICE in
         F_EAZ=$(find_file azbooka-errorsplash.png)
         mk-rawpic -r270 -d3 --high $F_EAZ $WORK_DIR/errorsplash.dat
 
-        # Pre-created dropbear keys
-        DSA_K=$(find_file dropbear_dss_host_key)
-        cp "$DSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_dss_host_key
-        RSA_K=$(find_file dropbear_rsa_host_key)
-        cp "$RSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
-        chmod 600 /rootfs-$ARCH/etc/dropbear/*
 
         # Pre-generated fontconfig cache
         FC_F=$(find_file fontconfig/0fdfe5ca58fd9bc9e4fc72abcd5bc429-mipsel-ip-linux-gnu.cache-2)
