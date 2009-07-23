@@ -279,7 +279,15 @@ raw=yes
 #
 
 # Basic stuff
-PACKAGES="mdev autosuspend-support dropbear"
+PACKAGES="mdev autosuspend-support dropbear mtd-support"
+case $DEVICE in
+    v3|v3ext|v3all)
+        PACKAGES="$PACKAGES v3-format-storage"
+        ;;
+    n516)
+        PACKAGES="$PACKAGES metronomefb-support n516-waveforms"
+        ;;
+esac
 
 # Kernel
 PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}${KERNEL_FLAVOUR}"
@@ -305,13 +313,14 @@ PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
 PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown language-selector"
+PACKAGES="$PACKAGES make-home"
 case $DEVICE in
-	v3|v3ext|v3all)
-		PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 ubi-support"
-		;;
-	n516)
-		PACKAGES="$PACKAGES fbreader-settings-n516 metronomefb-support n516-waveforms"
-        PACKAGES="$PACKAGES make-home elock usbwatcher usbwatcher-data-azbooka-n516 erot"
+    v3|v3ext|v3all)
+        PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3"
+        ;;
+    n516)
+        PACKAGES="$PACKAGES fbreader-settings-n516"
+        PACKAGES="$PACKAGES elock usbwatcher usbwatcher-data-azbooka-n516 erot"
 
         case $VARIANT in
             azbooka)
