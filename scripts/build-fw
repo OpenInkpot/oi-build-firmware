@@ -473,7 +473,6 @@ case $DEVICE in
 	v3|v3ext|v3all)
 		if [ "$MODE" = "nfsroot" ]; then
 			echo "eink_apollofb
-g_ether
 lbookv3_keys
 lbookv3_battery
 mmc_block
