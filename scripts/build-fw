@@ -328,7 +328,7 @@ case $DEVICE in
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
         esac
-		;;
+        ;;
 esac
 
 # Debug
