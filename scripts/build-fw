@@ -654,20 +654,6 @@ case $DEVICE in
     ;;
 esac
 
-## Devs' public SSH keys
-
-# mkdir /rootfs-$ARCH/root/.ssh
-# echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxjLCnn16+oXa4Iz1AbSQjbySOU9aPrSp/Cg9G2W0onqzrfhHXLvFptCgB4R3uuK0+yi5cD6j87IjU1sCcoj+TJ4qjIVr3ToivBNynWWFSVAvK6x0V8qVqkumkiHco88PQ1X6u8q7tnEjuMilT0EUgThHpaF90sTPcn9XoXsXXzrtn57mZXmkLi53PVGDtCvr1Rhzex+ANnMhgvKIGL2/H8fq6uJDg6/wKp8/7p1xCw9Z+xdrhIe8JJddDJgqSGUuomiZRyUO3pzZcKXm27lGgak+1iWoZ5nUygObsCfuzZcDZZIrNR3Pi6tMdM/I/zzm1mT/EEaXVP/Bvi78nIdp4w== dottedmag@frontier" >> /rootfs-$ARCH/root/.ssh/authorized_keys
-# echo "ssh-dss AAAAB3NzaC1kc3MAAACBAIkd+DovHuSNRiOdYGn4o693zCMDhcZfvhKQYE9XI+cZZyj+Xr8YP0FpH/oZc0ecrYvj3ZPv6HnuxSnM9An7MLXmJ+318r7YJFJf7wSTMbVB/PXu09Hq8SwdasOAxasF7USqvBOgCon4Ur7Lgozw0wtga7tPmMcVWlfx1YxztTjVAAAAFQDGjsMALZa/BXsNifRZZU0B7LfhBwAAAIAG6crXAqoi9XnNlthfhboXe87nmrNoo5llRO4Hh3QF4BW5bTr2O4UMEu+2LZgcyYnoTnG/HNuCZnq1QOj6uytg/2n72QQ6g21R8v+1R/9eLroWEEGlNg9RmqzE+5quJtEs/6OhA3ZhcW4mv2IuIsLK2XyaY0N9cKC3wfmLxbTlWQAAAIBRwGOmILrf/Tn+U6LuHMs6ASywkaNoqRavkbFSV6OORmNgThyS1W0qpL1UIY0ngAmXVKowwKUW0+4xchSwf4pU0ZEDQbSxTMpgIuUYnPj9aC3XBo2ZbRvgRiVkPYPUe6YDu7QF7sHjfVYjheaqnwMT6FMg4PzCVQBdRimHjL/D6Q== jek@jeknote" >> /rootfs-$ARCH/root/.ssh/authorized_keys
-# echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAKEAw40U+FSOuNbEuwl4jhwavRI30wiBFbM6ysoSDncHG6q2dr5N4/enSipW+ZxpX0CssOxNCkqXTSYQodXrQ8s7nTsmCZZOjj1rs3N3xFALIt9HtTEy63mqEhtyO8oDY/gF2zfg1isRG7eAODl0FzQfbFVCKC4IzlJ+pw8IfnSIYifDCFLojzPhyX5qr8FzDZVerjXFFGbN36bK2whYNxFJfw== alex@hosaka.homeunix.net
-# ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxFs13kmyuxFYSC6O3GMc/vxR+XQyfgUmsrIE7jAtdtbsS7vGYS9NAsK5ZNoGK5EuQwi3ahqFpKkLkN754ymXjc2Axjpif59C78njbx+l9MYFW7fpvU58QfurPdxinAcvTsvcFrQSbdtNZxgerFK+JBWlfrcZmhWYZsO/wtW0xz5IFg8z4n5L2GwvQ0Url0DhkfRhMt8Dn/5KYO5ukCaqlXYJSlPt053qx80N6fdeQx4WKTWDegEaOG+czvs1+E+Pa9TMM2QXdXuJm1kHB+afCl2TtBwkKQu05/MlJkEumDKwqHkkvl4DmhHvxfuhcvhapNijY+H51ZJF5YHHfAZkSQ== alex@ws22" >> /rootfs-$ARCH/root/.ssh/authorized_keys
-
-# chmod 700 /rootfs-$ARCH/root/.ssh
-# chmod 600 /rootfs-$ARCH/root/.ssh/authorized_keys
-
-# /keys
-
-
 ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
 
 cross-pack-rootfs $ARCH $ROOTFS
