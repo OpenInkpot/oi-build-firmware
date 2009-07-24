@@ -320,7 +320,7 @@ case $DEVICE in
         ;;
     n516)
         PACKAGES="$PACKAGES fbreader-settings-n516"
-        PACKAGES="$PACKAGES elock usbwatcher usbwatcher-data-azbooka-n516 erot"
+        PACKAGES="$PACKAGES elock usbwatcher usbwatcher-data-azbooka-n516 erot elowbatt"
 
         case $VARIANT in
             azbooka)
