@@ -1,3 +1,18 @@
+oi-build-firmware (0.42) asimov; urgency=low
+
+  * V3
+    - Removed useless g_ether module
+    - Added more packages
+    - $HOME moved to /mnt/storage
+    - Pre-generated SSH keys
+  * Various cleanups
+  * n516
+    - elowbatt added
+    - FAT partition filled with 0xFF for faster flashing
+    - fixed "argument list too long" error
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 06 Aug 2009 23:05:01 +0700
+
 oi-build-firmware (0.41) asimov; urgency=low
 
   * Decrease size of storage on N516 a bit.
