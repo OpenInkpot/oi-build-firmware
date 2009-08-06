@@ -362,15 +362,6 @@ cross-shell $ARCH apt-get update
 cross-shell $ARCH apt-get -y --force-yes dist-upgrade
 cross-shell $ARCH apt-get -y --force-yes install $PACKAGES
 
-case $DEVICE in
-    v3|v3ext|v3all)
-        echo "echo 200 > /sys/class/graphics/fb0/defio_delay" >> /rootfs-$ARCH/etc/init.d/rcS;;
-    n516)
-    ;;
-    *)
-        :;;
-esac
-
 server_args="-nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
 
 case $DEVICE in
