@@ -375,10 +375,6 @@ esac
 
 echo "SERVER_ARGS=\"$server_args\"" > /rootfs-$ARCH/etc/default/nulldm
 
-echo "::sysinit:/etc/init.d/rcS
-:2345:respawn:/bin/sh
-::shutdown:/etc/init.d/rc 0" > /rootfs-$ARCH/etc/inittab
-
 echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > /rootfs-$ARCH/etc/passwd
 
 # Humm??
