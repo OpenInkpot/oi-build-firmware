@@ -144,8 +144,8 @@ PATH=$PATH:/usr/sbin
 
 do_pack_n516_firmware() {
     # Fixate atime/mtime for rootfs being built
-    sudo find $WORK_DIR/rootfs -type f -print0 | xargs -0 sudo touch -d @0
-    sudo find $WORK_DIR/rootfs -depth -type d -print0 | xargs -0 sudo touch -d @0
+    sudo find $WORK_DIR/rootfs -type f -print0 | sudo xargs -0 touch -d @0
+    sudo find $WORK_DIR/rootfs -depth -type d -print0 | sudo xargs -0 touch -d @0
 	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
 	echo "[waveforms]
 mode=ubi
