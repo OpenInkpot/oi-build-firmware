@@ -634,72 +634,67 @@ ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
 
 cross-pack-rootfs $ARCH $ROOTFS
 
-if [ "$MODE" = "nfsroot" ]; then
-    cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
-    bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar"
-fi
+case "$MODE" in
+    nfsroot)
+        cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
+        bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar";;
+    install)
+        cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR
 
-if [ $MODE = "install" ]; then
-    cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR
+        mkdir -p $WORK_DIR/rootfs
+        (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
 
-    mkdir -p $WORK_DIR/rootfs
-    (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
+        if [ $DEVICE = n516 ]; then
+	        wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
-    case $DEVICE in
-        v3)
-            ERASEBLOCK=16384
-            PAGESIZE=512;;
-        v3ext)
-            ERASEBLOCK=131072
-            PAGESIZE=2048;;
-	n516)
-	    wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
+            rm -f $WORK_DIR/pattern-tmp
+            for i in `seq 1 61440`; do printf '\377' >> $WORK_DIR/pattern-tmp; done
+            for i in `seq 1 6321`; do cat $WORK_DIR/pattern-tmp >> $WORK_DIR/storage.vfat.fs; done
 
-        rm -f $WORK_DIR/pattern-tmp
-        for i in `seq 1 61440`; do printf '\377' >> $WORK_DIR/pattern-tmp; done
-        for i in `seq 1 6321`; do cat $WORK_DIR/pattern-tmp >> $WORK_DIR/storage.vfat.fs; done
+            /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
 
-        /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
+	        do_pack_n516_firmware
+        else
+            if [ $DEVICE = v3 ]; then
+                ERASEBLOCK=16384
+                PAGESIZE=512
+            else
+                ERASEBLOCK=131072
+                PAGESIZE=2048
+            fi
 
-	    do_pack_n516_firmware
-	    #FIXME: go to finish more clearly
-	    exit 0;;
-        *)
-            echo "Unknown device: $DEVICE"
-            exit 1
-    esac
+            sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.noopt.jffs2
+            sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
+            
+            mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
+        
+            sync
+            (cd $WORK_DIR; tar c V3update.bin) | bzip2 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
+            zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
+        fi
+        ;;
+    live)
+        cd $WORK_DIR
+        cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3
+        cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
 
-    sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.noopt.jffs2
-    sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
+        # Creates $WORK_DIR/initrd.gz
+        mkinitramfs-v3
 
-    mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
+        # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
+        (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)
 
-    sync
-    (cd $WORK_DIR; tar c V3update.bin) | bzip2 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
-    zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
-fi
+        mkdir -p $WORK_DIR/openinkpot
 
-if [ "$MODE" = "live" ]; then
-    cd $WORK_DIR
-    cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3
-    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
+        mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3 $WORK_DIR/openinkpot
 
-    # Creates $WORK_DIR/initrd.gz
-    mkinitramfs-v3
-
-    # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
-    (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)
-
-    mkdir -p $WORK_DIR/openinkpot
-
-    mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3 $WORK_DIR/openinkpot
-
-    echo "#!/bin/sh
+        echo "#!/bin/sh
 insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-${LINUX_VERSION}-v3 initrd=/mnt/openinkpot/initrd.gz
 " > $WORK_DIR/openinkpot/boot-OI-V3.exe.fb2
 
-    wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
+        wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
 
-    (cd $WORK_DIR; tar cv openinkpot/ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME.tar.bz2)
-    (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
-fi
+        (cd $WORK_DIR; tar cv openinkpot/ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME.tar.bz2)
+        (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
+        ;;
+esac
