@@ -146,8 +146,8 @@ do_pack_n516_firmware() {
     # Fixate atime/mtime for rootfs being built
     sudo find $WORK_DIR/rootfs -type f -print0 | sudo xargs -0 touch -d @0
     sudo find $WORK_DIR/rootfs -depth -type d -print0 | sudo xargs -0 touch -d @0
-	sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
-	echo "[waveforms]
+    sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
+    echo "[waveforms]
 mode=ubi
 image=$WORK_DIR/metronome.wbf
 vol_id=1
@@ -194,11 +194,11 @@ vol_id=6
 vol_type=dynamic
 vol_name=storage
 vol_size=388362240" > $WORK_DIR/n516-ubinize.ini
-	wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
+    wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
 
-	cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
+    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
 
-	/usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
+    /usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
 
     case "$VARIANT" in
         '')
@@ -207,7 +207,7 @@ vol_size=388362240" > $WORK_DIR/n516-ubinize.ini
             DESCRIPTION="Azbooka516 firmware.";;
     esac
 
-	echo "[DEFAULT]
+    echo "[DEFAULT]
 device=n516
 hwrev=1.0
 date=`date +%s`
@@ -229,7 +229,7 @@ filename=$WORK_DIR/uImage
 filename=$WORK_DIR/rootfs.ubi
 " > $WORK_DIR/n516-mkfw.cfg
 
-	echo "[DEFAULT]
+    echo "[DEFAULT]
 device=n516
 hwrev=1.0
 date=`date +%s`
@@ -247,24 +247,24 @@ filename=$WORK_DIR/u-boot-nand.bin
 raw=yes
 " > $WORK_DIR/n516-mkfw-reinstall.cfg
 
-	mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
-	mk-oifw $WORK_DIR/n516-mkfw-reinstall.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
-	pushd $WORK_DIR
+    mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
+    mk-oifw $WORK_DIR/n516-mkfw-reinstall.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
+    pushd $WORK_DIR
 
-	for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
-	for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
-	cat u-boot-nand.bin ff-1M.bin > tmp1
-	dd if=tmp1 of=tmp2 bs=1M count=1
-	cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
-	dd if=tmp3 of=tmp4 bs=1M count=1
-	cat tmp4 ubi.img > n516-image.bin
+    for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
+    for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
+    cat u-boot-nand.bin ff-1M.bin > tmp1
+    dd if=tmp1 of=tmp2 bs=1M count=1
+    cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
+    dd if=tmp3 of=tmp4 bs=1M count=1
+    cat tmp4 ubi.img > n516-image.bin
 
-	wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
-	unzip n516-usbboot.zip
-	mv n516-image.bin n516-usbboot/
-	zip -r $OUTPUT_DIR/$OUTPUT_NAME-flashimage.zip n516-usbboot
+    wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
+    unzip n516-usbboot.zip
+    mv n516-image.bin n516-usbboot/
+    zip -r $OUTPUT_DIR/$OUTPUT_NAME-flashimage.zip n516-usbboot
 
-	popd
+    popd
 
     for i in $OUTPUT_DIR/*.oifw; do
         DIR=$(dirname "$i")
@@ -383,34 +383,34 @@ ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
 echo '#!/bin/sh
 
 if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
-	if [ -e /var/lib/usbwatcher/state ]; then
-		. /var/lib/usbwatcher/state
-		if [ x"$STATE" = x"mass_storage" ]; then
-			exit 0;
-		fi
-	fi
+    if [ -e /var/lib/usbwatcher/state ]; then
+        . /var/lib/usbwatcher/state
+        if [ x"$STATE" = x"mass_storage" ]; then
+            exit 0;
+        fi
+    fi
 
-	for i in /dev/mmcblk*
-	do
-		D1=`echo $i | sed -e s/p[0-9]*//`
-		D2="/dev/"`echo $MDEV | sed -e s/p[0-9]*//`
-		if [ $D1 != $D2 ]
-		then
-			umount $i
-			rm -f $i
-		fi
-	done
+    for i in /dev/mmcblk*
+    do
+        D1=`echo $i | sed -e s/p[0-9]*//`
+        D2="/dev/"`echo $MDEV | sed -e s/p[0-9]*//`
+        if [ $D1 != $D2 ]
+        then
+            umount $i
+            rm -f $i
+        fi
+    done
 
-	mount -o iocharset=utf8,sync,noatime /dev/$MDEV /media/sd
+    mount -o iocharset=utf8,sync,noatime /dev/$MDEV /media/sd
 
-	killall -HUP madshelf
-	exit 0
+    killall -HUP madshelf
+    exit 0
 fi
 
 if [ $ACTION = "remove" ] ; then
-	umount -fl /dev/$MDEV
-	killall -HUP madshelf
-	exit 0
+    umount -fl /dev/$MDEV
+    killall -HUP madshelf
+    exit 0
 fi
 
 echo "Unknown action. This script must be called by mdev!"
@@ -437,25 +437,25 @@ do_power_supply() {
 }
 
 do_firmware() {
-	HOTPLUG_FW_DIR=/lib/firmware
+    HOTPLUG_FW_DIR=/lib/firmware
 
-	echo 1 > /sys/$DEVPATH/loading
-	cat $HOTPLUG_FW_DIR/$FIRMWARE > /sys/$DEVPATH/data
-	echo 0 > /sys/$DEVPATH/loading
+    echo 1 > /sys/$DEVPATH/loading
+    cat $HOTPLUG_FW_DIR/$FIRMWARE > /sys/$DEVPATH/data
+    echo 0 > /sys/$DEVPATH/loading
 }
 
 case $1 in
         power_supply)
                 do_power_supply
                 ;;
-	firmware)
-		do_firmware
-		;;
+    firmware)
+        do_firmware
+        ;;
 esac
 
 for i in /lib/mdev/*
 do
-	( . $i )
+    ( . $i )
 done
 
 exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
@@ -466,29 +466,29 @@ chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
 sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
 case $DEVICE in
-	v3|v3ext|v3all)
-		if [ "$MODE" = "nfsroot" ]; then
-			echo "eink_apollofb
+    v3|v3ext|v3all)
+        if [ "$MODE" = "nfsroot" ]; then
+            echo "eink_apollofb
 lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
 vfat
 evdev" > /rootfs-$ARCH/etc/modules
-		else
-			echo "lbookv3_keys
+        else
+            echo "lbookv3_keys
 lbookv3_battery
 mmc_block
 s3cmci
 vfat
 evdev
 mtdchar" > /rootfs-$ARCH/etc/modules
-		fi
-		;;
-	n516)
-		echo "lm75
+        fi
+        ;;
+    n516)
+        echo "lm75
 jz4740_udc" > /rootfs-$ARCH/etc/modules
-		;;
+        ;;
 esac
 
 
@@ -502,8 +502,8 @@ tmpfs /var/tmp tmpfs defaults 0 0
 tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
     case $DEVICE in
-	    v3|v3ext|v3all)
-		    echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+        v3|v3ext|v3all)
+            echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
             ;;
         n516)
             echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
@@ -533,10 +533,10 @@ iface lo inet loopback
 
 auto $iface
 iface $iface inet static
-	address 192.168.111.1
-	netmask 255.255.255.0
-	broadcast 192.168.111.255
-	gateway 192.168.111.2
+    address 192.168.111.1
+    netmask 255.255.255.0
+    broadcast 192.168.111.255
+    gateway 192.168.111.2
 " > /rootfs-$ARCH/etc/network/interfaces
 
 echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
@@ -546,7 +546,7 @@ case $DEVICE in
         echo '124 gm Activate exec gm' > /rootfs-$ARCH/etc/uk.conf
         echo 'Alt+124 gm Power exec eshutdown' >> /rootfs-$ARCH/etc/uk.conf
         ;;
-	n516)
+    n516)
         #
         # Pre-generation of most used locales
         #
@@ -645,7 +645,7 @@ case "$MODE" in
         (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
 
         if [ $DEVICE = n516 ]; then
-	        wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
+            wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
             rm -f $WORK_DIR/pattern-tmp
             for i in `seq 1 61440`; do printf '\377' >> $WORK_DIR/pattern-tmp; done
@@ -653,7 +653,7 @@ case "$MODE" in
 
             /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
 
-	        do_pack_n516_firmware
+            do_pack_n516_firmware
         else
             if [ $DEVICE = v3 ]; then
                 ERASEBLOCK=16384
