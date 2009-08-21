@@ -302,6 +302,13 @@ PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1 libevas-engines fontconfig"
 # Fonts
 PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts"
 
+case $VARIANT in
+    azbooka)
+        ;;
+    *)
+        PACKAGES="$PACKAGES droid-fallback-fonts";;
+esac
+
 # i18n
 PACKAGES="$PACKAGES gconv-data-basic"
 
