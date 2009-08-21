@@ -1,3 +1,13 @@
+oi-build-firmware (0.43) asimov; urgency=low
+
+  * Adapt to newer EFL
+  * Various minor cleanups
+  * Removed shutdown/reboot.desktop files for V3, eshutdown added.
+  * /etc/inittab generation moved to busybox
+  * defio_delay setup moved to kernel.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sat, 22 Aug 2009 04:14:12 +0700
+
 oi-build-firmware (0.42) asimov; urgency=low
 
   * V3
