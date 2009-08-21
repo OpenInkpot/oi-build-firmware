@@ -324,7 +324,7 @@ case $DEVICE in
 
         case $VARIANT in
             azbooka)
-                PACKAGES="$PACKAGES esplash-data-azbooka-n516";;
+                PACKAGES="$PACKAGES esplash-data-azbooka-n516 liblanguage-azbooka-data";;
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
         esac
