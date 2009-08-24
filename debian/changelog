@@ -1,3 +1,12 @@
+oi-build-firmware (0.44) asimov; urgency=low
+
+  * Use different liblanguage-*data packages for Azbooka and pure-OI
+    builds.
+  * Install droid-fallback-fonts in order to get Korean and Chinese
+    coverage.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 25 Aug 2009 05:17:25 +0700
+
 oi-build-firmware (0.43) asimov; urgency=low
 
   * Adapt to newer EFL
