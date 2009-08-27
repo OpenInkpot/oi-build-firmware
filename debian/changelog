@@ -1,3 +1,9 @@
+oi-build-firmware (0.45) asimov; urgency=low
+
+  * Added "long-press power" -> eshutdown handler for V3.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 28 Aug 2009 04:19:26 +0700
+
 oi-build-firmware (0.44) asimov; urgency=low
 
   * Use different liblanguage-*data packages for Azbooka and pure-OI
