@@ -1,3 +1,10 @@
+oi-build-firmware (0.46) asimov; urgency=low
+
+  * Separate bootsplash for non-Azbooka N516 build added (OI#422)
+  * Speed of storage.vfat.fs generation improved.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sat, 29 Aug 2009 14:01:54 +0700
+
 oi-build-firmware (0.45) asimov; urgency=low
 
   * Added "long-press power" -> eshutdown handler for V3.
