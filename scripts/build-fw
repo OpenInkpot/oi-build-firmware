@@ -621,10 +621,20 @@ chmod 600 /rootfs-$ARCH/etc/dropbear/*
 
 case $DEVICE in
     n516)
+        case $VARIANT in
+            azbooka)
+                SPLASH=azbooka-splash.png
+                ERRORSPLASH=azbooka-errorsplash.png
+                ;;
+            *)
+                SPLASH=oi-splash.png
+                ERRORSPLASH=oi-splash.png
+                ;;
+        esac
         # Bootloader
-        F_AZ=$(find_file azbooka-splash.png)
+        F_AZ=$(find_file $SPLASH)
         mk-rawpic -r270 -d3 --high $F_AZ $WORK_DIR/bootsplash.dat
-        F_EAZ=$(find_file azbooka-errorsplash.png)
+        F_EAZ=$(find_file $ERRORSPLASH)
         mk-rawpic -r270 -d3 --high $F_EAZ $WORK_DIR/errorsplash.dat
 
 
