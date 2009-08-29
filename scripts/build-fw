@@ -665,8 +665,7 @@ case "$MODE" in
             wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
             rm -f $WORK_DIR/pattern-tmp
-            for i in `seq 1 61440`; do printf '\377' >> $WORK_DIR/pattern-tmp; done
-            for i in `seq 1 6321`; do cat $WORK_DIR/pattern-tmp >> $WORK_DIR/storage.vfat.fs; done
+            dd if=/dev/zero count=6321 bs=61440 | tr '\0' '\377' > $WORK_DIR/storage.vfat.fs
 
             /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
 
