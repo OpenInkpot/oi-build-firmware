@@ -550,8 +550,12 @@ echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
 
 case $DEVICE in
     v3*)
-        echo '124 gm Activate exec gm' > /rootfs-$ARCH/etc/uk.conf
-        echo 'Alt-124 gm Power exec eshutdown' >> /rootfs-$ARCH/etc/uk.conf
+        # Hold-Power => power off
+        echo 'Alt-124   eshutdown   Power      exec eshutdown' > /rootfs-$ARCH/etc/uk.conf
+        # Power => lock
+        echo '124       elock       Lock       exec elock' >> /rootfs-$ARCH/etc/uk.conf
+        # Hold-Esc => main menu
+        echo 'Alt-9     gm          Activate   exec gm' >> /rootfs-$ARCH/etc/uk.conf
         ;;
     n516)
         #
@@ -567,8 +571,8 @@ case $DEVICE in
 
 161     erot    Rotate  exec erot
 
-150     elock   Lock    exec elock
-151     elock   Unlock  exec elock' > /rootfs-$ARCH/etc/uk.conf
+150     elock   Lock    exec elock --hardware-lock
+151     elock   Unlock  exec elock --hardware-lock' > /rootfs-$ARCH/etc/uk.conf
 
         ;;
     *)
