@@ -1,3 +1,10 @@
+oi-build-firmware (0.48) asimov; urgency=low
+
+  * Re-enable language-selector disabled in previous package
+    version. Transition to libchoicebox1 is now complete.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 31 Aug 2009 05:34:02 +0700
+
 oi-build-firmware (0.47) asimov; urgency=low
 
   * V3
