@@ -319,7 +319,7 @@ PACKAGES="$PACKAGES locopdf"
 PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
-PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock"
+PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector"
 PACKAGES="$PACKAGES make-home"
 case $DEVICE in
     v3|v3ext|v3all)
