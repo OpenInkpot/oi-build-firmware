@@ -709,7 +709,9 @@ case "$MODE" in
         mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3 $WORK_DIR/openinkpot
 
         echo "#!/bin/sh
-insmod /mnt/openinkpot/reloaded.ko kernel=/mnt/openinkpot/vmlinuz-${LINUX_VERSION}-v3 initrd=/mnt/openinkpot/initrd.gz
+DIR=\`dirname \$0\`
+insmod \$DIR/reloaded.ko kernel=\$DIR/vmlinuz-${LINUX_VERSION}-v3 initrd=\$DIR/initrd.gz >> \$DIR/boot.log.txt 2>&1
+dmesg > \$DIR/dmesg.txt
 " > $WORK_DIR/openinkpot/boot-OI-V3.exe.fb2
 
         wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
