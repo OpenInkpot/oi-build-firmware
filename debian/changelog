@@ -1,3 +1,16 @@
+oi-build-firmware (0.47) asimov; urgency=low
+
+  * V3
+    - Add keylocker (Power button) (OI#168)
+    - Move "go to menu" action to Hold-Esc
+    - Live version now can be located in any directory. Makes it possible
+      to run with recent V3 firmware with changed mountpoints. (OI#109)
+  * N516
+    - Adjust to newer elock
+  * Add kexec-tools to list of packages being installed by default.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 30 Aug 2009 01:23:24 +0700
+
 oi-build-firmware (0.46) asimov; urgency=low
 
   * Separate bootsplash for non-Azbooka N516 build added (OI#422)
