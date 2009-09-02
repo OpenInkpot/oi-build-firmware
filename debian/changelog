@@ -1,3 +1,11 @@
+oi-build-firmware (0.49) asimov; urgency=low
+
+  * Add mtd-utils to build for easier debugging.
+  * Add madshelf-settings-n516 for N516.
+  * Adjust for libextractor -> libextractor-mini transition.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 03 Sep 2009 01:02:08 +0700
+
 oi-build-firmware (0.48) asimov; urgency=low
 
   * Re-enable language-selector disabled in previous package
