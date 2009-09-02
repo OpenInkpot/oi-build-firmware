@@ -313,7 +313,7 @@ esac
 PACKAGES="$PACKAGES gconv-data-basic"
 
 # Applications
-PACKAGES="$PACKAGES madshelf libextractor-oi-extras"
+PACKAGES="$PACKAGES madshelf libextractor-mini-plugins"
 PACKAGES="$PACKAGES fbreader"
 PACKAGES="$PACKAGES locopdf"
 PACKAGES="$PACKAGES cr3"
