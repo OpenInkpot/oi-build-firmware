@@ -339,7 +339,7 @@ case $DEVICE in
 esac
 
 # Debug
-PACKAGES="$PACKAGES strace rsync kexec-tools"
+PACKAGES="$PACKAGES strace rsync kexec-tools mtd-utils"
 
 # if [ "$MODE" = "nfsroot" ]; then
 #     PACKAGES="$PACKAGES gdbserver"
