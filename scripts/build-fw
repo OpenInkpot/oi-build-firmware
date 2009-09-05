@@ -319,7 +319,7 @@ PACKAGES="$PACKAGES locopdf"
 PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
-PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector"
+PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
 PACKAGES="$PACKAGES make-home"
 case $DEVICE in
     v3|v3ext|v3all)
@@ -556,6 +556,11 @@ case $DEVICE in
         echo '124       elock       Lock       exec elock' >> /rootfs-$ARCH/etc/uk.conf
         # Hold-Esc => main menu
         echo 'Alt-9     gm          Activate   exec gm' >> /rootfs-$ARCH/etc/uk.conf
+        # Hold-+ => rotate
+        # Hold-- => rotate back
+        echo '
+Alt-86    erot        RotateForward  exec erot
+Alt-82    erot        RotateBack     exec erot' >> /rootfs-$ARCH/etc/uk.conf
         ;;
     n516)
         #
