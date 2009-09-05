@@ -408,7 +408,7 @@ if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
         fi
     done
 
-    mount -o iocharset=utf8,sync,noatime /dev/$MDEV /media/sd
+    mount -o iocharset=utf8,flush,noatime /dev/$MDEV /media/sd
 
     killall -HUP madshelf
     exit 0
@@ -513,7 +513,7 @@ tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
             echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
             ;;
         n516)
-            echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,sync,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
             ;;
     esac
 
