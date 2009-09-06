@@ -1,3 +1,11 @@
+oi-build-firmware (0.50) asimov; urgency=low
+
+  * Added erot to V3
+  * Added settings for libeoi to build
+  * Changed 'sync' to 'flush' in VFAT mount options
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 07 Sep 2009 06:38:36 +0700
+
 oi-build-firmware (0.49) asimov; urgency=low
 
   * Add mtd-utils to build for easier debugging.
