@@ -1,3 +1,10 @@
+oi-build-firmware (0.51) asimov; urgency=low
+
+  * V3 choicebox keybindings package added to build.
+  * sqlite3 is installed by default.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 21 Sep 2009 15:28:31 +0700
+
 oi-build-firmware (0.50) asimov; urgency=low
 
   * Added erot to V3
