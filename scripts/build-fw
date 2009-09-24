@@ -327,7 +327,7 @@ case $DEVICE in
         ;;
     n516)
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
-        PACKAGES="$PACKAGES locopdf-settings-n516"
+        PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
 
         case $VARIANT in
