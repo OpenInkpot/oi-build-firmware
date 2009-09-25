@@ -463,7 +463,7 @@ case $1 in
         ;;
 esac
 
-for i in /lib/mdev/*
+for i in /lib/mdev/handlers.d/*
 do
     ( . $i )
 done
