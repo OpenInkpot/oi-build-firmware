@@ -279,7 +279,7 @@ raw=yes
 #
 
 # Basic stuff
-PACKAGES="mdev autosuspend-support dropbear mtd-support"
+PACKAGES="mdev autosuspend-support dropbear mtd-support oi-hotplug"
 case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES v3-format-storage"
@@ -390,91 +390,6 @@ echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > /rootfs-$ARCH/etc/passwd
 
 # Humm??
 ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
-
-echo '#!/bin/sh
-
-if [ -z $ACTION ] || [ $ACTION = "add" ] ; then
-    if [ -e /var/lib/usbwatcher/state ]; then
-        . /var/lib/usbwatcher/state
-        if [ x"$STATE" = x"mass_storage" ]; then
-            exit 0;
-        fi
-    fi
-
-    for i in /dev/mmcblk*
-    do
-        D1=`echo $i | sed -e s/p[0-9]*//`
-        D2="/dev/"`echo $MDEV | sed -e s/p[0-9]*//`
-        if [ $D1 != $D2 ]
-        then
-            umount $i
-            rm -f $i
-        fi
-    done
-
-    mount -o iocharset=utf8,flush,noatime /dev/$MDEV /media/sd
-
-    killall -HUP madshelf
-    exit 0
-fi
-
-if [ $ACTION = "remove" ] ; then
-    umount -fl /dev/$MDEV
-    killall -HUP madshelf
-    exit 0
-fi
-
-echo "Unknown action. This script must be called by mdev!"
-exit 1
-' > /rootfs-$ARCH/sbin/automount.sh
-chmod a+x /rootfs-$ARCH/sbin/automount.sh
-
-echo "mmcblk[0-9]p[0-9] 0:0 0660 */sbin/automount.sh
-mmcblk[0-9]* 0:0 0660 */sbin/automount.sh" > /rootfs-$ARCH/etc/mdev.conf.d/50automount
-
-echo '#!/bin/sh
-
-exec </dev/null >/dev/null 2>/dev/null
-export USER=root
-
-do_power_supply() {
-        if [ x"$ACTION" = x"change" -a x"$POWER_SUPPLY_NAME" = x"usb" ]; then
-                if [ $POWER_SUPPLY_ONLINE -eq 1 ]; then
-                        echo 0 > /sys/power/autosuspend
-                else
-                        echo 1 > /sys/power/autosuspend
-                fi
-        fi
-}
-
-do_firmware() {
-    HOTPLUG_FW_DIR=/lib/firmware
-
-    echo 1 > /sys/$DEVPATH/loading
-    cat $HOTPLUG_FW_DIR/$FIRMWARE > /sys/$DEVPATH/data
-    echo 0 > /sys/$DEVPATH/loading
-}
-
-case $1 in
-        power_supply)
-                do_power_supply
-                ;;
-    firmware)
-        do_firmware
-        ;;
-esac
-
-for i in /lib/mdev/handlers.d/*
-do
-    ( . $i )
-done
-
-exec /sbin/mdev' > /rootfs-$ARCH/sbin/oi-hotplug.sh
-chmod a+x /rootfs-$ARCH/sbin/oi-hotplug.sh
-
-# FIXME!
-
-sed -i -e 's,echo /sbin/mdev,echo /sbin/oi-hotplug.sh,' /rootfs-$ARCH/etc/init.d/mdev
 
 case $DEVICE in
     v3|v3ext|v3all)
