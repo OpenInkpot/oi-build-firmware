@@ -1,3 +1,10 @@
+oi-build-firmware (0.54) asimov; urgency=low
+
+  * hotplug scripts moved to oi-hotplug package
+  * uk configuration moved to uk-settings-* packages
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 25 Sep 2009 22:36:07 +0700
+
 oi-build-firmware (0.53) asimov; urgency=low
 
   * oi-hotplug.sh: change mdev handler location to /lib/mdev/handlers.d
