@@ -324,10 +324,11 @@ PACKAGES="$PACKAGES make-home"
 case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 libeoi-settings-v3 libchoicebox1-settings-v3"
+        PACKAGES="$PACKAGES uk-settings-v3"
         ;;
     n516)
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
-        PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516"
+        PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
 
         case $VARIANT in
@@ -552,19 +553,6 @@ iface $iface inet static
 echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
 
 case $DEVICE in
-    v3*)
-        # Hold-Power => power off
-        echo 'Alt-124   eshutdown   Power      exec eshutdown' > /rootfs-$ARCH/etc/uk.conf
-        # Power => lock
-        echo '124       elock       Lock       exec elock' >> /rootfs-$ARCH/etc/uk.conf
-        # Hold-Esc => main menu
-        echo 'Alt-9     gm          Activate   exec gm' >> /rootfs-$ARCH/etc/uk.conf
-        # Hold-+ => rotate
-        # Hold-- => rotate back
-        echo '
-Alt-86    erot        RotateForward  exec erot
-Alt-82    erot        RotateBack     exec erot' >> /rootfs-$ARCH/etc/uk.conf
-        ;;
     n516)
         #
         # Pre-generation of most used locales
@@ -572,18 +560,6 @@ Alt-82    erot        RotateBack     exec erot' >> /rootfs-$ARCH/etc/uk.conf
         for i in ru_RU uk_UA en_US; do
             lzcat /rootfs-$ARCH/usr/lib/locale-archive/main.tar.lzma | tar -x -C /rootfs-$ARCH/usr/lib/locale $i.UTF-8
         done
-
-        # uk.conf
-        echo '124     eshutdown       Power   exec eshutdown
-147     gm      Activate exec gm
-
-161     erot    Rotate  exec erot
-
-150     elock   Lock    exec elock --hardware-lock
-151     elock   Unlock  exec elock --hardware-lock' > /rootfs-$ARCH/etc/uk.conf
-
-        ;;
-    *)
         ;;
 esac
 
