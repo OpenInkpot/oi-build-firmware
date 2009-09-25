@@ -1,3 +1,9 @@
+oi-build-firmware (0.52) asimov; urgency=low
+
+  * Add n516 settings for madeye and locopdf
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 25 Sep 2009 09:25:34 +0200
+
 oi-build-firmware (0.51) asimov; urgency=low
 
   * V3 choicebox keybindings package added to build.
