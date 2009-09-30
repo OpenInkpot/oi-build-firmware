@@ -330,6 +330,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
         PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
+        PACKAGES="$PACKAGES madaudio"
 
         case $VARIANT in
             azbooka)
@@ -413,6 +414,7 @@ mtdchar" > /rootfs-$ARCH/etc/modules
         ;;
     n516)
         echo "lm75
+snd-soc-n516
 jz4740_udc" > /rootfs-$ARCH/etc/modules
         ;;
 esac
