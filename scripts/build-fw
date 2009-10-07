@@ -247,8 +247,22 @@ filename=$WORK_DIR/u-boot-nand.bin
 raw=yes
 " > $WORK_DIR/n516-mkfw-reinstall.cfg
 
+    echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+[GLOBAL]
+description=$DESCRIPTION Bootloader.
+
+[uboot]
+filename=$WORK_DIR/u-boot-nand.bin
+raw=yes
+" > $WORK_DIR/n516-mkfw-bootloader.cfg
+
     mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
     mk-oifw $WORK_DIR/n516-mkfw-reinstall.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
+    mk-oifw $WORK_DIR/n516-mkfw-bootloader.cfg $OUTPUT_DIR/$OUTPUT_NAME-bootloader.oifw
     pushd $WORK_DIR
 
     for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
