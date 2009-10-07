@@ -194,8 +194,8 @@ vol_id=6
 vol_type=dynamic
 vol_name=storage
 vol_size=388362240" > $WORK_DIR/n516-ubinize.ini
-    wget -O $WORK_DIR/u-boot-nand.bin http://openinkpot.org/pub/contrib/n516-uboot/u-boot-nand.bin
 
+    cp /rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
     cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
 
     /usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
@@ -562,6 +562,9 @@ case "$MODE" in
         bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar";;
     install)
         cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR
+        if [ $DEVICE = n516 ]; then
+            cross-shell $ARCH apt-get -y --force-yes install uboot-n516
+        fi
 
         mkdir -p $WORK_DIR/rootfs
         (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
