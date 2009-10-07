@@ -1,3 +1,9 @@
+oi-build-firmware (0.56) asimov; urgency=low
+
+  * Using packaged u-boot instead of just random binary from oi.org/pub
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 07 Oct 2009 20:07:01 +0700
+
 oi-build-firmware (0.55) asimov; urgency=low
 
   * Add madaudio to N516 build.
