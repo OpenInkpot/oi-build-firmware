@@ -294,11 +294,12 @@ raw=yes
 
 # Basic stuff
 PACKAGES="mdev autosuspend-support dropbear mtd-support oi-hotplug"
-case $DEVICE in
-    v3|v3ext|v3all)
-        PACKAGES="$PACKAGES v3-format-storage"
+case $DEVICE-$MODE in
+    v3*-live)
         ;;
-    n516)
+    v3*-*)
+        PACKAGES="$PACKAGES v3-format-storage";;
+    n516-*)
         PACKAGES="$PACKAGES metronomefb-support n516-waveforms"
         ;;
 esac
