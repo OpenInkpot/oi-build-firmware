@@ -617,7 +617,7 @@ case "$MODE" in
         cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
 
         # Creates $WORK_DIR/initrd.gz
-        mkinitramfs-v3
+        mkinitramfs-v3 ${LINUX_VERSION}
 
         # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
         (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)

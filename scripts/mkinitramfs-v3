@@ -1,7 +1,9 @@
 #!/bin/bash
 
+LINUX_VERSION=$1
+
 ARCH=armel
-PACKAGES="busybox-static linux-modules-2.6.28-v3"
+PACKAGES="busybox-static linux-modules-${LINUX_VERSION}-v3"
 MIRROR="http://openinkpot.org/pub/SLIND"
 CACHE_DIR="/var/cache/apt/archives-$ARCH"
 INITRD_DIR=`mktemp build_initrd-$ARCH.XXXX`
@@ -33,16 +35,20 @@ mkdir -p $INITRD_DIR/root
 mkdir -p $INITRD_DIR/media/sd
 mkdir -p $INITRD_DIR/initrd
 
+MODULES_DIR="/lib/modules/${LINUX_VERSION}-v3/kernel"
+
 echo "#!/bin/sh
 
-insmod loop
-insmod nls_base
-insmod fat
-insmod vfat
-insmod mmc_core
-insmod mmc_block
-insmod s3cmci
-insmod ext2
+insmod $MODULES_DIR/drivers/block/loop.ko
+insmod $MODULES_DIR/fs/nls/nls_base.ko
+insmod $MODULES_DIR/fs/nls/nls_cp437.ko
+insmod $MODULES_DIR/fs/nls/nls_utf8.ko
+insmod $MODULES_DIR/fs/fat/fat.ko
+insmod $MODULES_DIR/fs/fat/vfat.ko
+insmod $MODULES_DIR/drivers/mmc/core/mmc_core.ko
+insmod $MODULES_DIR/drivers/mmc/card/mmc_block.ko
+insmod $MODULES_DIR/drivers/mmc/host/s3cmci.ko
+insmod $MODULES_DIR/fs/ext2/ext2.ko
 
 echo 'Mounting root filesystem'
 while ! mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /media/sd 2>/dev/null; do
