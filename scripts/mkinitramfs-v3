@@ -51,7 +51,13 @@ insmod $MODULES_DIR/drivers/mmc/host/s3cmci.ko
 insmod $MODULES_DIR/fs/ext2/ext2.ko
 
 echo 'Mounting root filesystem'
-while ! mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /media/sd 2>/dev/null; do
+while true; do
+  if mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0 /media/sd 2>/dev/null; then
+    break
+  fi
+  if mount -t vfat -o sync,iocharset=utf8 /dev/mmcblk0p1 /media/sd 2>/dev/null; then
+    break
+  fi
   echo -n .
 done
 echo ' done!'
