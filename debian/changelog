@@ -1,3 +1,10 @@
+oi-build-firmware (0.57) asimov; urgency=low
+
+  * Unbreak V3 live modules loading (OI#421)
+  * Support "superfloppy" SD cards in V3 live
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 15 Oct 2009 15:16:13 +0700
+
 oi-build-firmware (0.56) asimov; urgency=low
 
   * Using packaged u-boot instead of just random binary from oi.org/pub
