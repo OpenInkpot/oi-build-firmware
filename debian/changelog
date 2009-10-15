@@ -1,3 +1,9 @@
+oi-build-firmware (0.58) asimov; urgency=low
+
+  * Do not install v3-format-storage in live mode (#550).
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 15 Oct 2009 15:33:06 +0700
+
 oi-build-firmware (0.57) asimov; urgency=low
 
   * Unbreak V3 live modules loading (OI#421)
