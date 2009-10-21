@@ -1,3 +1,9 @@
+oi-build-firmware (0.59) asimov; urgency=low
+
+  * Fix missing firmware archive .zip extension if filename contains '~'.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 22 Oct 2009 06:44:01 +0700
+
 oi-build-firmware (0.58) asimov; urgency=low
 
   * Do not install v3-format-storage in live mode (#550).
