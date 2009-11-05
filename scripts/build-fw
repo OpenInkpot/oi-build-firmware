@@ -335,7 +335,7 @@ PACKAGES="$PACKAGES cr3"
 PACKAGES="$PACKAGES madeye"
 PACKAGES="$PACKAGES etimetool"
 PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
-PACKAGES="$PACKAGES make-home"
+PACKAGES="$PACKAGES make-home checkfs"
 case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 libeoi-settings-v3 libchoicebox1-settings-v3"
