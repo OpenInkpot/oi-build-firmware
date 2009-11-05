@@ -1,3 +1,9 @@
+oi-build-firmware (0.60) asimov; urgency=low
+
+  * Add checkfs to be installed by default (OI#577).
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 05 Nov 2009 17:08:04 +0600
+
 oi-build-firmware (0.59) asimov; urgency=low
 
   * Fix missing firmware archive .zip extension if filename contains '~'.
