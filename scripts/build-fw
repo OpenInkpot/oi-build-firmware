@@ -444,17 +444,31 @@ tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
 tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
-    case $DEVICE in
-        v3|v3ext|v3all)
+    case $DEVICE-$MODE in
+        v3-install|v3ext-install)
             echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
             ;;
-        n516)
+        v3all-live)
+            echo "/dev/mtdblock_STORAGE /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            ;;
+        n516-install)
             echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            ;;
+        *)
+            echo "Unknown device/mode: $DEVICE-$MODE"
+            exit 1
             ;;
     esac
 
-    rm -rf /rootfs-$ARCH/root /rootfs-$ARCH/home
-    ln -s /mnt/storage/.home /rootfs-$ARCH/home
+    case $MODE in
+        install)
+            rm -rf /rootfs-$ARCH/home
+            ln -s /mnt/storage/.home /rootfs-$ARCH/home
+            ;;
+        live)
+            ;;
+    esac
+    rm -rf /rootfs-$ARCH/root
     ln -s /home/user /rootfs-$ARCH/root
 
     rm -rf /rootfs-$ARCH/var/log/*
