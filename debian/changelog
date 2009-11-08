@@ -1,3 +1,10 @@
+oi-build-firmware (0.61) asimov; urgency=low
+
+  * Do not mount internal flash as jffs2 in live mode, it reformats the
+    partition into jffs2 automatically (OI#550)
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 09 Nov 2009 03:13:09 +0600
+
 oi-build-firmware (0.60) asimov; urgency=low
 
   * Add checkfs to be installed by default (OI#577).
