@@ -33,19 +33,16 @@ set_variant() {
 }
 
 usage() {
-    echo "Usage: build-fw [--keep-workdir]"
-    echo "    [(-d |--device=)(v3|v3ext|v3all|n516)]"
-    echo "    [(-m |--mode=)(install|live|nfsroot)]"
-    echo "    [(-a |--variant=)(default|azbooka)]"
-    echo "    [<version>]"
+    echo "Usage: build-fw [--keep-workdir] [(-m |--mode=)(install|live|nfsroot)]"
+    echo "    [(-a |--variant=)(default|azbooka)] <device> [<version>]"
     echo
-    echo "device defaults to 'v3',"
-    echo "mode defaults to 'install',"
-    echo "version defaults to today's snapshot,"
-    echo "variant defaults to 'default'."
+    echo " device should be 'v3', 'v3ext', 'v3all' or 'n516',"
+    echo " mode defaults to 'install',"
+    echo " variant defaults to 'default',"
+    echo " version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,keep-workdir,device:,mode:,variant: -o hd:m:a: -- "$@")
+TMP=$(getopt -l help,keep-workdir:,mode:,variant: -o hd:m:a: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
@@ -56,7 +53,6 @@ eval set -- "$TMP"
 while true; do
     case "$1" in
         --keep-workdir) KEEP_WORKDIR=1; shift;;
-        -d|--device) set_device "$2"; shift; shift;;
         -m|--mode) set_mode "$2"; shift; shift;;
         -a|--variant) set_variant "$2"; shift; shift;;
         -h|--help) usage; exit 0;;
@@ -65,10 +61,13 @@ while true; do
     esac
 done
 
-if [ $# -gt 1 ]; then
+if [ $# -lt 1 -o $# -gt 2 ]; then
     usage
     exit 1
 fi
+
+set_device "$1"
+shift
 
 if [ $# -eq 1 ]; then
     VERSION="$1"
