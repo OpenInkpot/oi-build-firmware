@@ -13,6 +13,7 @@ set_device() {
     case "$1" in
         v3|v3ext|v3all) DEVICE="$1";;
         n516) DEVICE="$1";;
+	dns323) DEVICE="$1";;
         *) echo "Unknown device: $1"; exit 1;;
     esac
 }
@@ -36,7 +37,7 @@ usage() {
     echo "Usage: build-fw [--keep-workdir] [(-m |--mode=)(install|live|nfsroot)]"
     echo "    [(-a |--variant=)(default|azbooka)] <device> [<version>]"
     echo
-    echo " device should be 'v3', 'v3ext', 'v3all' or 'n516',"
+    echo " device should be 'v3', 'v3ext', 'v3all', 'n516', 'dns323',"
     echo " mode defaults to 'install',"
     echo " variant defaults to 'default',"
     echo " version defaults to today's snapshot."
@@ -88,6 +89,7 @@ case $DEVICE in
     v3|v3all) KERNEL_FLAVOUR=-v3;;
     v3ext) KERNEL_FLAVOUR=-v3ext;;
     n516) KERNEL_FLAVOUR=-n516;;
+    dns323) KERNEL_FLAVOUR=-dns323;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
@@ -104,11 +106,13 @@ fi
 case $DEVICE in
     v3|v3ext|v3all) MANUFACTURER=hanlin;;
     n516) MANUFACTURER=hanvon;;
+    dns323) MANUFACTURER=dlink;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
 case $DEVICE in
     v3|v3ext|v3all) ARCH=armel;;
+    dns323) ARCH=armel;;
     n516) ARCH=mipsel;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
@@ -121,6 +125,8 @@ OUTPUT_DIR=$(pwd)/output/"$VERSION"
 mkdir -p "$OUTPUT_DIR"
 
 case "$VARIANT-$DEVICE" in
+    -dns323)
+	OUTPUT_NAME=dns323-$VERSION;;
     -*)
         OUTPUT_NAME=oi-$MANUFACTURER-$DEVICE-$MODE-$VERSION;;
     azbooka-n516)
@@ -292,15 +298,19 @@ raw=yes
 #
 
 # Basic stuff
-PACKAGES="mdev autosuspend-support dropbear mtd-support oi-hotplug"
+case $DEVICE in
+    dns323)
+	PACKAGE="mdev dropbear mtd-support";;
+    *)	
+	PACKAGES="mdev autosuspend-support dropbear mtd-support oi-hotplug";;
+esac
 case $DEVICE-$MODE in
     v3*-live)
         ;;
     v3*-*)
         PACKAGES="$PACKAGES v3-format-storage";;
     n516-*)
-        PACKAGES="$PACKAGES metronomefb-support n516-waveforms"
-        ;;
+        PACKAGES="$PACKAGES metronomefb-support n516-waveforms";;
 esac
 
 # Kernel
@@ -310,31 +320,52 @@ if [ "$MODE" = nfsroot ]; then
     PACKAGES="$PACKAGES boot-local-kernel"
 fi
 
-# GUI
-PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1 libevas-engines fontconfig"
+case $DEVICE in
+    dns323)
+	;;
+    *)
+	# GUI
+	PACKAGES="$PACKAGES nulldm xserver-xfbdev libewl1 libevas-engines fontconfig"
+        # Fonts
+	PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts"
+	;;
+esac    
 
-# Fonts
-PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts"
-
-case $VARIANT in
-    azbooka)
+case $DEVICE-$VARIANT in
+    *-azbooka)
         ;;
+    dns323-*)
+	;;
     *)
         PACKAGES="$PACKAGES droid-fallback-fonts";;
 esac
 
 # i18n
-PACKAGES="$PACKAGES gconv-data-basic"
+case $DEVICE in
+    dns323)
+	;;
+    *)
+	PACKAGES="$PACKAGES gconv-data-basic"
+	;;
+esac
 
 # Applications
-PACKAGES="$PACKAGES madshelf libextractor-mini-plugins"
-PACKAGES="$PACKAGES fbreader"
-PACKAGES="$PACKAGES locopdf"
-PACKAGES="$PACKAGES cr3"
-PACKAGES="$PACKAGES madeye"
-PACKAGES="$PACKAGES etimetool"
-PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
-PACKAGES="$PACKAGES make-home checkfs"
+case $DEVICE in
+    dns323)
+	PACKAGES="$PACKAGES vlc"
+	;;
+    *)
+	PACKAGES="$PACKAGES madshelf libextractor-mini-plugins"
+	PACKAGES="$PACKAGES fbreader"
+	PACKAGES="$PACKAGES locopdf"
+	PACKAGES="$PACKAGES cr3"
+	PACKAGES="$PACKAGES madeye"
+	PACKAGES="$PACKAGES etimetool"
+	PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
+	PACKAGES="$PACKAGES make-home checkfs"
+	;;
+esac
+
 case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 libeoi-settings-v3 libchoicebox1-settings-v3"
@@ -358,7 +389,13 @@ case $DEVICE in
 esac
 
 # Debug
-PACKAGES="$PACKAGES strace rsync kexec-tools mtd-utils sqlite3"
+case $DEVICE in
+    dns323)
+	;;
+    *)
+	PACKAGES="$PACKAGES strace rsync kexec-tools mtd-utils sqlite3"
+	;;
+esac
 
 # if [ "$MODE" = "nfsroot" ]; then
 #     PACKAGES="$PACKAGES gdbserver"
@@ -453,6 +490,8 @@ tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
         n516-install)
             echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
             ;;
+	dns323-install)
+	    ;;
         *)
             echo "Unknown device/mode: $DEVICE-$MODE"
             exit 1
@@ -480,7 +519,7 @@ if [ -z "$VARIANT" ]; then
 else
     echo "OpenInkpot $VERSION ($DEVICE-$VARIANT)" > /rootfs-$ARCH/etc/openinkpot-version
 fi
-
+#<!--
 iface=usb0
 #[ "$DEVICE" == "n516" ] && iface=eth0
 
