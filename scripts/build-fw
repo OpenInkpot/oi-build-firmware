@@ -357,6 +357,12 @@ case $DEVICE in
         ;;
 esac
 
+case $VARIANT in
+    '')
+        PACKAGES="$PACKAGES libextractor-mini-plugins-extra";;
+esac
+        
+
 # Debug
 PACKAGES="$PACKAGES strace rsync kexec-tools mtd-utils sqlite3"
 
