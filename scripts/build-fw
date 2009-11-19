@@ -441,6 +441,7 @@ if [ "$MODE" != "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
+tmpfs /var/lock tmpfs defaults 0 0
 tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
     case $DEVICE-$MODE in
@@ -621,7 +622,6 @@ case "$MODE" in
             mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
         
             sync
-            (cd $WORK_DIR; tar c V3update.bin) | bzip2 > "$OUTPUT_DIR/$OUTPUT_NAME.tar.bz2"
             zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
         fi
         ;;
@@ -648,7 +648,6 @@ dmesg > \$DIR/dmesg.txt
 
         wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
 
-        (cd $WORK_DIR; tar cv openinkpot/ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME.tar.bz2)
         (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
         ;;
 esac
