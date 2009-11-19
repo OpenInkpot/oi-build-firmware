@@ -1,3 +1,10 @@
+oi-build-firmware (0.63) asimov; urgency=low
+
+  * Install pdf and rtf metadata extraction plugins in OI builds
+  * Stop providing .tar.bz2 for install/live versions as useless.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 19 Nov 2009 09:13:46 +0600
+
 oi-build-firmware (0.62) asimov; urgency=low
 
   * Do not build image for v3 when no options are passed to build-fw
