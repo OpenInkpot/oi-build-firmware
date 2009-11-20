@@ -6,6 +6,7 @@ DEVICE=v3
 MODE=install
 VARIANT=
 VERSION=$(date +%Y%m%d)
+ADDON_PACKAGES=
 
 KEEP_WORKDIR=0
 
@@ -43,7 +44,7 @@ usage() {
     echo " version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,keep-workdir:,mode:,variant: -o hd:m:a: -- "$@")
+TMP=$(getopt -l help,keep-workdir:,addon-packages:,mode:,variant: -o hd:m:a: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
@@ -54,6 +55,7 @@ eval set -- "$TMP"
 while true; do
     case "$1" in
         --keep-workdir) KEEP_WORKDIR=1; shift;;
+	--addon-packages) ADDON_PACKAGES="$2"; shift; shift;;
         -m|--mode) set_mode "$2"; shift; shift;;
         -a|--variant) set_variant "$2"; shift; shift;;
         -h|--help) usage; exit 0;;
@@ -300,7 +302,7 @@ raw=yes
 # Basic stuff
 case $DEVICE in
     dns323)
-	PACKAGE="mdev dropbear mtd-support";;
+	PACKAGES="mdev dropbear mtd-support";;
     *)	
 	PACKAGES="mdev autosuspend-support dropbear mtd-support oi-hotplug";;
 esac
@@ -314,7 +316,14 @@ case $DEVICE-$MODE in
 esac
 
 # Kernel
-PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}${KERNEL_FLAVOUR}"
+case $DEVICE in
+    dns323)
+	;;
+    *)
+	PACKAGES="$PACKAGES linux-modules-${LINUX_VERSION}${KERNEL_FLAVOUR}"
+	;;
+esac
+
 if [ "$MODE" = nfsroot ]; then
     PACKAGES="$PACKAGES linux-image-${LINUX_VERSION}${KERNEL_FLAVOUR}"
     PACKAGES="$PACKAGES boot-local-kernel"
@@ -352,7 +361,7 @@ esac
 # Applications
 case $DEVICE in
     dns323)
-	PACKAGES="$PACKAGES vlc"
+	# PACKAGES="$PACKAGES vlc"
 	;;
     *)
 	PACKAGES="$PACKAGES madshelf libextractor-mini-plugins"
@@ -430,6 +439,15 @@ echo "deb http://openinkpot.org/pub/oi asimov core security gui media" >> /rootf
 cross-shell $ARCH apt-get update
 cross-shell $ARCH apt-get -y --force-yes dist-upgrade
 cross-shell $ARCH apt-get -y --force-yes install $PACKAGES
+
+
+if [ -n "$ADDON_PACKAGES" ]; then
+    for i in $ADDON_PACKAGES; do
+	cp /build/$i /var/cache/apt/archives-$ARCH/
+	install_packages="$install_packages /var/cache/apt/archives/$i"
+    done
+    cross-shell $ARCH dpkg -i $install_packages
+fi
 
 server_args="-nocursor -wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
 
