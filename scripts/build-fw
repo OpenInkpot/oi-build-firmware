@@ -614,7 +614,7 @@ case "$MODE" in
                 azbooka)
                     LABEL=Azbooka;;
                 *)
-                    Label=OpenInkpot;;
+                    LABEL=OpenInkpot;;
             esac
             /sbin/mkfs.vfat -n $LABEL -m /dev/null $WORK_DIR/storage.vfat.fs
 
