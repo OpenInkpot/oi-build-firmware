@@ -610,7 +610,13 @@ case "$MODE" in
             rm -f $WORK_DIR/pattern-tmp
             dd if=/dev/zero count=6321 bs=61440 | tr '\0' '\377' > $WORK_DIR/storage.vfat.fs
 
-            /sbin/mkfs.vfat $WORK_DIR/storage.vfat.fs
+            case $VARIANT in
+                azbooka)
+                    LABEL=Azbooka;;
+                *)
+                    Label=OpenInkpot;;
+            esac
+            /sbin/mkfs.vfat -n $LABEL $WORK_DIR/storage.vfat.fs
 
             do_pack_n516_firmware
         else
