@@ -188,7 +188,6 @@ vol_name=rootfs
 
 [storage]
 mode=ubi
-image=$WORK_DIR/storage.vfat.fs
 vol_id=6
 vol_type=dynamic
 vol_name=storage
@@ -299,7 +298,7 @@ case $DEVICE-$MODE in
     v3*-*)
         PACKAGES="$PACKAGES v3-format-storage";;
     n516-*)
-        PACKAGES="$PACKAGES metronomefb-support n516-waveforms"
+        PACKAGES="$PACKAGES metronomefb-support n516-waveforms n516-format-storage"
         ;;
 esac
 
@@ -607,16 +606,12 @@ case "$MODE" in
         if [ $DEVICE = n516 ]; then
             wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
-            rm -f $WORK_DIR/pattern-tmp
-            dd if=/dev/zero count=6321 bs=61440 | tr '\0' '\377' > $WORK_DIR/storage.vfat.fs
-
             case $VARIANT in
                 azbooka)
                     LABEL=Azbooka;;
                 *)
                     LABEL=OpenInkpot;;
             esac
-            /sbin/mkfs.vfat -n $LABEL -m /dev/null $WORK_DIR/storage.vfat.fs
 
             do_pack_n516_firmware
         else
