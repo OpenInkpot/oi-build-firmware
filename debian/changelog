@@ -1,3 +1,10 @@
+oi-build-firmware (0.64) asimov; urgency=low
+
+  * Do not provide pre-created VFAT image for N516 devices, install
+    formatter package instead (OI#706).
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 27 Nov 2009 05:12:41 +0600
+
 oi-build-firmware (0.63) asimov; urgency=low
 
   * Install pdf and rtf metadata extraction plugins in OI builds
