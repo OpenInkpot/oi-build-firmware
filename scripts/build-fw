@@ -191,7 +191,8 @@ mode=ubi
 vol_id=6
 vol_type=dynamic
 vol_name=storage
-vol_size=388362240" > $WORK_DIR/n516-ubinize.ini
+vol_size=16MiB
+vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
 
     cp /rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
     cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
