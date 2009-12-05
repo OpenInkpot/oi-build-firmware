@@ -357,10 +357,10 @@ case $DEVICE in
         ;;
 esac
 
-case $VARIANT in
-    '')
-        PACKAGES="$PACKAGES libextractor-mini-plugins-extra";;
-esac
+# case $VARIANT in
+#     '')
+#         PACKAGES="$PACKAGES libextractor-mini-plugins-extra";;
+# esac
         
 
 # Debug
