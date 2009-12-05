@@ -1,3 +1,11 @@
+oi-build-firmware (0.65) asimov; urgency=low
+
+  * Use "autoresize" option for VFAT partition on N510/N516
+  * Disable extractor-plugins-extra until there is a way to see filename
+    instead of metadata in madshelf
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 06 Dec 2009 03:56:35 +0600
+
 oi-build-firmware (0.64) asimov; urgency=low
 
   * Do not provide pre-created VFAT image for N516 devices, install
