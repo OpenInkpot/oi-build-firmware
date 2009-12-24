@@ -387,8 +387,8 @@ sudo rm -rf /rootfs-$ARCH
 cross-bootstrap-host
 cross-bootstrap-target $ARCH
 
-echo "deb http://ftp.iplinux.org/iplinux asimov core security gui media" > /rootfs-$ARCH/etc/apt/sources.list
-echo "deb http://openinkpot.org/pub/oi asimov core security gui media" >> /rootfs-$ARCH/etc/apt/sources.list
+echo "deb http://ftp.iplinux.org/iplinux zelazny core security gui media" > /rootfs-$ARCH/etc/apt/sources.list
+echo "deb http://openinkpot.org/pub/oi zelazny core security gui media" >> /rootfs-$ARCH/etc/apt/sources.list
 
 cross-shell $ARCH apt-get update
 cross-shell $ARCH apt-get -y --force-yes dist-upgrade
