@@ -5,6 +5,7 @@
  *
  * (c) 2007 Yauhen Kharuzhy <jekhor@gmail.com>
  * (c) 2008 Mikhail Gusarov <dottedmag@dottedmag.net>
+ * (c) 2009 Vadim Lopatin <buggins@coolreader.org>
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -69,10 +70,33 @@ const partition_t v3_oi_partitions[] =
   { "storage", "vfat", 55, 9 }
 };
 
+const partition_t v5_64_partitions[] =
+{
+  /* 0th block is the badblocks remapping space */
+  { "kernel", "zImage", 1, 1 },
+  { "rofs", "cramfs",   2, 6 },
+  { "rootfs", "jffs2",  8, 44 },
+  { "logo", "two 800x600 8-bit images", 52, 1 },
+  { "userdata", "jffs2", 53, 2 },
+//  { "storage", "vfat", 55, 9 }
+};
+
+const partition_t v5_128_partitions[] =
+{
+  /* 0th block is the badblocks remapping space */
+  { "kernel", "zImage", 1, 2 },
+  { "rofs", "cramfs",   3, 6 },
+  { "rootfs", "jffs2",  9, 0x73 },
+  { "logo", "two 800x600 8-bit images", 0x7C, 1 },
+  { "userdata", "jffs2", 0x7D, 2 },
+//  { "storage", "vfat", 0x7F, 9 }
+};
+
 typedef struct
 {
   const char* name;
   const char* tag;
+  const char* magic;
   size_t size; /* in blocks, including remapping space */
   const partition_t *partitions;
   const size_t npartitions;
@@ -81,15 +105,25 @@ typedef struct
 const layout_t layouts[] = 
 {
   {
-    "OpenInkpot V3 firmware", "oi", 64,
+    "OpenInkpot V3 firmware", "oi", "JKV3:V3.01", 64,
     v3_oi_partitions,
     sizeof(v3_oi_partitions) / sizeof(partition_t)
   },
   {
-    "Original Hanlin V3 firmware", "hanlin", 64,
+    "Original Hanlin V3 firmware", "hanlin", "JKV3:V3.01", 64,
     v3_orig_partitions,
     sizeof(v3_orig_partitions) / sizeof(partition_t)
-  }
+  },
+  {
+    "Original Hanlin V5 firmware 64Mb", "v5-64", "JKV5:V5.01", 64,
+    v5_64_partitions,
+    sizeof(v5_64_partitions) / sizeof(partition_t)
+  },
+  {
+    "Original Hanlin V5 firmware 128Mb", "v5-128", "JKV5:V5.01", 128,
+    v5_128_partitions,
+    sizeof(v5_128_partitions) / sizeof(partition_t)
+  },
 };
 
 const size_t nlayouts = sizeof(layouts) / sizeof(layout_t);
@@ -235,7 +269,7 @@ int put_file_to_image(const partition_t* partition,
   return 0;
 }
 
-int write_firmware_header(void *firmware, int end_block)
+int write_firmware_header(void *firmware, const char * magic, int end_block)
 {
   block0_t* block0 = (block0_t*) firmware;
   time_t t;
@@ -255,7 +289,7 @@ int write_firmware_header(void *firmware, int end_block)
 
   memset(block0->version, 0, sizeof(block0->version));
   snprintf(block0->version, sizeof(block0->version) + 1,
-           "JKV3:V3.01%04d%02d%02d",
+           "%s%04d%02d%02d", magic, // JKV3:V3.01
            local_t->tm_year + 1900, local_t->tm_mon + 1, local_t->tm_mday);
 
   memset(block0->vendor, 0, sizeof(block0->vendor));
@@ -347,7 +381,7 @@ int build_firmware(const layout_t* layout,
     }
   }
 
-  res = write_firmware_header(firmware, firmware_end_block);
+  res = write_firmware_header(firmware, layout->magic, firmware_end_block);
   if(res != 0)
   {
     fprintf(stderr, "Error during writing firmware header, bailing out.\n");
