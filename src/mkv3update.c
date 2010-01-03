@@ -327,15 +327,15 @@ int write_firmware_header(void *firmware, const char * magic, int end_block)
   return 0;
 }
 
-int put_image_to_file(const partition_t * partition, const unsigned char * buf, int sz, const char * fname )
+int put_image_to_file(const partition_t* partition, const unsigned char* buf, int sz, const char* fname )
 {
-    FILE * f = fopen(fname, "wb");
+    FILE* f = fopen(fname, "wb");
     if ( !f ) {
         fprintf(stderr, "Cannot open file %s for writing", fname);
         return 1;
     }
     printf("Writing partition %s [size=%d] to file %s (start=0x%02x, end=0x%02x)...\n", partition->name, sz/BLOCK_SIZE, fname, partition->offset, partition->offset+partition->size);
-    if (fwrite( buf, 1, sz, f )!=sz) {
+    if (fwrite(buf, 1, sz, f) != sz) {
         fprintf(stderr, "Error while writing to file %s", fname);
         return 1;
     }
@@ -348,7 +348,7 @@ int unpack_firmware(const layout_t* layout,
                    const char* input_file)
 {
   printf("Unpacking %s firmware from %s\n\n", layout->name, input_file);
-  FILE * f = fopen(input_file, "rb");
+  FILE* f = fopen(input_file, "rb");
   if ( !f ) {
       perror("creat");
       return 1;
@@ -361,23 +361,23 @@ int unpack_firmware(const layout_t* layout,
     
     if(i < nfiles)
     {
-      int start = partition->offset*BLOCK_SIZE;
-      int sz = partition->size*BLOCK_SIZE;
-      unsigned char * buf = malloc(sz);
+      int start = partition->offset * BLOCK_SIZE;
+      int sz = partition->size * BLOCK_SIZE;
+      unsigned char* buf = malloc(sz);
       
       if ( fseek(f, start, SEEK_SET) ) {
         fprintf(stderr, "Error during reading of partition %s, bailing out.\n",
                 partition->name);
         return 1;
       }
-      int bytesRead = (int)fread(buf, 1, sz, f);
-      if ( bytesRead!=sz ) {
-        if ( bytesRead>0 && bytesRead<sz ) {
-            printf("Warning: partition %s is truncated: %d bytes instead of %d\n", partition->name, bytesRead, sz);
-            sz = bytesRead;
+      int bytes_read = (int)fread(buf, 1, sz, f);
+      if ( bytes_read != sz ) {
+        if ( bytes_read > 0 && bytes_read < sz ) {
+            printf("Warning: partition %s is truncated: %d bytes instead of %d\n", partition->name, bytes_read, sz);
+            sz = bytes_read;
         } else {
             fprintf(stderr, "Error during reading of partition %s: expected %d bytes, read %d bytes, bailing out.\n",
-                    partition->name, sz, bytesRead);
+                    partition->name, sz, bytes_read);
             return 1;
         }
       }
@@ -540,8 +540,8 @@ int main(int argc, char** argv)
   {
     if(strncmp("--unpack-", argv[1], 9))
     {
-        fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
-        exit(1);
+      fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
+      exit(1);
     }
     const layout_t* layout;
 
