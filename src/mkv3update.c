@@ -327,6 +327,77 @@ int write_firmware_header(void *firmware, const char * magic, int end_block)
   return 0;
 }
 
+int put_image_to_file(const partition_t * partition, const unsigned char * buf, int sz, const char * fname )
+{
+    FILE * f = fopen(fname, "wb");
+    if ( !f ) {
+        fprintf(stderr, "Cannot open file %s for writing", fname);
+        return 1;
+    }
+    printf("Writing partition %s [size=%d] to file %s (start=0x%02x, end=0x%02x)...\n", partition->name, sz/BLOCK_SIZE, fname, partition->offset, partition->offset+partition->size);
+    if (fwrite( buf, 1, sz, f )!=sz) {
+        fprintf(stderr, "Error while writing to file %s", fname);
+        return 1;
+    }
+    fclose(f);
+    return 0;
+}
+
+int unpack_firmware(const layout_t* layout,
+                   int nfiles, char** filenames,
+                   const char* input_file)
+{
+  printf("Unpacking %s firmware from %s\n\n", layout->name, input_file);
+  FILE * f = fopen(input_file, "rb");
+  if ( !f ) {
+      perror("creat");
+      return 1;
+  }
+  
+  int i, res;
+  for(i = 0; i < layout->npartitions; ++i)
+  {
+    const partition_t* partition = layout->partitions + i;
+    
+    if(i < nfiles)
+    {
+      int start = partition->offset*BLOCK_SIZE;
+      int sz = partition->size*BLOCK_SIZE;
+      unsigned char * buf = malloc(sz);
+      
+      if ( fseek(f, start, SEEK_SET) ) {
+        fprintf(stderr, "Error during reading of partition %s, bailing out.\n",
+                partition->name);
+        return 1;
+      }
+      int bytesRead = (int)fread(buf, 1, sz, f);
+      if ( bytesRead!=sz ) {
+        if ( bytesRead>0 && bytesRead<sz ) {
+            printf("Warning: partition %s is truncated: %d bytes instead of %d\n", partition->name, bytesRead, sz);
+            sz = bytesRead;
+        } else {
+            fprintf(stderr, "Error during reading of partition %s: expected %d bytes, read %d bytes, bailing out.\n",
+                    partition->name, sz, bytesRead);
+            return 1;
+        }
+      }
+      res = put_image_to_file(partition, buf, sz, filenames[i]);
+      if(res != 0)
+      {
+        fprintf(stderr, "Error during writing partition %s, bailing out.\n",
+                partition->name);
+        return res;
+      }
+    }
+    else
+    {
+      printf("Skipping partiton %s: no file supplied\n", partition->name);
+    }
+  }
+  fclose(f);
+  return 0;
+}
+
 int build_firmware(const layout_t* layout,
                    int nfiles, char** filenames,
                    const char* output_file)
@@ -413,7 +484,7 @@ void usage()
 {
   int i, j;
       
-  printf("Hanlin v3 firmware builder " PACKAGE_VERSION ".\n\nUsage:\n");
+  printf("Hanlin v3/v5 firmware builder " PACKAGE_VERSION ".\n\nUsage:\n");
   printf(PROGNAME " --describe-layout=(");
   for(i = 0; i < nlayouts; ++i)
     printf("%s%s", i > 0 ? "|": "", layouts[i].tag);
@@ -429,6 +500,14 @@ void usage()
   printf("\n");
   printf("Any file may be omitted. Resulting image will be truncated.\n");
   printf("'+' before filename will force filling whole partition with 0xff.\n");
+  for(i = 0; i < nlayouts; ++i)
+  {
+    printf(PROGNAME " --unpack-%s=<outfile>", layouts[i].tag);
+    for(j = 0; j < layouts[i].npartitions; ++j)
+      printf(" [+]<%s>", layouts[i].partitions[j].name);
+    printf("\n");
+  }
+  printf("\n");
 }
 
 int main(int argc, char** argv)
@@ -459,8 +538,29 @@ int main(int argc, char** argv)
 
   if(strncmp("--write-", argv[1], 8))
   {
-    fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
-    exit(1);
+    if(strncmp("--unpack-", argv[1], 9))
+    {
+        fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
+        exit(1);
+    }
+    const layout_t* layout;
+
+    char *c = strchr(argv[1] + 9, '=');
+    if(!c)
+    {
+      fprintf(stderr, "No input file name specified.\n");
+      exit(1);
+    }
+    *c = 0;
+
+    layout = get_layout(argv[1] + 9);
+    if(layout == NULL)
+    {
+      fprintf(stderr, "Unknown layout: %s\n", argv[1] + 9);
+      exit(1);
+    }
+
+    exit(unpack_firmware(layout, argc - 2, argv + 2, c+1));
   }
   else
   {

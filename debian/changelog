@@ -1,3 +1,9 @@
+oi-build-firmware (0.68) zelazny; urgency=low
+
+  * Add support of firmware unpacking
+
+ -- Vadim Lopatin <buggins@coolreader.org>  Sun, 03 Jan 2009 19:11:57 +0300
+
 oi-build-firmware (0.67) zelazny; urgency=low
 
   * Add support of V5 firmware
