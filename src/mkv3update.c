@@ -5,6 +5,7 @@
  *
  * (c) 2007 Yauhen Kharuzhy <jekhor@gmail.com>
  * (c) 2008 Mikhail Gusarov <dottedmag@dottedmag.net>
+ * (c) 2009 Vadim Lopatin <buggins@coolreader.org>
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -69,10 +70,33 @@ const partition_t v3_oi_partitions[] =
   { "storage", "vfat", 55, 9 }
 };
 
+const partition_t v5_64_partitions[] =
+{
+  /* 0th block is the badblocks remapping space */
+  { "kernel", "zImage", 1, 1 },
+  { "rofs", "cramfs",   2, 6 },
+  { "rootfs", "jffs2",  8, 44 },
+  { "logo", "two 800x600 8-bit images", 52, 1 },
+  { "userdata", "jffs2", 53, 2 },
+//  { "storage", "vfat", 55, 9 }
+};
+
+const partition_t v5_128_partitions[] =
+{
+  /* 0th block is the badblocks remapping space */
+  { "kernel", "zImage", 1, 2 },
+  { "rofs", "cramfs",   3, 6 },
+  { "rootfs", "jffs2",  9, 0x73 },
+  { "logo", "two 800x600 8-bit images", 0x7C, 1 },
+  { "userdata", "jffs2", 0x7D, 2 },
+//  { "storage", "vfat", 0x7F, 9 }
+};
+
 typedef struct
 {
   const char* name;
   const char* tag;
+  const char* magic;
   size_t size; /* in blocks, including remapping space */
   const partition_t *partitions;
   const size_t npartitions;
@@ -81,15 +105,25 @@ typedef struct
 const layout_t layouts[] = 
 {
   {
-    "OpenInkpot V3 firmware", "oi", 64,
+    "OpenInkpot V3 firmware", "oi", "JKV3:V3.01", 64,
     v3_oi_partitions,
     sizeof(v3_oi_partitions) / sizeof(partition_t)
   },
   {
-    "Original Hanlin V3 firmware", "hanlin", 64,
+    "Original Hanlin V3 firmware", "hanlin", "JKV3:V3.01", 64,
     v3_orig_partitions,
     sizeof(v3_orig_partitions) / sizeof(partition_t)
-  }
+  },
+  {
+    "Original Hanlin V5 firmware 64Mb", "v5-64", "JKV5:V5.01", 64,
+    v5_64_partitions,
+    sizeof(v5_64_partitions) / sizeof(partition_t)
+  },
+  {
+    "Original Hanlin V5 firmware 128Mb", "v5-128", "JKV5:V5.01", 128,
+    v5_128_partitions,
+    sizeof(v5_128_partitions) / sizeof(partition_t)
+  },
 };
 
 const size_t nlayouts = sizeof(layouts) / sizeof(layout_t);
@@ -235,7 +269,7 @@ int put_file_to_image(const partition_t* partition,
   return 0;
 }
 
-int write_firmware_header(void *firmware, int end_block)
+int write_firmware_header(void *firmware, const char * magic, int end_block)
 {
   block0_t* block0 = (block0_t*) firmware;
   time_t t;
@@ -255,7 +289,7 @@ int write_firmware_header(void *firmware, int end_block)
 
   memset(block0->version, 0, sizeof(block0->version));
   snprintf(block0->version, sizeof(block0->version) + 1,
-           "JKV3:V3.01%04d%02d%02d",
+           "%s%04d%02d%02d", magic, // JKV3:V3.01
            local_t->tm_year + 1900, local_t->tm_mon + 1, local_t->tm_mday);
 
   memset(block0->vendor, 0, sizeof(block0->vendor));
@@ -290,6 +324,77 @@ int write_firmware_header(void *firmware, int end_block)
 
   printf("Done.\n");
 
+  return 0;
+}
+
+int put_image_to_file(const partition_t* partition, const unsigned char* buf, int sz, const char* fname )
+{
+    FILE* f = fopen(fname, "wb");
+    if ( !f ) {
+        fprintf(stderr, "Cannot open file %s for writing", fname);
+        return 1;
+    }
+    printf("Writing partition %s [size=%d] to file %s (start=0x%02x, end=0x%02x)...\n", partition->name, sz/BLOCK_SIZE, fname, partition->offset, partition->offset+partition->size);
+    if (fwrite(buf, 1, sz, f) != sz) {
+        fprintf(stderr, "Error while writing to file %s", fname);
+        return 1;
+    }
+    fclose(f);
+    return 0;
+}
+
+int unpack_firmware(const layout_t* layout,
+                   int nfiles, char** filenames,
+                   const char* input_file)
+{
+  printf("Unpacking %s firmware from %s\n\n", layout->name, input_file);
+  FILE* f = fopen(input_file, "rb");
+  if ( !f ) {
+      perror("creat");
+      return 1;
+  }
+  
+  int i, res;
+  for(i = 0; i < layout->npartitions; ++i)
+  {
+    const partition_t* partition = layout->partitions + i;
+    
+    if(i < nfiles)
+    {
+      int start = partition->offset * BLOCK_SIZE;
+      int sz = partition->size * BLOCK_SIZE;
+      unsigned char* buf = malloc(sz);
+      
+      if ( fseek(f, start, SEEK_SET) ) {
+        fprintf(stderr, "Error during reading of partition %s, bailing out.\n",
+                partition->name);
+        return 1;
+      }
+      int bytes_read = (int)fread(buf, 1, sz, f);
+      if ( bytes_read != sz ) {
+        if ( bytes_read > 0 && bytes_read < sz ) {
+            printf("Warning: partition %s is truncated: %d bytes instead of %d\n", partition->name, bytes_read, sz);
+            sz = bytes_read;
+        } else {
+            fprintf(stderr, "Error during reading of partition %s: expected %d bytes, read %d bytes, bailing out.\n",
+                    partition->name, sz, bytes_read);
+            return 1;
+        }
+      }
+      res = put_image_to_file(partition, buf, sz, filenames[i]);
+      if(res != 0)
+      {
+        fprintf(stderr, "Error during writing partition %s, bailing out.\n",
+                partition->name);
+        return res;
+      }
+    }
+    else
+    {
+      printf("Skipping partiton %s: no file supplied\n", partition->name);
+    }
+  }
+  fclose(f);
   return 0;
 }
 
@@ -347,7 +452,7 @@ int build_firmware(const layout_t* layout,
     }
   }
 
-  res = write_firmware_header(firmware, firmware_end_block);
+  res = write_firmware_header(firmware, layout->magic, firmware_end_block);
   if(res != 0)
   {
     fprintf(stderr, "Error during writing firmware header, bailing out.\n");
@@ -379,7 +484,7 @@ void usage()
 {
   int i, j;
       
-  printf("Hanlin v3 firmware builder " PACKAGE_VERSION ".\n\nUsage:\n");
+  printf("Hanlin v3/v5 firmware builder " PACKAGE_VERSION ".\n\nUsage:\n");
   printf(PROGNAME " --describe-layout=(");
   for(i = 0; i < nlayouts; ++i)
     printf("%s%s", i > 0 ? "|": "", layouts[i].tag);
@@ -395,6 +500,14 @@ void usage()
   printf("\n");
   printf("Any file may be omitted. Resulting image will be truncated.\n");
   printf("'+' before filename will force filling whole partition with 0xff.\n");
+  for(i = 0; i < nlayouts; ++i)
+  {
+    printf(PROGNAME " --unpack-%s=<outfile>", layouts[i].tag);
+    for(j = 0; j < layouts[i].npartitions; ++j)
+      printf(" [+]<%s>", layouts[i].partitions[j].name);
+    printf("\n");
+  }
+  printf("\n");
 }
 
 int main(int argc, char** argv)
@@ -425,8 +538,29 @@ int main(int argc, char** argv)
 
   if(strncmp("--write-", argv[1], 8))
   {
-    fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
-    exit(1);
+    if(strncmp("--unpack-", argv[1], 9))
+    {
+      fprintf(stderr, "Use %s --help to see usage information.\n", argv[0]);
+      exit(1);
+    }
+    const layout_t* layout;
+
+    char *c = strchr(argv[1] + 9, '=');
+    if(!c)
+    {
+      fprintf(stderr, "No input file name specified.\n");
+      exit(1);
+    }
+    *c = 0;
+
+    layout = get_layout(argv[1] + 9);
+    if(layout == NULL)
+    {
+      fprintf(stderr, "Unknown layout: %s\n", argv[1] + 9);
+      exit(1);
+    }
+
+    exit(unpack_firmware(layout, argc - 2, argv + 2, c+1));
   }
   else
   {
