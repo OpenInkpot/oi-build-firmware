@@ -42,7 +42,7 @@ usage() {
     echo " version defaults to today's snapshot."
 }
 
-TMP=$(getopt -l help,keep-workdir:,mode:,variant: -o hd:m:a: -- "$@")
+TMP=$(getopt -l help,keep-workdir,mode:,variant: -o hd:m:a: -- "$@")
 
 if [ $? != 0 ]; then
     exit 1
