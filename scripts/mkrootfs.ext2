@@ -9,7 +9,7 @@ fi
 
 ROOTFS_DIR=`mktemp -d rootfs.XXXX`
 
-dd if=/dev/zero of=rootfs.ext2 bs=10M count=5
+dd if=/dev/zero of=rootfs.ext2 bs=10M count=10
 /sbin/mke2fs -m0 -F rootfs.ext2
 sudo mount -o loop rootfs.ext2 $ROOTFS_DIR
 sudo tar xf $tar -C $ROOTFS_DIR
