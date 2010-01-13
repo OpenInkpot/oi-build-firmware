@@ -1,3 +1,12 @@
+oi-build-firmware (0.69) zelazny; urgency=low
+
+  * mkv3update: added support for V5
+  * mkv3update: added support for unpacking firmware
+  * build-fw: fixed broken --keep-workdir
+  * build-fw: increased size of rootfs for v3all-live to 100 Mb
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 14 Jan 2010 05:19:47 +0600
+
 oi-build-firmware (0.68) zelazny; urgency=low
 
   * Add support of firmware unpacking
