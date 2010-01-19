@@ -1,3 +1,11 @@
+oi-build-firmware (0.71) zelazny; urgency=low
+
+  [ Oleg Leschinsky ]
+  * Added --addon-packages switch
+  * Added support for D-Link DNS-323
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 19 Jan 2010 08:54:40 +0600
+
 oi-build-firmware (0.70) zelazny; urgency=low
 
   * Removed libewl1, evas-engines from packages lists: libraries should be
