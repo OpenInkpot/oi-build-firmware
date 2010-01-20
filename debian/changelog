@@ -1,3 +1,10 @@
+oi-build-firmware (0.72) zelazny; urgency=low
+
+  * Install mime-defaults package by default to make FBReader default
+    viewer (OI#769).
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 20 Jan 2010 11:43:41 +0600
+
 oi-build-firmware (0.71) zelazny; urgency=low
 
   [ Oleg Leschinsky ]
