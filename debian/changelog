@@ -1,3 +1,9 @@
+oi-build-firmware (0.73) zelazny; urgency=low
+
+  * Adapt to libeoi<-libchoicebox merger
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 25 Feb 2010 05:56:21 +0600
+
 oi-build-firmware (0.72) zelazny; urgency=low
 
   [ Mikhail Gusarov ]
