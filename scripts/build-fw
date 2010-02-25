@@ -391,7 +391,7 @@ case $DEVICE in
         case $VARIANT in
             azbooka)
                 PACKAGES="$PACKAGES esplash-data-azbooka-n516 liblanguage-azbooka-data"
-                PACKAGES="$PACKAGES libeoi-settings-azbooka oi-themes-azbooka"
+                PACKAGES="$PACKAGES libeoi-settings-azbooka oi-themes-azbooka gm-theme-azbooka"
                 ;;
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
