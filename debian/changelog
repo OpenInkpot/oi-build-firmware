@@ -1,3 +1,9 @@
+oi-build-firmware (0.74) zelazny; urgency=low
+
+  * Added Azbooka theme selector and Azbooka gm theme
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 25 Feb 2010 20:26:35 +0600
+
 oi-build-firmware (0.73) zelazny; urgency=low
 
   * Adapt to libeoi<-libchoicebox merger
