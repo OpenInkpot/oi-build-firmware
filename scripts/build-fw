@@ -372,6 +372,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES locopdf"
         PACKAGES="$PACKAGES cr3"
         PACKAGES="$PACKAGES madeye"
+        PACKAGES="$PACKAGES edict"
         PACKAGES="$PACKAGES etimetool"
         PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
         PACKAGES="$PACKAGES make-home checkfs"
@@ -388,7 +389,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
         PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
-        PACKAGES="$PACKAGES madaudio cr3-settings-n516"
+        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516"
 
         case $VARIANT in
             azbooka)
