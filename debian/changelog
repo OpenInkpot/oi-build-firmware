@@ -1,3 +1,13 @@
+oi-build-firmware (0.75) zelazny; urgency=low
+
+  [ Leschinsky Oleg ]
+  * Added --addon-packages to the usage reference
+
+  [ Alexander Kerner ]
+  * Add edict to list of packages
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Wed, 10 Mar 2010 21:45:40 +0100
+
 oi-build-firmware (0.74) zelazny; urgency=low
 
   * Added Azbooka theme selector and Azbooka gm theme
