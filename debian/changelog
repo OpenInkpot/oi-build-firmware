@@ -1,3 +1,10 @@
+oi-build-firmware (0.76) zelazny; urgency=low
+
+  * Fix Xfbdev arguments on n516
+  * Add elock-azbooka package
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sun, 14 Mar 2010 21:53:22 +0100
+
 oi-build-firmware (0.75) zelazny; urgency=low
 
   [ Leschinsky Oleg ]
