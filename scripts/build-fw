@@ -460,7 +460,7 @@ case $DEVICE in
     v3|v3ext|v3all)
         server_args="$server_args -screen 600x800 -dpi 170";;
     n516)
-        server_args="$server_args -fb /dev/fb1 -screen 800x600@270 -dpi 200";;
+        server_args="$server_args -fb /dev/fb1 -screen 600x800 -dpi 200";;
     *)
         :;;
 esac
