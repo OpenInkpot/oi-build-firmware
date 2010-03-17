@@ -372,6 +372,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES locopdf"
         PACKAGES="$PACKAGES cr3"
         PACKAGES="$PACKAGES madeye"
+        PACKAGES="$PACKAGES edict"
         PACKAGES="$PACKAGES etimetool"
         PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
         PACKAGES="$PACKAGES make-home checkfs"
@@ -388,12 +389,13 @@ case $DEVICE in
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
         PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
-        PACKAGES="$PACKAGES madaudio cr3-settings-n516"
+        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516"
 
         case $VARIANT in
             azbooka)
                 PACKAGES="$PACKAGES esplash-data-azbooka-n516 liblanguage-azbooka-data"
                 PACKAGES="$PACKAGES libeoi-settings-azbooka oi-themes-azbooka gm-theme-azbooka"
+                PACKAGES="$PACKAGES elock-azbooka"
                 ;;
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
@@ -459,7 +461,7 @@ case $DEVICE in
     v3|v3ext|v3all)
         server_args="$server_args -screen 600x800 -dpi 170";;
     n516)
-        server_args="$server_args -fb /dev/fb1 -screen 800x600@270 -dpi 200";;
+        server_args="$server_args -fb /dev/fb1 -screen 600x800 -dpi 200";;
     *)
         :;;
 esac
