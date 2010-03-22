@@ -655,7 +655,7 @@ case $DEVICE in
 
 
         # Pre-generated fontconfig cache
-        FC_F=$(find_file fontconfig/0fdfe5ca58fd9bc9e4fc72abcd5bc429-mipsel-ip-linux-gnu.cache-2)
+        FC_F=$(find_file fontconfig/0fdfe5ca58fd9bc9e4fc72abcd5bc429-mipsel-ip-linux-gnu.cache-3)
         FC_D=$(dirname "$FC_F")
         cp "$FC_D/"*cache* /rootfs-$ARCH/var/cache/fontconfig
     ;;

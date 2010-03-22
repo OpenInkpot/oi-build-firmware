@@ -1,4 +1,4 @@
-FC_CACHE_FILES=$(wildcard *.cache-2)
+FC_CACHE_FILES=$(wildcard *.cache-*)
 
 fc_cache_dir=$(datadir)/oi-build-firmware/fontconfig
 
