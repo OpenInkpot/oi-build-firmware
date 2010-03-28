@@ -396,6 +396,7 @@ case $DEVICE in
                 PACKAGES="$PACKAGES esplash-data-azbooka-n516 liblanguage-azbooka-data"
                 PACKAGES="$PACKAGES libeoi-settings-azbooka oi-themes-azbooka gm-theme-azbooka"
                 PACKAGES="$PACKAGES elock-azbooka locopdf-theme-azbooka fbreader-settings-azbooka"
+                PACKAGES="$PACKAGES edict-theme-azbooka"
                 ;;
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
