@@ -1,3 +1,9 @@
+oi-build-firmware (0.80) zelazny; urgency=low
+
+  * Add fbreader-theme-azbooka package
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 09 Apr 2010 16:09:25 +0200
+
 oi-build-firmware (0.79) zelazny; urgency=low
 
   * Add fbreader-settings-azbooka
