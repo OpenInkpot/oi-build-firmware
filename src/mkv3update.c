@@ -124,6 +124,11 @@ const layout_t layouts[] =
     v5_128_partitions,
     sizeof(v5_128_partitions) / sizeof(partition_t)
   },
+  {
+    "Original Hanlin V3A firmware", "v3a", "JKV3A:V5.01", 128,
+    v5_128_partitions,
+    sizeof(v5_128_partitions) / sizeof(partition_t)
+  },
 };
 
 const size_t nlayouts = sizeof(layouts) / sizeof(layout_t);
