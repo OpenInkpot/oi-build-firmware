@@ -390,20 +390,20 @@ esac
 case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 libeoi-settings-v3"
-        PACKAGES="$PACKAGES uk-settings-v3 cr3-settings-v3"
+        PACKAGES="$PACKAGES uk-settings-v3 cr3-settings-v3 eabout-settings-v3"
         ;;
     n516)
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
         PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
-        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516"
+        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516 eabout-settings-n516"
 
         case $VARIANT in
             azbooka)
                 PACKAGES="$PACKAGES esplash-data-azbooka-n516 liblanguage-azbooka-data"
                 PACKAGES="$PACKAGES libeoi-settings-azbooka oi-themes-azbooka gm-theme-azbooka"
                 PACKAGES="$PACKAGES elock-azbooka locopdf-theme-azbooka fbreader-theme-azbooka"
-                PACKAGES="$PACKAGES edict-theme-azbooka"
+                PACKAGES="$PACKAGES edict-theme-azbooka eabout-settings-azbooka"
                 ;;
             '')
                 PACKAGES="$PACKAGES esplash-data-n516";;
