@@ -339,7 +339,7 @@ case $DEVICE in
         # GUI
         PACKAGES="$PACKAGES nulldm xserver-xfbdev fontconfig"
         # Fonts
-        PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts"
+        PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts ptsans-fonts"
         ;;
 esac    
 
