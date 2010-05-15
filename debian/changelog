@@ -1,3 +1,15 @@
+oi-build-firmware (0.81) zelazny; urgency=low
+
+  [ Vadim Lopatin ]
+  * patch by solsticio for V3+ support
+
+  [ Alexander Kerner ]
+  * Add PTSans fonts
+  * Workaround for broken 2.6.32 kernel. Use 2.6.29 on V3 devices.
+  * Add settings packages for eabout
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sat, 15 May 2010 17:48:11 +0200
+
 oi-build-firmware (0.80) zelazny; urgency=low
 
   * Add fbreader-theme-azbooka package
