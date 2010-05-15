@@ -109,6 +109,13 @@ case $DEVICE in
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
+# workaround for broken 2.6.3x kernels on V3
+case $DEVICE in
+    v3|v3all|v3ext) LINUX_VERSION='2.6.29';;
+    *) ;;
+esac
+#
+
 case "$DEVICE-$VARIANT" in
     n516-azbooka) :;;
     *-azbooka) echo "Error: azbooka variant is supported only for n516"; exit 1;;
