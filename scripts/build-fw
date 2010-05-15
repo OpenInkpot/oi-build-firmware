@@ -396,7 +396,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
         PACKAGES="$PACKAGES locopdf-settings-n516 madeye-settings-n516 uk-settings-n516"
         PACKAGES="$PACKAGES usbwatcher usbwatcher-data-azbooka-n516 elowbatt"
-        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516 eabout-settings-n516"
+        PACKAGES="$PACKAGES madaudio cr3-settings-n516 edict-settings-n516"
 
         case $VARIANT in
             azbooka)
@@ -406,7 +406,7 @@ case $DEVICE in
                 PACKAGES="$PACKAGES edict-theme-azbooka eabout-settings-azbooka"
                 ;;
             '')
-                PACKAGES="$PACKAGES esplash-data-n516";;
+                PACKAGES="$PACKAGES esplash-data-n516 eabout-settings-n516";;
         esac
         ;;
 esac
