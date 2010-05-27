@@ -1,3 +1,9 @@
+oi-build-firmware (0.83) zelazny; urgency=low
+
+  * Add fontconfig cache for PTSans
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Thu, 27 May 2010 14:28:11 +0200
+
 oi-build-firmware (0.82) zelazny; urgency=low
 
   * Fix packages list
