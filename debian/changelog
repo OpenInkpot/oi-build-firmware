@@ -1,3 +1,9 @@
+oi-build-firmware (0.84) zelazny; urgency=low
+
+  * Update fontconfig cache for /usr/share/fonts/truetype directory
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Thu, 27 May 2010 15:26:32 +0200
+
 oi-build-firmware (0.83) zelazny; urgency=low
 
   * Add fontconfig cache for PTSans
