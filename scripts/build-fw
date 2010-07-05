@@ -469,7 +469,7 @@ if [ -n "$ADDON_PACKAGES" ]; then
     cross-shell $ARCH dpkg -i $install_packages
 fi
 
-server_args="-wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
+server_args="-wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0 -norootcursor"
 
 case $DEVICE in
     v3|v3ext|v3all)
