@@ -1,3 +1,10 @@
+oi-build-firmware (0.85) zelazny; urgency=low
+
+  * Add -norootcursor option to nulldm args due to changed semantics of X
+    server cursor processing.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 05 Jul 2010 14:10:24 +0700
+
 oi-build-firmware (0.84) zelazny; urgency=low
 
   * Update fontconfig cache for /usr/share/fonts/truetype directory
