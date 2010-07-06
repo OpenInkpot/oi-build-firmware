@@ -344,7 +344,7 @@ case $DEVICE in
         ;;
     *)
         # GUI
-        PACKAGES="$PACKAGES nulldm xserver-xfbdev fontconfig"
+        PACKAGES="$PACKAGES nulldm xserver-xfbdev fontconfig nullcursor"
         # Fonts
         PACKAGES="$PACKAGES liberation-fonts libertine-fonts droid-fonts ptsans-fonts"
         ;;
@@ -469,7 +469,7 @@ if [ -n "$ADDON_PACKAGES" ]; then
     cross-shell $ARCH dpkg -i $install_packages
 fi
 
-server_args="-wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0 -norootcursor"
+server_args="-wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
 
 case $DEVICE in
     v3|v3ext|v3all)
