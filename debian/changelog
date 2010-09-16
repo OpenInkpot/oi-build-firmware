@@ -1,3 +1,9 @@
+oi-build-firmware (0.87) zelazny; urgency=low
+
+  * Add madaudio-mp3 to OI branded builds 
+
+ -- Alexander V. Nikolaev <avn@daemon.hole.ru>  Fri, 17 Sep 2010 02:00:43 +0300
+
 oi-build-firmware (0.86) zelazny; urgency=low
 
   * Use nullcursor tool instead of (broken) -norootcursor option of X
