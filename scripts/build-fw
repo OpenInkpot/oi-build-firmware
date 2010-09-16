@@ -406,6 +406,7 @@ case $DEVICE in
                 PACKAGES="$PACKAGES edict-theme-azbooka eabout-settings-azbooka"
                 ;;
             '')
+                PACKAGES="$PACKAGES madaudio-mp3"
                 PACKAGES="$PACKAGES esplash-data-n516 eabout-settings-n516";;
         esac
         ;;
