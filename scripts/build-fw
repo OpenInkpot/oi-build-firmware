@@ -211,8 +211,8 @@ vol_name=storage
 vol_size=16MiB
 vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
 
-    cp /rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
-    cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
+    cp $ROOTFS_PATH/rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
+    cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
 
     /usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
 
@@ -439,11 +439,11 @@ umount_all() {
     fi
 }
 
-umount_all /rootfs-$HOSTARCH
-umount_all /rootfs-$ARCH
+umount_all $ROOTFS_PATH/rootfs-$HOSTARCH
+umount_all $ROOTFS_PATH/rootfs-$ARCH
 
-sudo rm -rf /rootfs-$HOSTARCH
-sudo rm -rf /rootfs-$ARCH
+sudo rm -rf $ROOTFS_PATH/rootfs-$HOSTARCH
+sudo rm -rf $ROOTFS_PATH/rootfs-$ARCH
 
 cross-bootstrap-host
 cross-bootstrap-target $ARCH
@@ -451,8 +451,8 @@ cross-bootstrap-target $ARCH
 update_sources_list() {
   . /etc/cross-shell/config
 
-  echo "deb http://ftp.iplinux.org/iplinux $SUITE core security gui media" > /rootfs-$ARCH/etc/apt/sources.list
-  echo "deb http://openinkpot.org/pub/oi $SUITE core security gui media" >> /rootfs-$ARCH/etc/apt/sources.list
+  echo "deb http://ftp.iplinux.org/iplinux $SUITE core security gui media" > $ROOTFS_PATH/rootfs-$ARCH/etc/apt/sources.list
+  echo "deb http://openinkpot.org/pub/oi $SUITE core security gui media" >> $ROOTFS_PATH/rootfs-$ARCH/etc/apt/sources.list
 }
 
 update_sources_list
@@ -481,12 +481,12 @@ case $DEVICE in
         :;;
 esac
 
-echo "SERVER_ARGS=\"$server_args\"" > /rootfs-$ARCH/etc/default/nulldm
+echo "SERVER_ARGS=\"$server_args\"" > $ROOTFS_PATH/rootfs-$ARCH/etc/default/nulldm
 
-echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > /rootfs-$ARCH/etc/passwd
+echo 'root:scKY2GQGBG3Nc:0:0:root:/root:/bin/sh' > $ROOTFS_PATH/rootfs-$ARCH/etc/passwd
 
 # Humm??
-ln -sf /proc/mounts /rootfs-$ARCH/etc/mtab
+ln -sf /proc/mounts $ROOTFS_PATH/rootfs-$ARCH/etc/mtab
 
 case $DEVICE in
     v3|v3ext|v3all)
@@ -497,7 +497,7 @@ lbookv3_battery
 mmc_block
 s3cmci
 vfat
-evdev" > /rootfs-$ARCH/etc/modules
+evdev" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         else
             echo "lbookv3_keys
 lbookv3_battery
@@ -505,36 +505,36 @@ mmc_block
 s3cmci
 vfat
 evdev
-mtdchar" > /rootfs-$ARCH/etc/modules
+mtdchar" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         fi
         ;;
     n516)
         echo "lm75
 snd-soc-n516
-jz4740_udc" > /rootfs-$ARCH/etc/modules
+jz4740_udc" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         ;;
 esac
 
 
-mkdir -p /rootfs-$ARCH/mnt/storage
-mkdir -p /rootfs-$ARCH/media/sd
+mkdir -p $ROOTFS_PATH/rootfs-$ARCH/mnt/storage
+mkdir -p $ROOTFS_PATH/rootfs-$ARCH/media/sd
 
 if [ "$MODE" != "nfsroot" ]; then
     echo "tmpfs /tmp tmpfs defaults 0 0
 tmpfs /var/run tmpfs defaults 0 0
 tmpfs /var/tmp tmpfs defaults 0 0
 tmpfs /var/lock tmpfs defaults 0 0
-tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
+tmpfs /var/log tmpfs defaults 0 0" > $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
 
     case $DEVICE-$MODE in
         v3-install|v3ext-install)
-            echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            echo "/dev/mtdblock_STORAGE /mnt/storage jffs2 noatime 0 0" >> $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             ;;
         v3all-live)
-            echo "/dev/mtdblock_STORAGE /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            echo "/dev/mtdblock_STORAGE /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             ;;
         n516-install)
-            echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> /rootfs-$ARCH/etc/fstab
+            echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             ;;
         dns323-install)
             ;;
@@ -546,24 +546,24 @@ tmpfs /var/log tmpfs defaults 0 0" > /rootfs-$ARCH/etc/fstab
 
     case $MODE in
         install)
-            rm -rf /rootfs-$ARCH/home
-            ln -s /mnt/storage/.home /rootfs-$ARCH/home
+            rm -rf $ROOTFS_PATH/rootfs-$ARCH/home
+            ln -s /mnt/storage/.home $ROOTFS_PATH/rootfs-$ARCH/home
             ;;
         live)
             ;;
     esac
-    rm -rf /rootfs-$ARCH/root
-    ln -s /home/user /rootfs-$ARCH/root
+    rm -rf $ROOTFS_PATH/rootfs-$ARCH/root
+    ln -s /home/user $ROOTFS_PATH/rootfs-$ARCH/root
 
-    rm -rf /rootfs-$ARCH/var/log/*
+    rm -rf $ROOTFS_PATH/rootfs-$ARCH/var/log/*
     # Apt goes awry if log directory does not exist.
-    mkdir -p /rootfs-$ARCH/var/log/apt
+    mkdir -p $ROOTFS_PATH/rootfs-$ARCH/var/log/apt
 fi
 
 if [ -z "$VARIANT" ]; then
-    echo "OpenInkpot $VERSION ($DEVICE)" > /rootfs-$ARCH/etc/openinkpot-version
+    echo "OpenInkpot $VERSION ($DEVICE)" > $ROOTFS_PATH/rootfs-$ARCH/etc/openinkpot-version
 else
-    echo "OpenInkpot $VERSION ($DEVICE-$VARIANT)" > /rootfs-$ARCH/etc/openinkpot-version
+    echo "OpenInkpot $VERSION ($DEVICE-$VARIANT)" > $ROOTFS_PATH/rootfs-$ARCH/etc/openinkpot-version
 fi
 #<!--
 iface=usb0
@@ -578,9 +578,9 @@ iface $iface inet static
     netmask 255.255.255.0
     broadcast 192.168.111.255
     gateway 192.168.111.2
-" > /rootfs-$ARCH/etc/network/interfaces
+" > $ROOTFS_PATH/rootfs-$ARCH/etc/network/interfaces
 
-echo 'nameserver 192.168.111.2' > /rootfs-$ARCH/etc/resolv.conf
+echo 'nameserver 192.168.111.2' > $ROOTFS_PATH/rootfs-$ARCH/etc/resolv.conf
 
 case $DEVICE in
   v3*)
@@ -593,7 +593,7 @@ case $DEVICE in
     HWADDR=02:00:00:05:70:41;;
 esac
     
-echo "options g_ether dev_addr=$HWADDR" > /rootfs-$ARCH/etc/modprobe.d/g_ether
+echo "options g_ether dev_addr=$HWADDR" > $ROOTFS_PATH/rootfs-$ARCH/etc/modprobe.d/g_ether
 
 case $DEVICE in
     n516)
@@ -601,7 +601,7 @@ case $DEVICE in
         # Pre-generation of most used locales
         #
         for i in ru_RU uk_UA en_US; do
-            lzcat /rootfs-$ARCH/usr/lib/locale-archive/main.tar.lzma | tar -x -C /rootfs-$ARCH/usr/lib/locale $i.UTF-8
+            lzcat $ROOTFS_PATH/rootfs-$ARCH/usr/lib/locale-archive/main.tar.lzma | tar -x -C $ROOTFS_PATH/rootfs-$ARCH/usr/lib/locale $i.UTF-8
         done
         ;;
 esac
@@ -645,10 +645,10 @@ find_file() {
 
 # Pre-created dropbear keys
 DSA_K=$(find_file dropbear_dss_host_key)
-cp "$DSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_dss_host_key
+cp "$DSA_K" $ROOTFS_PATH/rootfs-$ARCH/etc/dropbear/dropbear_dss_host_key
 RSA_K=$(find_file dropbear_rsa_host_key)
-cp "$RSA_K" /rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
-chmod 600 /rootfs-$ARCH/etc/dropbear/*
+cp "$RSA_K" $ROOTFS_PATH/rootfs-$ARCH/etc/dropbear/dropbear_rsa_host_key
+chmod 600 $ROOTFS_PATH/rootfs-$ARCH/etc/dropbear/*
 
 case $DEVICE in
     n516)
@@ -672,7 +672,7 @@ case $DEVICE in
         # Pre-generated fontconfig cache
         FC_F=$(find_file fontconfig/0fdfe5ca58fd9bc9e4fc72abcd5bc429-mipsel-ip-linux-gnu.cache-3)
         FC_D=$(dirname "$FC_F")
-        cp "$FC_D/"*cache* /rootfs-$ARCH/var/cache/fontconfig
+        cp "$FC_D/"*cache* $ROOTFS_PATH/rootfs-$ARCH/var/cache/fontconfig
     ;;
     *)
     ;;
@@ -718,7 +718,7 @@ case "$MODE" in
             sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.noopt.jffs2
             sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
             
-            mkv3update --write-oi=$WORK_DIR/V3update.bin /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
+            mkv3update --write-oi=$WORK_DIR/V3update.bin $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
         
             sync
             zip -j $OUTPUT_DIR/$OUTPUT_NAME.zip $WORK_DIR/V3update.bin
@@ -727,7 +727,7 @@ case "$MODE" in
     live)
         cd $WORK_DIR
         cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3
-        cp /rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
+        cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
 
         # Creates $WORK_DIR/initrd.gz
         mkinitramfs-v3 ${LINUX_VERSION}
