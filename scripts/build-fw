@@ -1,11 +1,14 @@
 #!/bin/sh
+# vim: set ts=4 expandtab shiftwidth=4:
+
+
 set -e
 
 LINUX_VERSION='2.6.32'
 DEVICE=v3
 MODE=install
 VARIANT=
-VERSION=$(date +%Y%m%d)
+VERSION=$(date +%Y%m%d-%H%M%S)
 ADDON_PACKAGES=
 
 KEEP_WORKDIR=0
@@ -144,7 +147,8 @@ case "$VARIANT-$DEVICE" in
         OUTPUT_NAME=azbooka516-$VERSION;;
 esac
 
-WORK_DIR=$(pwd)/$(mktemp build-fw.XXXXXXXX -d)
+WORK_DIR=$(pwd)/build-fw-$VERSION
+mkdir -p $WORK_DIR
 cleanup() {
     RETCODE=$?
     [ -z "$WORK_DIR" ] || sudo rm -rf "$WORK_DIR"
