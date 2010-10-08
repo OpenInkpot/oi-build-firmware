@@ -686,16 +686,32 @@ ROOTFS=$WORK_DIR/rootfs$KERNEL_FLAVOUR-$ARCH.tar
 
 cross-pack-rootfs $ARCH $ROOTFS
 
+UNPACK_PACKAGES=
+
+case "$MODE" in
+  install)
+    UNPACK_PACKAGES="$UNPACK_PACKAGES linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR"
+    ;;
+  live)
+    UNPACK_PACKAGES="$UNPACK_PACKAGES linux-image-${LINUX_VERSION}-v3"
+    ;;
+esac
+
+case "$DEVICE-MODE" in
+  n516-install)
+    UNPACK_PACKAGES="$UNPACK_PACKAGES uboot-n516"
+    ;;
+esac
+
+cross-shell $ARCH apt-get -y --force-yes install $UNPACK_PACKAGES
+
+cross-shell $ARCH dpkg-query -W > $OUTPUT_DIR/$OUTPUT_NAME.pkglist
+
 case "$MODE" in
     nfsroot)
         cp $ROOTFS "$OUTPUT_DIR/$OUTPUT_NAME.tar"
         bzip2 -9 "$OUTPUT_DIR/$OUTPUT_NAME.tar";;
     install)
-        cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR
-        if [ $DEVICE = n516 ]; then
-            cross-shell $ARCH apt-get -y --force-yes install uboot-n516
-        fi
-
         mkdir -p $WORK_DIR/rootfs
         (cd $WORK_DIR/rootfs && sudo tar xf $ROOTFS)
 
@@ -730,7 +746,7 @@ case "$MODE" in
         ;;
     live)
         cd $WORK_DIR
-        cross-shell $ARCH apt-get -y --force-yes install linux-image-${LINUX_VERSION}-v3
+
         cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
 
         # Creates $WORK_DIR/initrd.gz
