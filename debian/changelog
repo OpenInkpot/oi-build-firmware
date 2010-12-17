@@ -1,3 +1,16 @@
+oi-build-firmware (0.89) zelazny; urgency=low
+
+  [ Alexey Zaytsev ]
+  * Name the work dir after the build version
+
+  [ Mikhail Gusarov ]
+  * Generate fw.pkglist during firmware build
+
+  [ Alexander V. Nikolaev ]
+  * Include mp3 to all n516 flavors
+
+ -- Alexander V. Nikolaev <avn@daemon.hole.ru>  Fri, 17 Dec 2010 18:45:28 +0200
+
 oi-build-firmware (0.88) zelazny; urgency=low
 
   * /rootfs-$host and /rootfs-$target now can be created in $ROOTFS_PATH
