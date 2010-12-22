@@ -1,3 +1,9 @@
+oi-build-firmware (0.90) zelazny; urgency=low
+
+  * Fix broken daily builds (typo in build-fw)
+
+ -- Alexander V. Nikolaev <avn@daemon.hole.ru>  Wed, 22 Dec 2010 12:04:40 +0200
+
 oi-build-firmware (0.89) zelazny; urgency=low
 
   [ Alexey Zaytsev ]
