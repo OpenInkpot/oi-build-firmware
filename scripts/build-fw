@@ -697,7 +697,7 @@ case "$MODE" in
     ;;
 esac
 
-case "$DEVICE-MODE" in
+case "$DEVICE-$MODE" in
   n516-install)
     UNPACK_PACKAGES="$UNPACK_PACKAGES uboot-n516"
     ;;
