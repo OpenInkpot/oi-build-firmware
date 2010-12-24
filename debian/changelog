@@ -1,3 +1,9 @@
+oi-build-firmware (0.91) zelazny; urgency=low
+
+  * Remove time from version
+
+ -- Alexander V. Nikolaev <avn@daemon.hole.ru>  Fri, 24 Dec 2010 12:21:25 +0200
+
 oi-build-firmware (0.90) zelazny; urgency=low
 
   * Fix broken daily builds (typo in build-fw)
