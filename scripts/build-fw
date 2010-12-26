@@ -8,7 +8,9 @@ LINUX_VERSION='2.6.32'
 DEVICE=v3
 MODE=install
 VARIANT=
-VERSION=$(date +%Y%m%d-%H%M%S)
+if [ -z "$VERSION" ]; then
+    VERSION=$(date +%Y%m%d-%H%M%S)
+fi
 ADDON_PACKAGES=
 
 KEEP_WORKDIR=0
