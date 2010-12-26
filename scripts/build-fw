@@ -1,7 +1,6 @@
 #!/bin/sh
 # vim: set ts=4 expandtab shiftwidth=4:
 
-
 set -e
 
 LINUX_VERSION='2.6.32'
@@ -139,6 +138,7 @@ HOSTARCH=$(dpkg --print-architecture)
 
 OUTPUT_DIR=$(pwd)/output/"$VERSION"
 mkdir -p "$OUTPUT_DIR"
+ln -sf $VERSION output/latest
 
 case "$VARIANT-$DEVICE" in
     -dns323)
@@ -158,157 +158,11 @@ cleanup() {
 }
 if [ $KEEP_WORKDIR -eq 0 ]; then
     trap cleanup 0
+else
+    ln -s build-fw-$VERSION build-fw-latest
 fi
 
 # --
-
-PATH=$PATH:/usr/sbin
-
-do_pack_n516_firmware() {
-    # Fixate atime/mtime for rootfs being built
-    sudo find $WORK_DIR/rootfs -type f -print0 | sudo xargs -0 touch -d @0
-    sudo find $WORK_DIR/rootfs -depth -type d -print0 | sudo xargs -0 touch -d @0
-    sudo mkfs.ubifs -o $WORK_DIR/rootfs.ubi -d $WORK_DIR/rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
-    echo "[waveforms]
-mode=ubi
-image=$WORK_DIR/metronome.wbf
-vol_id=1
-vol_size=100KiB
-vol_type=dynamic
-vol_name=waveforms
-
-[bootsplash]
-mode=ubi
-image=$WORK_DIR/bootsplash.dat
-vol_id=2
-vol_size=480000
-vol_type=dynamic
-vol_name=bootsplash
-
-[errorsplash]
-mode=ubi
-image=$WORK_DIR/errorsplash.dat
-vol_id=3
-vol_size=480000
-vol_type=dynamic
-vol_name=errorsplash
-
-[kernel]
-mode=ubi
-image=$WORK_DIR/uImage
-vol_id=4
-vol_size=3MiB
-vol_type=dynamic
-vol_name=kernel
-
-[rootfs]
-mode=ubi
-image=$WORK_DIR/rootfs.ubi
-vol_id=5
-vol_size=122MiB
-vol_type=dynamic
-vol_name=rootfs
-
-[storage]
-mode=ubi
-vol_id=6
-vol_type=dynamic
-vol_name=storage
-vol_size=16MiB
-vol_flags=autoresize" > $WORK_DIR/n516-ubinize.ini
-
-    cp $ROOTFS_PATH/rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
-    cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
-
-    /usr/sbin/ubinize -v -o $WORK_DIR/ubi.img -p 128KiB -s 512 -m 2048 $WORK_DIR/n516-ubinize.ini
-
-    case "$VARIANT" in
-        '')
-            DESCRIPTION="OpenInkpot for N516.";;
-        azbooka)
-            DESCRIPTION="Azbooka516 firmware.";;
-    esac
-
-    echo "[DEFAULT]
-device=n516
-hwrev=1.0
-date=`date +%s`
-
-# global properties
-[GLOBAL]
-description=$DESCRIPTION
-
-[bootsplash]
-filename=$WORK_DIR/bootsplash.dat
-
-[errorsplash]
-filename=$WORK_DIR/errorsplash.dat
-
-[kernel]
-filename=$WORK_DIR/uImage
-
-[rootfs]
-filename=$WORK_DIR/rootfs.ubi
-" > $WORK_DIR/n516-mkfw.cfg
-
-    echo "[DEFAULT]
-device=n516
-hwrev=1.0
-date=`date +%s`
-
-# global properties
-[GLOBAL]
-description=$DESCRIPTION Reinstall image.
-
-[UBI]
-filename=$WORK_DIR/ubi.img
-raw=yes
-
-[uboot]
-filename=$WORK_DIR/u-boot-nand.bin
-raw=yes
-" > $WORK_DIR/n516-mkfw-reinstall.cfg
-
-    echo "[DEFAULT]
-device=n516
-hwrev=1.0
-date=`date +%s`
-
-[GLOBAL]
-description=$DESCRIPTION Bootloader.
-
-[uboot]
-filename=$WORK_DIR/u-boot-nand.bin
-raw=yes
-" > $WORK_DIR/n516-mkfw-bootloader.cfg
-
-    mk-oifw $WORK_DIR/n516-mkfw.cfg $OUTPUT_DIR/$OUTPUT_NAME-update.oifw
-    mk-oifw $WORK_DIR/n516-mkfw-reinstall.cfg $OUTPUT_DIR/$OUTPUT_NAME-reinstall.oifw
-    mk-oifw $WORK_DIR/n516-mkfw-bootloader.cfg $OUTPUT_DIR/$OUTPUT_NAME-bootloader.oifw
-    pushd $WORK_DIR
-
-    for i in `seq 1 1024`; do echo -ne "\xff" >> $WORK_DIR/ff-1k.bin; done
-    for i in `seq 1 1024`; do cat $WORK_DIR/ff-1k.bin >> $WORK_DIR/ff-1M.bin; done
-    cat u-boot-nand.bin ff-1M.bin > tmp1
-    dd if=tmp1 of=tmp2 bs=1M count=1
-    cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
-    dd if=tmp3 of=tmp4 bs=1M count=1
-    cat tmp4 ubi.img > n516-image.bin
-
-    wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
-    unzip n516-usbboot.zip
-    mv n516-image.bin n516-usbboot/
-    zip -r $OUTPUT_DIR/$OUTPUT_NAME-flashimage.zip n516-usbboot
-
-    popd
-
-    for i in $OUTPUT_DIR/*.oifw; do
-        DIR=$(dirname "$i")
-        FILE=$(basename "$i")
-        (cd "$DIR" && zip -r $OUTPUT_DIR/${FILE%.oifw}.zip "$FILE" && rm "$FILE")
-    done
-}
-
 
 #
 # FIXME: this script is steaming pile of shit.
@@ -720,14 +574,30 @@ case "$MODE" in
         if [ $DEVICE = n516 ]; then
             wget -O $WORK_DIR/metronome.wbf http://openinkpot.org/pub/contrib/n516-waveforms/default.wbf
 
+
+            cp $ROOTFS_PATH/rootfs-$ARCH/boot/u-boot-nand.bin $WORK_DIR/u-boot-nand.bin
+            cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/uImage
+
+            pushd $WORK_DIR
             case $VARIANT in
                 azbooka)
-                    LABEL=Azbooka;;
+                    pack-firmware --description="Azbooka516 firmware." --output-name=$OUTPUT_NAME n516
+                    ;;
                 *)
-                    LABEL=OpenInkpot;;
+                    pack-firmware --output-name $OUTPUT_NAME n516
+                    ;;
             esac
 
-            do_pack_n516_firmware
+            # Create a win-user friendly usbboot package.
+            wget http://openinkpot.org/pub/contrib/n516-usbboot/n516-usbboot.zip
+            unzip n516-usbboot.zip
+            cp -l n516-image.bin n516-usbboot/
+            zip -r $OUTPUT_NAME-flashimage.zip n516-usbboot
+
+            cp $OUTPUT_NAME-*.zip $OUTPUT_DIR
+
+            popd
+
         else
             if [ $DEVICE = v3 ]; then
                 ERASEBLOCK=16384
@@ -737,6 +607,7 @@ case "$MODE" in
                 PAGESIZE=2048
             fi
 
+            # XXX move this to pack-firmware
             sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.noopt.jffs2
             sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
             

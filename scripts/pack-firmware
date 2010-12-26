@@ -1,0 +1,192 @@
+#!/bin/sh
+
+# vim: set ts=4 expandtab shiftwidth=4:
+
+set -e
+
+usage() {
+    echo "Usage: pack-firmware [--description=string] [--output-name=name] <device>"
+    echo
+    echo "    Only n516 is supported yet."
+}
+
+TMP=$(getopt -l description:,output-name: -o hd:m:a: -- "$@")
+
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+eval set -- "$TMP"
+
+while true; do
+    case "$1" in
+        --description) DESCRIPTION="$2"; shift; shift;;
+        --output-name) OUTPUT_NAME="$2"; shift; shift;;
+        -h|--help) usage; exit 0;;
+        --) shift; break;;
+        *) echo "Unexpected argument in getopt parsing: $1"; exit 1;;
+    esac
+done
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+DEVICE=$1
+
+if [ -z "$DESCRIPTION" ] ; then
+    DESCRIPTION="OpenInkpot for $DEVICE"
+fi
+
+if [ -z "$OUTPUT_NAME" ]; then
+    OUTPUT_NAME=oi-$DEVICE
+fi
+
+do_pack_n516_firmware() {
+    # Fixate atime/mtime for rootfs being built
+    sudo find rootfs -type f -print0 | sudo xargs -0 touch -d @0
+    sudo find rootfs -depth -type d -print0 | sudo xargs -0 touch -d @0
+    sudo mkfs.ubifs -o rootfs.ubi -d rootfs -m 2048 -e 126KiB -c 4096 -x favor_lzo -X 10 -v
+    echo "[waveforms]
+mode=ubi
+image=metronome.wbf
+vol_id=1
+vol_size=100KiB
+vol_type=dynamic
+vol_name=waveforms
+
+[bootsplash]
+mode=ubi
+image=bootsplash.dat
+vol_id=2
+vol_size=480000
+vol_type=dynamic
+vol_name=bootsplash
+
+[errorsplash]
+mode=ubi
+image=errorsplash.dat
+vol_id=3
+vol_size=480000
+vol_type=dynamic
+vol_name=errorsplash
+
+[kernel]
+mode=ubi
+image=uImage
+vol_id=4
+vol_size=3MiB
+vol_type=dynamic
+vol_name=kernel
+
+[rootfs]
+mode=ubi
+image=rootfs.ubi
+vol_id=5
+vol_size=122MiB
+vol_type=dynamic
+vol_name=rootfs
+
+[storage]
+mode=ubi
+vol_id=6
+vol_type=dynamic
+vol_name=storage
+vol_size=16MiB
+vol_flags=autoresize" > n516-ubinize.ini
+
+
+    /usr/sbin/ubinize -v -o ubi.img -p 128KiB -s 512 -m 2048 n516-ubinize.ini
+
+    case "$VARIANT" in
+        '')
+            DESCRIPTION="OpenInkpot for N516.";;
+        azbooka)
+            DESCRIPTION="Azbooka516 firmware.";;
+    esac
+
+    echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+# global properties
+[GLOBAL]
+description=$DESCRIPTION
+
+[bootsplash]
+filename=bootsplash.dat
+
+[errorsplash]
+filename=errorsplash.dat
+
+[kernel]
+filename=uImage
+
+[rootfs]
+filename=rootfs.ubi
+" > n516-mkfw.cfg
+
+    echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+# global properties
+[GLOBAL]
+description=$DESCRIPTION Reinstall image.
+
+[UBI]
+filename=ubi.img
+raw=yes
+
+[uboot]
+filename=u-boot-nand.bin
+raw=yes
+" > n516-mkfw-reinstall.cfg
+
+    echo "[DEFAULT]
+device=n516
+hwrev=1.0
+date=`date +%s`
+
+[GLOBAL]
+description=$DESCRIPTION Bootloader.
+
+[uboot]
+filename=u-boot-nand.bin
+raw=yes
+" > n516-mkfw-bootloader.cfg
+
+    mk-oifw n516-mkfw.cfg $OUTPUT_NAME-update.oifw
+    mk-oifw n516-mkfw-reinstall.cfg $OUTPUT_NAME-reinstall.oifw
+    mk-oifw n516-mkfw-bootloader.cfg $OUTPUT_NAME-bootloader.oifw
+
+    for i in *.oifw; do
+        DIR=$(dirname "$i")
+        FILE=$(basename "$i")
+        (cd "$DIR" && zip -r ${FILE%.oifw}.zip "$FILE" && rm "$FILE")
+    done
+
+    # Additionally, create an image for usbboot
+    for i in `seq 1 1024`; do echo -ne "\xff" >> ff-1k.bin; done
+    for i in `seq 1 1024`; do cat ff-1k.bin >> ff-1M.bin; done
+    cat u-boot-nand.bin ff-1M.bin > tmp1
+    dd if=tmp1 of=tmp2 bs=1M count=1
+    cat tmp2 uImage ff-1M.bin ff-1M.bin ff-1M.bin ff-1M.bin > tmp3
+    dd if=tmp3 of=tmp4 bs=1M count=1
+    cat tmp4 ubi.img > n516-image.bin
+}
+
+case $DEVICE in
+    n516)
+        do_pack_n516_firmware
+        ;;
+    *)
+        echo "Unsupported device: $DEVICE"
+        exit 1
+        ;;
+esac
+
+echo "Have a nice day."
