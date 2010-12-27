@@ -1,1 +1,1 @@
-dist_bin_SCRIPTS = build-fw mkinitramfs-v3 mkrootfs.ext2 build-prs505
+dist_bin_SCRIPTS = build-fw mkinitramfs-v3 mkrootfs.ext2 build-prs505 pack-firmware
