@@ -1,3 +1,10 @@
+oi-build-firmware (0.93) zelazny; urgency=low
+
+  * Remove etimetool from builds: no longer necessary, given the graphical
+    menu.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 03 Jan 2011 14:46:43 +0100
+
 oi-build-firmware (0.92) zelazny; urgency=low
 
   * Remove mtd-utils from list of packages, newer busybox conflicts with it
