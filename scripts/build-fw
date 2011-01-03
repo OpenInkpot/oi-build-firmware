@@ -283,7 +283,7 @@ case $DEVICE in
     dns323)
         ;;
     *)
-        PACKAGES="$PACKAGES strace rsync kexec-tools mtd-utils sqlite3"
+        PACKAGES="$PACKAGES strace rsync kexec-tools sqlite3"
         ;;
 esac
 

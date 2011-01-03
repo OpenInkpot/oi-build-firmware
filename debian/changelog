@@ -1,3 +1,9 @@
+oi-build-firmware (0.92) zelazny; urgency=low
+
+  * Remove mtd-utils from list of packages, newer busybox conflicts with it
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 03 Jan 2011 11:05:00 +0100
+
 oi-build-firmware (0.91) zelazny; urgency=low
 
   * Remove time from version
