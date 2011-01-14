@@ -1,3 +1,9 @@
+oi-build-firmware (0.93.1) zelazny; urgency=low
+
+  * Unbreak daily builds by fixing sumtool(1) invocation.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Fri, 14 Jan 2011 18:54:08 +0100
+
 oi-build-firmware (0.93) zelazny; urgency=low
 
   * Remove etimetool from builds: no longer necessary, given the graphical
