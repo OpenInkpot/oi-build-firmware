@@ -608,7 +608,7 @@ case "$MODE" in
 
             # XXX move this to pack-firmware
             sudo mkfs.jffs2 -l -n -e $ERASEBLOCK -s $PAGESIZE --faketime -r $WORK_DIR/rootfs -o $WORK_DIR/rootfs.noopt.jffs2
-            sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
+            /usr/sbin/sumtool -e $ERASEBLOCK -l -i $WORK_DIR/rootfs.noopt.jffs2 -o $WORK_DIR/rootfs.jffs2
             
             mkv3update --write-oi=$WORK_DIR/V3update.bin $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR +$WORK_DIR/rootfs.jffs2
         
