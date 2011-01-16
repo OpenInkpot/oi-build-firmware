@@ -240,6 +240,7 @@ case $DEVICE in
         PACKAGES="$PACKAGES cr3"
         PACKAGES="$PACKAGES madeye"
         PACKAGES="$PACKAGES edict mueller7-dict"
+        PACKAGES="$PACKAGES etimetool"
         PACKAGES="$PACKAGES gm shared-mime-info epuzzles uk uk-send uuwm eshutdown elock language-selector erot"
         PACKAGES="$PACKAGES make-home checkfs"
         PACKAGES="$PACKAGES mime-defaults"
