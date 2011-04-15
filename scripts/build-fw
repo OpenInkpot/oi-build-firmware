@@ -3,7 +3,7 @@
 
 set -e
 
-LINUX_VERSION='2.6.32'
+LINUX_VERSION='2.6.37'
 DEVICE=v3
 MODE=install
 VARIANT=
@@ -17,6 +17,7 @@ KEEP_WORKDIR=0
 set_device() {
     case "$1" in
         v3|v3ext|v3all) DEVICE="$1";;
+        eb600) DEVICE="$1";;
         n516) DEVICE="$1";;
         dns323) DEVICE="$1";;
         *) echo "Unknown device: $1"; exit 1;;
@@ -44,7 +45,7 @@ usage() {
     echo "    [--addon-packages \"space delimited list of package filenames\"]"
     echo "    <device> [<version>]"
     echo
-    echo " device should be 'v3', 'v3ext', 'v3all', 'n516', 'dns323',"
+    echo " device should be 'v3', 'v3ext', 'v3all', 'n516', 'dns323', 'eb600'"
     echo " mode defaults to 'install',"
     echo " variant defaults to 'default',"
     echo " version defaults to today's snapshot."
@@ -93,20 +94,20 @@ case "$MODE-$DEVICE" in
     *) ;;
 esac
 
+case "$MODE-$DEVICE" in
+    live-eb600) :;;
+    *-eb600) echo "Error: only live is supported for eb600";  exit 1;;
+    *) ;;
+esac
+
 case $DEVICE in
     v3|v3all) KERNEL_FLAVOUR=-v3;;
     v3ext) KERNEL_FLAVOUR=-v3ext;;
+    eb600) KERNEL_FLAVOUR=-eb600;;
     n516) KERNEL_FLAVOUR=-n516;;
     dns323) KERNEL_FLAVOUR=-dns323;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
-
-# workaround for broken 2.6.32 kernel on V3
-case $DEVICE in
-    v3|v3all|v3ext) LINUX_VERSION='2.6.29';;
-    *) ;;
-esac
-#
 
 case "$DEVICE-$VARIANT" in
     n516-azbooka) :;;
@@ -120,6 +121,7 @@ fi
 
 case $DEVICE in
     v3|v3ext|v3all) MANUFACTURER=hanlin;;
+    eb600) MANUFACTURER=netronix;;
     n516) MANUFACTURER=hanvon;;
     dns323) MANUFACTURER=dlink;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
@@ -127,6 +129,7 @@ esac
 
 case $DEVICE in
     v3|v3ext|v3all) ARCH=armel;;
+    eb600) ARCH=armel;;
     dns323) ARCH=armel;;
     n516) ARCH=mipsel;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
@@ -177,6 +180,8 @@ case $DEVICE in
 esac
 case $DEVICE-$MODE in
     v3*-live)
+        ;;
+    eb600-live)
         ;;
     v3*-*)
         PACKAGES="$PACKAGES v3-format-storage";;
@@ -251,6 +256,10 @@ case $DEVICE in
     v3|v3ext|v3all)
         PACKAGES="$PACKAGES esplash-data-v3 fbreader-settings-v3 libeoi-settings-v3"
         PACKAGES="$PACKAGES uk-settings-v3 cr3-settings-v3 eabout-settings-v3"
+        ;;
+    eb600)
+        PACKAGES="$PACKAGES esplash-data-eb600 fbreader-settings-eb600 libeoi-settings-eb600"
+        PACKAGES="$PACKAGES uk-settings-eb600 cr3-settings-eb600 eabout-settings-eb600"
         ;;
     n516)
         PACKAGES="$PACKAGES fbreader-settings-n516 madshelf-settings-n516 libeoi-settings-n516"
@@ -330,10 +339,10 @@ if [ -n "$ADDON_PACKAGES" ]; then
     cross-shell $ARCH dpkg -i $install_packages
 fi
 
-server_args="-wr -ac -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
+server_args="-wr -ac -hwrotation -noreset -nolisten inet6 -keybd evdev,,device=/dev/event0"
 
 case $DEVICE in
-    v3|v3ext|v3all)
+    v3|v3ext|v3all|eb600)
         server_args="$server_args -screen 600x800 -dpi 170";;
     n516)
         server_args="$server_args -fb /dev/fb1 -screen 600x800 -dpi 200";;
@@ -368,8 +377,20 @@ evdev
 mtdchar" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         fi
         ;;
+    eb600)
+            echo "eb600_keys
+eb600_battery
+mmc_block
+s3cmci
+vfat
+evdev
+mtdchar" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
+        ;;
     n516)
         echo "lm75
+snd-soc-jz4740-i2s
+snd-soc-jz4740
+snd-soc-jz4740-codec
 snd-soc-n516
 jz4740_udc" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         ;;
@@ -395,6 +416,8 @@ tmpfs /var/log tmpfs defaults 0 0" > $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             ;;
         n516-install)
             echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
+            ;;
+        eb600-live)
             ;;
         dns323-install)
             ;;
@@ -445,6 +468,8 @@ echo 'nameserver 192.168.111.2' > $ROOTFS_PATH/rootfs-$ARCH/etc/resolv.conf
 case $DEVICE in
   v3*)
     HWADDR=02:00:00:00:00:03;;
+  eb600)
+    HWADDR=02:00:00:0E:B6:00;;
   n516)
     HWADDR=02:00:00:00:05:16;;
   prs505)
@@ -549,7 +574,7 @@ case "$MODE" in
     UNPACK_PACKAGES="$UNPACK_PACKAGES linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR"
     ;;
   live)
-    UNPACK_PACKAGES="$UNPACK_PACKAGES linux-image-${LINUX_VERSION}-v3"
+    UNPACK_PACKAGES="$UNPACK_PACKAGES linux-image-${LINUX_VERSION}$KERNEL_FLAVOUR"
     ;;
 esac
 
@@ -620,26 +645,45 @@ case "$MODE" in
     live)
         cd $WORK_DIR
 
-        cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}-v3 .
+        cp $ROOTFS_PATH/rootfs-$ARCH/boot/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR .
 
         # Creates $WORK_DIR/initrd.gz
-        mkinitramfs-v3 ${LINUX_VERSION}
+        mkinitramfs ${LINUX_VERSION} $DEVICE
 
         # Consumes $ROOTFS, generates $WORK_DIR/rootfs.ext2
         (cd $WORK_DIR; mkrootfs.ext2 $ROOTFS)
 
         mkdir -p $WORK_DIR/openinkpot
 
-        mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}-v3 $WORK_DIR/openinkpot
+        mv $WORK_DIR/initrd.gz $WORK_DIR/rootfs.ext2 $WORK_DIR/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR $WORK_DIR/openinkpot
 
-        echo "#!/bin/sh
+        if [ $DEVICE = eb600 ]; then
+            echo "#!/bin/sh
+DIR=/mnt/mmc/openinkpot
+mount /mnt/mmc -o remount,rw
+for i in \$DIR/reloaded*.ko; do insmod \$i kernel=\$DIR/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR initrd=\$DIR/initrd.gz >> \$DIR/boot.log.txt 2>&1; done
+dmesg > \$DIR/dmesg.txt
+" > $WORK_DIR/openinkpot/boot-oi.sh
+
+            echo "#!/bin/sh
+cd openinkpot
+./boot-oi.sh
+" > $WORK_DIR/update_kernel
+
+            wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/eb600-reloaded/reloaded.ko
+            wget -O $WORK_DIR/openinkpot/reloaded2.ko http://openinkpot.org/pub/contrib/eb600-reloaded/reloaded2.ko
+
+            (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot update_kernel)
+        fi
+        if [ $DEVICE = v3all ]; then
+            echo "#!/bin/sh
 DIR=\`dirname \$0\`
-insmod \$DIR/reloaded.ko kernel=\$DIR/vmlinuz-${LINUX_VERSION}-v3 initrd=\$DIR/initrd.gz >> \$DIR/boot.log.txt 2>&1
+insmod \$DIR/reloaded.ko kernel=\$DIR/vmlinuz-${LINUX_VERSION}$KERNEL_FLAVOUR initrd=\$DIR/initrd.gz >> \$DIR/boot.log.txt 2>&1
 dmesg > \$DIR/dmesg.txt
 " > $WORK_DIR/openinkpot/boot-OI-V3.exe.fb2
 
-        wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
-
-        (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
+            wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
+            (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
+        fi
         ;;
 esac

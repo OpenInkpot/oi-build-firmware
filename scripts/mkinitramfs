@@ -1,9 +1,10 @@
 #!/bin/bash
 
 LINUX_VERSION=$1
+FLAVOUR=$2
 
 ARCH=armel
-PACKAGES="busybox-static linux-modules-${LINUX_VERSION}-v3"
+PACKAGES="busybox-static linux-modules-${LINUX_VERSION}-${FLAVOUR}"
 MIRROR="http://openinkpot.org/pub/SLIND"
 CACHE_DIR="/var/cache/apt/archives-$ARCH"
 INITRD_DIR=`mktemp build_initrd-$ARCH.XXXX`
@@ -35,7 +36,7 @@ mkdir -p $INITRD_DIR/root
 mkdir -p $INITRD_DIR/media/sd
 mkdir -p $INITRD_DIR/initrd
 
-MODULES_DIR="/lib/modules/${LINUX_VERSION}-v3/kernel"
+MODULES_DIR="/lib/modules/${LINUX_VERSION}-${FLAVOUR}/kernel"
 
 echo "#!/bin/sh
 
