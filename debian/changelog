@@ -1,3 +1,9 @@
+oi-build-firmware (0.93.3) zelazny; urgency=low
+
+  * Add new target 'eb600'
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 15 Apr 2011 20:51:33 +0200
+
 oi-build-firmware (0.93.2) zelazny; urgency=low
 
   * Re-include (newer) etimetool to builds, as it no longer starts on startup.
