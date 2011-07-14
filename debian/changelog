@@ -1,3 +1,9 @@
+oi-build-firmware (0.93.4) zelazny; urgency=low
+
+  * Use 2.6.29 kernel for V3. The newer kernels freeze.
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Thu, 14 Jul 2011 13:56:55 +0200
+
 oi-build-firmware (0.93.3) zelazny; urgency=low
 
   * Add new target 'eb600'
