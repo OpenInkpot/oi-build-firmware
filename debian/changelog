@@ -1,3 +1,9 @@
+oi-build-firmware (0.93.5) zelazny; urgency=low
+
+  * Add new target 'prs505'
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sun, 11 Sep 2011 17:31:40 +0200
+
 oi-build-firmware (0.93.4) zelazny; urgency=low
 
   * Use 2.6.29 kernel for V3. The newer kernels freeze.
