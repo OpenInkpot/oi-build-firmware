@@ -19,6 +19,7 @@ set_device() {
         v3|v3ext|v3all) DEVICE="$1";;
         eb600) DEVICE="$1";;
         n516) DEVICE="$1";;
+        prs505) DEVICE="$1";;
         dns323) DEVICE="$1";;
         *) echo "Unknown device: $1"; exit 1;;
     esac
@@ -45,7 +46,7 @@ usage() {
     echo "    [--addon-packages \"space delimited list of package filenames\"]"
     echo "    <device> [<version>]"
     echo
-    echo " device should be 'v3', 'v3ext', 'v3all', 'n516', 'dns323', 'eb600'"
+    echo " device should be 'v3', 'v3ext', 'v3all', 'n516', 'dns323', 'eb600', 'prs505'"
     echo " mode defaults to 'install',"
     echo " variant defaults to 'default',"
     echo " version defaults to today's snapshot."
@@ -105,6 +106,7 @@ case $DEVICE in
     v3ext) KERNEL_FLAVOUR=-v3ext;;
     eb600) KERNEL_FLAVOUR=-eb600;;
     n516) KERNEL_FLAVOUR=-n516;;
+    prs505) KERNEL_FLAVOUR=-prs505;;
     dns323) KERNEL_FLAVOUR=-dns323;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
@@ -130,6 +132,7 @@ case $DEVICE in
     v3|v3ext|v3all) MANUFACTURER=hanlin;;
     eb600) MANUFACTURER=netronix;;
     n516) MANUFACTURER=hanvon;;
+    prs505) MANUFACTURER=sony;;
     dns323) MANUFACTURER=dlink;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
@@ -139,6 +142,7 @@ case $DEVICE in
     eb600) ARCH=armel;;
     dns323) ARCH=armel;;
     n516) ARCH=mipsel;;
+prs505) ARCH=armel;;
     *) echo "Unknown device: $DEVICE"; exit 1;;
 esac
 
@@ -194,6 +198,10 @@ case $DEVICE-$MODE in
         PACKAGES="$PACKAGES v3-format-storage";;
     n516-*)
         PACKAGES="$PACKAGES metronomefb-support metronome-state n516-waveforms n516-format-storage"
+        PACKAGES="$PACKAGES metronomefb-support-n516";;
+    prs505-*)
+        PACKAGES="$PACKAGES metronomefb-support metronome-state inputattach inputattach-settings-prs505"
+        PACKAGES="$PACKAGES metronomefb-support-prs505 prs505-waveforms"
         ;;
 esac
 
@@ -286,6 +294,12 @@ case $DEVICE in
                 PACKAGES="$PACKAGES esplash-data-n516 eabout-settings-n516";;
         esac
         ;;
+    prs505)
+        PACKAGES="$PACKAGES fbreader-settings-prs505 madshelf-settings-prs505 libeoi-settings-prs505"
+        PACKAGES="$PACKAGES locopdf-settings-prs505 madeye-settings-prs505 uk-settings-prs505"
+        PACKAGES="$PACKAGES cr3-settings-prs505 edict-settings-prs505 eabout-settings-prs505"
+        PACKAGES="$PACKAGES elowbatt esplash-data-prs505"
+        ;;
 esac
 
 # case $VARIANT in
@@ -353,6 +367,8 @@ case $DEVICE in
         server_args="$server_args -screen 600x800 -dpi 170";;
     n516)
         server_args="$server_args -fb /dev/fb1 -screen 600x800 -dpi 200";;
+    prs505)
+        server_args="$server_args -fb /dev/fb1 -screen 600x800 -dpi 170";;
     *)
         :;;
 esac
@@ -401,6 +417,9 @@ snd-soc-jz4740-codec
 snd-soc-n516
 jz4740_udc" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
         ;;
+    prs505)
+        echo "lm75" > $ROOTFS_PATH/rootfs-$ARCH/etc/modules
+        ;;
 esac
 
 
@@ -425,6 +444,8 @@ tmpfs /var/log tmpfs defaults 0 0" > $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             echo "/dev/mtdblock_storage /mnt/storage vfat quiet,iocharset=utf8,flush,noatime 0 0" >> $ROOTFS_PATH/rootfs-$ARCH/etc/fstab
             ;;
         eb600-live)
+            ;;
+        prs505-live)
             ;;
         dns323-install)
             ;;
@@ -691,6 +712,18 @@ dmesg > \$DIR/dmesg.txt
 
             wget -O $WORK_DIR/openinkpot/reloaded.ko http://openinkpot.org/pub/contrib/v3all-reloaded/reloaded.ko
             (cd $WORK_DIR; zip -r $OUTPUT_DIR/$OUTPUT_NAME.zip openinkpot)
+        fi
+        if [ $DEVICE = prs505 ]; then
+
+            mkdir -p $WORK_DIR/openinkpot-sd
+            mv $WORK_DIR/openinkpot/vmlinuz-${LINUX_VERSION}${KERNEL_FLAVOUR} $WORK_DIR/openinkpot-sd/zImage
+            mv $WORK_DIR/openinkpot/initrd.gz $WORK_DIR/openinkpot-sd/initrd.gz
+            mv $WORK_DIR/openinkpot $WORK_DIR/openinkpot-sd/
+
+            wget -O $WORK_DIR/openinkpot-sd/reloaded.o http://openinkpot.org/pub/contrib/sony-prs505-reloaded/reloaded.o
+            wget -O - http://openinkpot.org/pub/contrib/sony-prs505-live-loader/oi-runner.tar.gz | tar xz -C $WORK_DIR/openinkpot-sd/
+
+            (cd $WORK_DIR/openinkpot-sd; tar cv ./ | bzip2 -9 > $OUTPUT_DIR/$OUTPUT_NAME-sd-loader.tar.bz2)
         fi
         ;;
 esac
