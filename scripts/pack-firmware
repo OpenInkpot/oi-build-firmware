@@ -160,7 +160,7 @@ raw=yes
 " > n516-mkfw-bootloader.cfg
 
     mk-oifw n516-mkfw.cfg $OUTPUT_NAME-update.oifw
-    mk-oifw n516-mkfw-reinstall.cfg $OUTPUT_NAME-reinstall.oifw
+    #mk-oifw n516-mkfw-reinstall.cfg $OUTPUT_NAME-reinstall.oifw
     mk-oifw n516-mkfw-bootloader.cfg $OUTPUT_NAME-bootloader.oifw
 
     for i in *.oifw; do
