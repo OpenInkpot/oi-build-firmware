@@ -1,3 +1,9 @@
+oi-build-firmware (0.93.6) zelazny; urgency=low
+
+  * Do not build 'reinstall' fw for N516
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Wed, 14 Sep 2011 20:17:54 +0200
+
 oi-build-firmware (0.93.5) zelazny; urgency=low
 
   * Add new target 'prs505'
